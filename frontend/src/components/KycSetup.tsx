@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import { useState, useRef, useEffect } from "react";
 import { Check, X, CheckCircle2 } from "lucide-react";
 
@@ -29,26 +23,68 @@ import {
 } from "@/components/ui/command";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-
+import Img from "../assets/image.png";
 const docs = ["PAN Card", "Aadhaar Card"];
 
 const DocumentIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className="shrink-0">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    className="shrink-0"
+  >
     <g filter="url(#filter0_d_2_1631)">
-      <path d="M14.374 2H13.1638H5.87469C5.38997 2 5 2.39732 5 2.89119V20.1209C5 20.6148 5.38997 21.0121 5.87469 21.0121H18.1203C18.6051 21.0121 18.995 20.6148 18.995 20.1209V6.35694L17.1466 4.50854C16.8826 4.24449 14.8829 2 14.374 2Z" fill="white"/>
-      <path d="M5.875 2.15039H14.374C14.3936 2.15039 14.45 2.16496 14.5518 2.22559C14.6466 2.28208 14.7609 2.36575 14.8896 2.4707C15.147 2.68053 15.449 2.9658 15.7461 3.26172C16.0426 3.55701 16.3324 3.86037 16.5645 4.10742C16.7941 4.35186 16.9728 4.54607 17.041 4.61426L18.8447 6.41797V20.1211C18.8446 20.5347 18.5193 20.8623 18.1201 20.8623H5.875C5.4758 20.8623 5.15048 20.5347 5.15039 20.1211V2.8916C5.15039 2.47792 5.47575 2.15039 5.875 2.15039Z" stroke="white" strokeWidth="0.3"/>
+      <path
+        d="M14.374 2H13.1638H5.87469C5.38997 2 5 2.39732 5 2.89119V20.1209C5 20.6148 5.38997 21.0121 5.87469 21.0121H18.1203C18.6051 21.0121 18.995 20.6148 18.995 20.1209V6.35694L17.1466 4.50854C16.8826 4.24449 14.8829 2 14.374 2Z"
+        fill="white"
+      />
+      <path
+        d="M5.875 2.15039H14.374C14.3936 2.15039 14.45 2.16496 14.5518 2.22559C14.6466 2.28208 14.7609 2.36575 14.8896 2.4707C15.147 2.68053 15.449 2.9658 15.7461 3.26172C16.0426 3.55701 16.3324 3.86037 16.5645 4.10742C16.7941 4.35186 16.9728 4.54607 17.041 4.61426L18.8447 6.41797V20.1211C18.8446 20.5347 18.5193 20.8623 18.1201 20.8623H5.875C5.4758 20.8623 5.15048 20.5347 5.15039 20.1211V2.8916C5.15039 2.47792 5.47575 2.15039 5.875 2.15039Z"
+        stroke="white"
+        strokeWidth="0.3"
+      />
     </g>
-    <path d="M14.8835 2.27437L18.8631 6.09289C19.0395 6.26927 18.9951 6.53106 18.9951 6.77799V7.01709H14.978C14.4257 7.01709 13.978 6.56937 13.978 6.01709V2H14.2171C14.468 2 14.7071 2.09799 14.8835 2.27437Z" fill="#5F605B"/>
+    <path
+      d="M14.8835 2.27437L18.8631 6.09289C19.0395 6.26927 18.9951 6.53106 18.9951 6.77799V7.01709H14.978C14.4257 7.01709 13.978 6.56937 13.978 6.01709V2H14.2171C14.468 2 14.7071 2.09799 14.8835 2.27437Z"
+      fill="#5F605B"
+    />
     <defs>
-      <filter id="filter0_d_2_1631" x="-1" y="-3" width="25.9951" height="31.0122" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-        <feFlood floodOpacity="0" result="BackgroundImageFix"/>
-        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-        <feOffset dy="1"/>
-        <feGaussianBlur stdDeviation="3"/>
-        <feComposite in2="hardAlpha" operator="out"/>
-        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.07 0"/>
-        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2_1631"/>
-        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2_1631" result="shape"/>
+      <filter
+        id="filter0_d_2_1631"
+        x="-1"
+        y="-3"
+        width="25.9951"
+        height="31.0122"
+        filterUnits="userSpaceOnUse"
+        colorInterpolationFilters="sRGB"
+      >
+        <feFlood floodOpacity="0" result="BackgroundImageFix" />
+        <feColorMatrix
+          in="SourceAlpha"
+          type="matrix"
+          values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+          result="hardAlpha"
+        />
+        <feOffset dy="1" />
+        <feGaussianBlur stdDeviation="3" />
+        <feComposite in2="hardAlpha" operator="out" />
+        <feColorMatrix
+          type="matrix"
+          values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.07 0"
+        />
+        <feBlend
+          mode="normal"
+          in2="BackgroundImageFix"
+          result="effect1_dropShadow_2_1631"
+        />
+        <feBlend
+          mode="normal"
+          in="SourceGraphic"
+          in2="effect1_dropShadow_2_1631"
+          result="shape"
+        />
       </filter>
     </defs>
   </svg>
@@ -61,7 +97,7 @@ const DocumentIcon = () => (
 //   return (
 //     <Dialog open={open} onOpenChange={onOpenChange}>
 //       <DialogContent className="p-0 border-0 bg-transparent [&>button]:hidden">
-//         <Card className="relative bg-white rounded-[20px] border border-solid border-[#eaeaea]">
+//         <Card className="relative bg-white rounded-[20px] border border-solid border-border">
 //           {/* CardHeader for heading and separator */}
 //           <CardHeader className="pb-3">
 //             <div className="flex flex-col items-center gap-2">
@@ -89,8 +125,8 @@ const DocumentIcon = () => (
 
 //               <div className="w-full h-[63px] flex flex-col items-center gap-[9px]">
 //                 <div className="w-[356px] h-[19px] relative">
-//                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[284px] h-[19px] bg-[#efefef] rounded-[10px]" />
-//                   <div 
+//                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[284px] h-[19px] bg-border rounded-[10px]" />
+//                   <div
 //                     className="absolute top-0.5 left-1/2 -translate-x-1/2 h-[15px] shadow-[0px_1px_4px_#00000040] bg-[linear-gradient(90deg,rgba(171,172,194,1)_65%,rgba(133,134,153,1)_99%)] rounded-[10px] transition-all duration-300"
 //                     style={{ width: `${(284 * 65) / 100}px` }}
 //                   />
@@ -100,7 +136,7 @@ const DocumentIcon = () => (
 //                   <span className="[font-family:'Roobert_TRIAL-BoldItalic',Helvetica] font-bold italic text-[#0e0e0e]">
 //                     65%
 //                   </span>
-//                   <span className="[font-family:'Roobert_TRIAL-MediumItalic',Helvetica] font-medium italic text-[#858699]">
+//                   <span className="[font-family:'Roobert_TRIAL-MediumItalic',Helvetica] font-medium italic text-secondary">
 //                     {" "}
 //                     processed...
 //                   </span>
@@ -109,8 +145,8 @@ const DocumentIcon = () => (
 //             </div>
 //           </CardContent>
 
-//           <button 
-//             className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center border border-solid border-[#eaeaea] bg-white hover:bg-gray-100 transition-colors"
+//           <button
+//             className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center border border-solid border-border bg-white hover:bg-gray-100 transition-colors"
 //             onClick={() => onOpenChange(false)}
 //           >
 //             <X className="w-3 h-3 text-black" />
@@ -121,10 +157,13 @@ const DocumentIcon = () => (
 //   );
 // };
 
-
-
-
-const SuccessModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) => {
+const SuccessModal = ({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) => {
   const [progress, setProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
 
@@ -132,10 +171,10 @@ const SuccessModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (op
     if (open) {
       setProgress(0);
       setIsComplete(false);
-      
+
       // Progress animation
       const progressInterval = setInterval(() => {
-        setProgress(prev => {
+        setProgress((prev) => {
           if (prev >= 100) {
             clearInterval(progressInterval);
             return 100;
@@ -182,141 +221,469 @@ const SuccessModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (op
                     Your documents are being uploaded.
                   </p>
 
-                  <div className="relative w-[366.46px] h-[195.69px] flex items-center justify-center">
+                  <div className="relative  flex items-center justify-center">
                     <svg
                       width="367"
                       height="196"
                       viewBox="0 0 367 196"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
-                      className="w-full h-full"
                     >
-                      <circle cx="183" cy="98" r="80" fill="#f5f5f5" opacity="0.3" />
-                      <circle cx="100" cy="140" r="40" fill="#f5f5f5" opacity="0.2" />
-                      <circle cx="280" cy="60" r="50" fill="#f5f5f5" opacity="0.2" />
-                      <rect
-                        x="130"
-                        y="40"
-                        width="110"
-                        height="140"
-                        rx="8"
-                        fill="white"
-                        stroke="#e5e5e5"
-                        strokeWidth="2"
+                      <ellipse
+                        cx="141.884"
+                        cy="35.2978"
+                        rx="35.1006"
+                        ry="35.2978"
+                        fill="#1E1E1E"
+                        fill-opacity="0.03"
                       />
-                      <circle cx="160" cy="70" r="15" fill="#efefef" />
-                      <rect
-                        x="150"
-                        y="95"
-                        width="70"
-                        height="8"
-                        rx="4"
-                        fill="#efefef"
+                      <ellipse
+                        cx="97.0311"
+                        cy="165.9"
+                        rx="13.6502"
+                        ry="13.7269"
+                        fill="#1E1E1E"
+                        fill-opacity="0.03"
                       />
-                      <rect
-                        x="150"
-                        y="110"
-                        width="70"
-                        height="8"
-                        rx="4"
-                        fill="#efefef"
+                      <ellipse
+                        cx="269.41"
+                        cy="16.0801"
+                        rx="15.9903"
+                        ry="16.0801"
+                        fill="#1E1E1E"
+                        fill-opacity="0.03"
                       />
+                      <g filter="url(#filter0_d_5_2022)">
+                        <rect
+                          x="169.049"
+                          y="60.1572"
+                          width="100.998"
+                          height="130.843"
+                          rx="10.813"
+                          fill="white"
+                        />
+                      </g>
                       <rect
-                        x="150"
-                        y="125"
-                        width="70"
-                        height="8"
-                        rx="4"
-                        fill="#efefef"
-                      />
-                      <rect
-                        x="150"
-                        y="140"
-                        width="70"
-                        height="8"
-                        rx="4"
-                        fill="#efefef"
+                        x="180.721"
+                        y="71.9756"
+                        width="75.1197"
+                        height="6.50599"
+                        rx="3.25299"
+                        fill="url(#paint0_linear_5_2022)"
                       />
                       <rect
-                        x="150"
-                        y="155"
-                        width="70"
-                        height="8"
-                        rx="4"
-                        fill="#efefef"
+                        x="180.721"
+                        y="86.0234"
+                        width="75.1197"
+                        height="6.50599"
+                        rx="3.25299"
+                        fill="url(#paint1_linear_5_2022)"
                       />
                       <rect
-                        x="155"
-                        y="50"
-                        width="110"
-                        height="140"
-                        rx="8"
-                        fill="white"
-                        stroke="#e5e5e5"
-                        strokeWidth="2"
-                      />
-                      <circle cx="185" cy="80" r="15" fill="#efefef" />
-                      <rect
-                        x="175"
-                        y="105"
-                        width="70"
-                        height="8"
-                        rx="4"
-                        fill="#efefef"
+                        x="180.721"
+                        y="100.071"
+                        width="75.1197"
+                        height="6.50599"
+                        rx="3.25299"
+                        fill="url(#paint2_linear_5_2022)"
                       />
                       <rect
-                        x="175"
-                        y="120"
-                        width="70"
-                        height="8"
-                        rx="4"
-                        fill="#efefef"
+                        x="180.721"
+                        y="114.119"
+                        width="75.1197"
+                        height="6.50599"
+                        rx="3.25299"
+                        fill="url(#paint3_linear_5_2022)"
                       />
                       <rect
-                        x="175"
-                        y="135"
-                        width="70"
-                        height="8"
-                        rx="4"
-                        fill="#efefef"
+                        x="180.721"
+                        y="128.167"
+                        width="75.1197"
+                        height="6.50599"
+                        rx="3.25299"
+                        fill="url(#paint4_linear_5_2022)"
                       />
                       <rect
-                        x="175"
-                        y="150"
-                        width="70"
-                        height="8"
-                        rx="4"
-                        fill="#efefef"
+                        x="180.721"
+                        y="142.214"
+                        width="75.1197"
+                        height="6.50599"
+                        rx="3.25299"
+                        fill="url(#paint5_linear_5_2022)"
                       />
                       <rect
-                        x="175"
-                        y="165"
-                        width="70"
-                        height="8"
-                        rx="4"
-                        fill="#efefef"
+                        x="180.721"
+                        y="156.262"
+                        width="75.1197"
+                        height="6.50599"
+                        rx="3.25299"
+                        fill="url(#paint6_linear_5_2022)"
                       />
+                      <rect
+                        x="180.721"
+                        y="170.31"
+                        width="75.1197"
+                        height="6.50599"
+                        rx="3.25299"
+                        fill="url(#paint7_linear_5_2022)"
+                      />
+                      <g filter="url(#filter1_d_5_2022)">
+                        <rect
+                          x="129.955"
+                          y="32.1602"
+                          width="100.998"
+                          height="130.843"
+                          rx="10.813"
+                          fill="white"
+                        />
+                      </g>
+                      <ellipse
+                        cx="152.07"
+                        cy="60.5331"
+                        rx="11.6813"
+                        ry="11.7469"
+                        fill="url(#paint8_linear_5_2022)"
+                      />
+                      <rect
+                        x="177.041"
+                        y="51.3184"
+                        width="38.4584"
+                        height="6.50599"
+                        rx="3.25299"
+                        fill="url(#paint9_linear_5_2022)"
+                      />
+                      <rect
+                        x="140.389"
+                        y="83.124"
+                        width="75.1197"
+                        height="6.50599"
+                        rx="3.25299"
+                        fill="url(#paint10_linear_5_2022)"
+                      />
+                      <rect
+                        x="140.389"
+                        y="97.1719"
+                        width="75.1197"
+                        height="6.50599"
+                        rx="3.25299"
+                        fill="url(#paint11_linear_5_2022)"
+                      />
+                      <rect
+                        x="140.389"
+                        y="111.219"
+                        width="75.1197"
+                        height="6.50599"
+                        rx="3.25299"
+                        fill="url(#paint12_linear_5_2022)"
+                      />
+                      <rect
+                        x="140.389"
+                        y="125.267"
+                        width="75.1197"
+                        height="6.50599"
+                        rx="3.25299"
+                        fill="url(#paint13_linear_5_2022)"
+                      />
+                      <rect
+                        x="140.389"
+                        y="139.315"
+                        width="75.1197"
+                        height="6.50599"
+                        rx="3.25299"
+                        fill="url(#paint14_linear_5_2022)"
+                      />
+                      <rect
+                        x="177.041"
+                        y="62.5234"
+                        width="20.4872"
+                        height="6.50599"
+                        rx="3.25299"
+                        fill="url(#paint15_linear_5_2022)"
+                      />
+                      <defs>
+                        <filter
+                          id="filter0_d_5_2022"
+                          x="165.445"
+                          y="57.6342"
+                          width="108.207"
+                          height="138.051"
+                          filterUnits="userSpaceOnUse"
+                          color-interpolation-filters="sRGB"
+                        >
+                          <feFlood
+                            flood-opacity="0"
+                            result="BackgroundImageFix"
+                          />
+                          <feColorMatrix
+                            in="SourceAlpha"
+                            type="matrix"
+                            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                            result="hardAlpha"
+                          />
+                          <feOffset dy="1.0813" />
+                          <feGaussianBlur stdDeviation="1.80216" />
+                          <feComposite in2="hardAlpha" operator="out" />
+                          <feColorMatrix
+                            type="matrix"
+                            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"
+                          />
+                          <feBlend
+                            mode="normal"
+                            in2="BackgroundImageFix"
+                            result="effect1_dropShadow_5_2022"
+                          />
+                          <feBlend
+                            mode="normal"
+                            in="SourceGraphic"
+                            in2="effect1_dropShadow_5_2022"
+                            result="shape"
+                          />
+                        </filter>
+                        <filter
+                          id="filter1_d_5_2022"
+                          x="115.371"
+                          y="18.6576"
+                          width="130.166"
+                          height="160.01"
+                          filterUnits="userSpaceOnUse"
+                          color-interpolation-filters="sRGB"
+                        >
+                          <feFlood
+                            flood-opacity="0"
+                            result="BackgroundImageFix"
+                          />
+                          <feColorMatrix
+                            in="SourceAlpha"
+                            type="matrix"
+                            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                            result="hardAlpha"
+                          />
+                          <feMorphology
+                            radius="3.77089"
+                            operator="dilate"
+                            in="SourceAlpha"
+                            result="effect1_dropShadow_5_2022"
+                          />
+                          <feOffset dy="1.0813" />
+                          <feGaussianBlur stdDeviation="5.40649" />
+                          <feComposite in2="hardAlpha" operator="out" />
+                          <feColorMatrix
+                            type="matrix"
+                            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"
+                          />
+                          <feBlend
+                            mode="normal"
+                            in2="BackgroundImageFix"
+                            result="effect1_dropShadow_5_2022"
+                          />
+                          <feBlend
+                            mode="normal"
+                            in="SourceGraphic"
+                            in2="effect1_dropShadow_5_2022"
+                            result="shape"
+                          />
+                        </filter>
+                        <linearGradient
+                          id="paint0_linear_5_2022"
+                          x1="218.281"
+                          y1="71.9756"
+                          x2="218.281"
+                          y2="78.4816"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop stop-color="#F0F0F0" />
+                          <stop offset="1" stop-color="#EAEAEA" />
+                        </linearGradient>
+                        <linearGradient
+                          id="paint1_linear_5_2022"
+                          x1="218.281"
+                          y1="86.0234"
+                          x2="218.281"
+                          y2="92.5294"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop stop-color="#F0F0F0" />
+                          <stop offset="1" stop-color="#EAEAEA" />
+                        </linearGradient>
+                        <linearGradient
+                          id="paint2_linear_5_2022"
+                          x1="218.281"
+                          y1="100.071"
+                          x2="218.281"
+                          y2="106.577"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop stop-color="#F0F0F0" />
+                          <stop offset="1" stop-color="#EAEAEA" />
+                        </linearGradient>
+                        <linearGradient
+                          id="paint3_linear_5_2022"
+                          x1="218.281"
+                          y1="114.119"
+                          x2="218.281"
+                          y2="120.625"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop stop-color="#F0F0F0" />
+                          <stop offset="1" stop-color="#EAEAEA" />
+                        </linearGradient>
+                        <linearGradient
+                          id="paint4_linear_5_2022"
+                          x1="218.281"
+                          y1="128.167"
+                          x2="218.281"
+                          y2="134.673"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop stop-color="#F0F0F0" />
+                          <stop offset="1" stop-color="#EAEAEA" />
+                        </linearGradient>
+                        <linearGradient
+                          id="paint5_linear_5_2022"
+                          x1="218.281"
+                          y1="142.214"
+                          x2="218.281"
+                          y2="148.72"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop stop-color="#F0F0F0" />
+                          <stop offset="1" stop-color="#EAEAEA" />
+                        </linearGradient>
+                        <linearGradient
+                          id="paint6_linear_5_2022"
+                          x1="218.281"
+                          y1="156.262"
+                          x2="218.281"
+                          y2="162.768"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop stop-color="#F0F0F0" />
+                          <stop offset="1" stop-color="#EAEAEA" />
+                        </linearGradient>
+                        <linearGradient
+                          id="paint7_linear_5_2022"
+                          x1="218.281"
+                          y1="170.31"
+                          x2="218.281"
+                          y2="176.816"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop stop-color="#F0F0F0" />
+                          <stop offset="1" stop-color="#EAEAEA" />
+                        </linearGradient>
+                        <linearGradient
+                          id="paint8_linear_5_2022"
+                          x1="152.07"
+                          y1="48.7861"
+                          x2="152.07"
+                          y2="72.28"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop stop-color="#F0F0F0" />
+                          <stop offset="1" stop-color="#EAEAEA" />
+                        </linearGradient>
+                        <linearGradient
+                          id="paint9_linear_5_2022"
+                          x1="196.27"
+                          y1="51.3184"
+                          x2="196.27"
+                          y2="57.8243"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop stop-color="#F0F0F0" />
+                          <stop offset="1" stop-color="#EAEAEA" />
+                        </linearGradient>
+                        <linearGradient
+                          id="paint10_linear_5_2022"
+                          x1="177.949"
+                          y1="83.124"
+                          x2="177.949"
+                          y2="89.63"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop stop-color="#F0F0F0" />
+                          <stop offset="1" stop-color="#EAEAEA" />
+                        </linearGradient>
+                        <linearGradient
+                          id="paint11_linear_5_2022"
+                          x1="177.949"
+                          y1="97.1719"
+                          x2="177.949"
+                          y2="103.678"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop stop-color="#F0F0F0" />
+                          <stop offset="1" stop-color="#EAEAEA" />
+                        </linearGradient>
+                        <linearGradient
+                          id="paint12_linear_5_2022"
+                          x1="177.949"
+                          y1="111.219"
+                          x2="177.949"
+                          y2="117.725"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop stop-color="#F0F0F0" />
+                          <stop offset="1" stop-color="#EAEAEA" />
+                        </linearGradient>
+                        <linearGradient
+                          id="paint13_linear_5_2022"
+                          x1="177.949"
+                          y1="125.267"
+                          x2="177.949"
+                          y2="131.773"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop stop-color="#F0F0F0" />
+                          <stop offset="1" stop-color="#EAEAEA" />
+                        </linearGradient>
+                        <linearGradient
+                          id="paint14_linear_5_2022"
+                          x1="177.949"
+                          y1="139.315"
+                          x2="177.949"
+                          y2="145.821"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop stop-color="#F0F0F0" />
+                          <stop offset="1" stop-color="#EAEAEA" />
+                        </linearGradient>
+                        <linearGradient
+                          id="paint15_linear_5_2022"
+                          x1="187.285"
+                          y1="62.5234"
+                          x2="187.285"
+                          y2="69.0294"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop stop-color="#F0F0F0" />
+                          <stop offset="1" stop-color="#EAEAEA" />
+                        </linearGradient>
+                      </defs>
                     </svg>
                   </div>
 
-                  <p className="w-[358px] font-roobert font-normal text-[#5f605b] text-sm text-center tracking-[0] leading-[normal]">
+                  <p className="w-[358px] font-roobert font-normal text-secondary text-sm text-center tracking-[0] leading-[normal]">
                     Hang tight – this usually takes under a minute.
                   </p>
 
                   <div className="w-full h-[63px] flex flex-col items-center gap-[9px]">
-                    <div className="w-[356px] h-[19px] relative">
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[284px] h-[19px] bg-[#efefef] rounded-[10px]" />
-                      <div 
-                        className="absolute top-0.5 left-1/2 -translate-x-1/2 h-[15px] shadow-[0px_1px_4px_#00000040] bg-[linear-gradient(90deg,rgba(171,172,194,1)_65%,rgba(133,134,153,1)_99%)] rounded-[10px] transition-all duration-100"
-                        style={{ width: `${(284 * progress) / 100}px` }}
-                      />
+                    <div className="w-[356px] h-[19px] flex justify-center">
+                      <div className="relative w-[284px] h-[19px]">
+                        <div className="absolute top-0 w-full h-[19px] bg-border rounded-[10px]" />
+
+                        <div
+                          className="absolute top-0.5 h-[15px] shadow-[0px_1px_4px_#00000040] bg-[linear-gradient(90deg,rgba(171,172,194,1)_65%,rgba(133,134,153,1)_99%)] rounded-[10px] transition-all duration-100"
+                          style={{ width: `${progress}%` }}
+                        />
+                      </div>
                     </div>
 
                     <div className="w-[358px] h-[18px] font-roobert font-normal text-sm text-center tracking-[0] leading-[normal]">
-                      <span className="font-roobert font-bold italic text-[#0e0e0e]">
+                      <span className="font-roobert font-bold italic text-primary">
                         {progress}%
                       </span>
-                      <span className="font-roobert font-medium italic text-[#858699]">
+                      <span className="font-roobert font-medium italic text-secondary">
                         {" "}
                         processed...
                       </span>
@@ -326,16 +693,17 @@ const SuccessModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (op
               ) : (
                 // Success State
                 <div className="flex w-[401px] flex-col items-center gap-5">
-                  <div className="relative w-[366.46px] h-[195.69px] flex items-center justify-center">
-                    <CheckCircle2 className="w-24 h-24 text-green-500" />
-                  </div>
-
                   <p className="w-[401px] font-roobert font-normal text-secondary text-sm text-center tracking-[0] leading-[normal]">
-                    Your documents have been successfully verified!
+                    It will be reviewed shortly.{" "}
                   </p>
 
+                  <div className="relative w-[366.46px] h-[195.69px] flex items-center justify-center">
+                    <img src={Img} />
+                  </div>
+
                   <p className="w-[358px] font-roobert font-normal text-[#5f605b] text-sm text-center tracking-[0] leading-[normal]">
-                    Your KYC verification is now complete and your account is ready to use.
+                    Your KYC verification is now complete and your account is
+                    ready to use.
                   </p>
 
                   <div className="w-full flex justify-center mt-4">
@@ -357,7 +725,7 @@ const SuccessModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (op
             <Button
               variant="ghost"
               size="icon"
-              className="absolute top-4 right-4 w-8 h-8 rounded-full border border-solid border-[#eaeaea] hover:bg-gray-100"
+              className="absolute top-4 right-4 w-8 h-8 rounded-full border border-solid border-border hover:bg-gray-100"
               onClick={() => onOpenChange(false)}
             >
               <X className="h-3 w-3" />
@@ -368,9 +736,6 @@ const SuccessModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (op
     </Dialog>
   );
 };
-
-
-
 
 /* ----------------------------
    FloatingLabelFileUploader
@@ -395,7 +760,9 @@ const FloatingLabelFileUploader = ({
   const [isDragging, setIsDragging] = useState(false);
 
   // Determine effective label
-  const effectiveLabel = selectedFile ? (dynamicLabel || label).toUpperCase() : label;
+  const effectiveLabel = selectedFile
+    ? (dynamicLabel || label).toUpperCase()
+    : label;
 
   const handleWrapperClick = () => {
     if (!selectedFile) {
@@ -453,9 +820,28 @@ const FloatingLabelFileUploader = ({
 
       <div className="flex flex-col">
         <div className="flex justify-end items-end">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-            <path d="M7 17L17 7" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M7 7H17V17" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            className="w-4 h-4"
+          >
+            <path
+              d="M7 17L17 7"
+              stroke="black"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M7 7H17V17"
+              stroke="black"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </div>
         <Button
@@ -469,8 +855,18 @@ const FloatingLabelFileUploader = ({
     </div>
   ) : (
     <div className="inline-flex items-center gap-[9px] w-full h-full">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className="shrink-0">
-        <path d="M16.5003 10.5C19.8141 10.5 22.5003 13.1863 22.5003 16.5C22.5003 19.8137 19.8141 22.5 16.5003 22.5C13.1867 22.5 10.5004 19.8137 10.5004 16.5C10.5004 13.1863 13.1867 10.5 16.5003 10.5ZM16.1192 1.5C19.2258 1.5 21.7442 4.0184 21.7442 7.125V7.86842C21.7442 8.48973 21.2405 8.99342 20.6192 8.99342C19.9979 8.99342 19.4942 8.48973 19.4942 7.86842V7.125C19.4942 5.26104 17.9831 3.75 16.1192 3.75H7.11913C5.25517 3.75 3.74413 5.26104 3.74413 7.125V16.4557C3.74413 18.3196 5.25517 19.8307 7.11913 19.8307H9.07888C9.70021 19.8307 10.2039 20.3343 10.2039 20.9557C10.2039 21.5771 9.70021 22.0807 9.07888 22.0807H7.11913C4.01254 22.0807 1.49414 19.5623 1.49414 16.4557V7.125C1.49414 4.0184 4.01254 1.5 7.11913 1.5H16.1192ZM16.5003 12.3823L16.3478 12.3926C15.8486 12.4603 15.4533 12.8555 15.3857 13.3547L15.3753 13.5073V15.3764L13.5016 15.375L13.3489 15.385C12.8496 15.4522 12.4541 15.847 12.3858 16.3461L12.3754 16.4988L12.3855 16.6515C12.4527 17.1507 12.8474 17.5463 13.3465 17.6145L13.4992 17.625L15.3753 17.6264V19.5054L15.3857 19.6581C15.4533 20.1573 15.8486 20.5524 16.3478 20.6202L16.5003 20.6304L16.653 20.6202C17.1522 20.5524 17.5473 20.1573 17.6151 19.6581L17.6253 19.5054V17.6294L19.4991 17.6313L19.6518 17.6213C20.1512 17.5541 20.5467 17.1593 20.615 16.6602L20.6253 16.5075L20.6153 16.355C20.5481 15.8556 20.1533 15.46 19.6542 15.3918L19.5015 15.3813L17.6253 15.3794V13.5073L17.6151 13.3547C17.5473 12.8555 17.1522 12.4603 16.653 12.3926L16.5003 12.3823Z" fill="black"/>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        className="shrink-0"
+      >
+        <path
+          d="M16.5003 10.5C19.8141 10.5 22.5003 13.1863 22.5003 16.5C22.5003 19.8137 19.8141 22.5 16.5003 22.5C13.1867 22.5 10.5004 19.8137 10.5004 16.5C10.5004 13.1863 13.1867 10.5 16.5003 10.5ZM16.1192 1.5C19.2258 1.5 21.7442 4.0184 21.7442 7.125V7.86842C21.7442 8.48973 21.2405 8.99342 20.6192 8.99342C19.9979 8.99342 19.4942 8.48973 19.4942 7.86842V7.125C19.4942 5.26104 17.9831 3.75 16.1192 3.75H7.11913C5.25517 3.75 3.74413 5.26104 3.74413 7.125V16.4557C3.74413 18.3196 5.25517 19.8307 7.11913 19.8307H9.07888C9.70021 19.8307 10.2039 20.3343 10.2039 20.9557C10.2039 21.5771 9.70021 22.0807 9.07888 22.0807H7.11913C4.01254 22.0807 1.49414 19.5623 1.49414 16.4557V7.125C1.49414 4.0184 4.01254 1.5 7.11913 1.5H16.1192ZM16.5003 12.3823L16.3478 12.3926C15.8486 12.4603 15.4533 12.8555 15.3857 13.3547L15.3753 13.5073V15.3764L13.5016 15.375L13.3489 15.385C12.8496 15.4522 12.4541 15.847 12.3858 16.3461L12.3754 16.4988L12.3855 16.6515C12.4527 17.1507 12.8474 17.5463 13.3465 17.6145L13.4992 17.625L15.3753 17.6264V19.5054L15.3857 19.6581C15.4533 20.1573 15.8486 20.5524 16.3478 20.6202L16.5003 20.6304L16.653 20.6202C17.1522 20.5524 17.5473 20.1573 17.6151 19.6581L17.6253 19.5054V17.6294L19.4991 17.6313L19.6518 17.6213C20.1512 17.5541 20.5467 17.1593 20.615 16.6602L20.6253 16.5075L20.6153 16.355C20.5481 15.8556 20.1533 15.46 19.6542 15.3918L19.5015 15.3813L17.6253 15.3794V13.5073L17.6151 13.3547C17.5473 12.8555 17.1522 12.4603 16.653 12.3926L16.5003 12.3823Z"
+          fill="black"
+        />
       </svg>
       <div className="flex items-end justify-center w-fit text-xs tracking-[0] leading-5 whitespace-nowrap">
         <span className="font-bold underline ">Click here </span>
@@ -484,18 +880,21 @@ const FloatingLabelFileUploader = ({
 
   return (
     <div className="relative w-full">
-      <Label htmlFor={id} className="absolute -top-2 left-3 bg-white px-1 text-xs text-secondary">
+      <Label
+        htmlFor={id}
+        className="absolute -top-2 left-3 bg-white px-1 text-xs text-secondary"
+      >
         {effectiveLabel}
       </Label>
 
       <div
         id={id}
         className={cn(
-          "w-full rounded-xl border border-[#929292] cursor-pointer",
+          "w-full rounded-xl border border-secondary cursor-pointer",
           "h-14 flex items-center px-3 py-4", // Fixed Height
           "border-dashed", // Always dashed
           // Styling when no file is selected
-          !selectedFile && " bg-white hover:border-[#858699]",
+          !selectedFile && " bg-white hover:border-secondary",
           // Styling when a file IS selected (light grey background)
           selectedFile && "  cursor-default ",
           // Dragging state
@@ -543,15 +942,30 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
   return (
     <div className="">
       <div className="flex justify-between">
-        <div className="relative -top-0 py-4 self-stretch justify-start text-sm font-bold uppercase tracking-wider text-black">ADDITIONAL DOCUMENTS</div>
+        <div className="relative -top-0 py-4 self-stretch justify-start text-sm font-bold uppercase tracking-wider text-black">
+          ADDITIONAL DOCUMENTS
+        </div>
         <div className="flex justify-end">
           <Dialog>
             <DialogTrigger asChild>
               <div className="flex justify-center items-center cursor-pointer gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="13" viewBox="0 0 12 13" fill="none">
-                  <path fillRule="evenodd" clipRule="evenodd" d="M3.59159 4.5718V10.0252C3.59159 10.2804 3.69556 10.5261 3.87513 10.7057C4.0547 10.8853 4.30044 10.9892 4.55562 10.9892H8.4023C8.65748 10.9892 8.90321 10.8853 9.08279 10.7057C9.26236 10.5261 9.36633 10.2804 9.36633 10.0252V4.5718H3.59159ZM5.18886 5.85717V9.70384C5.18886 9.88342 5.33063 10.0252 5.5102 10.0252C5.68978 10.0252 5.83155 9.88342 5.83155 9.70384V5.85717C5.83155 5.6776 5.68978 5.53583 5.5102 5.53583C5.33063 5.53583 5.18886 5.6776 5.18886 5.85717ZM7.11692 5.85717V9.70384C7.11692 9.88342 7.25869 10.0252 7.43826 10.0252C7.61784 10.0252 7.75961 9.88342 7.75961 9.70384V5.85717C7.75961 5.6776 7.61784 5.53583 7.43826 5.53583C7.25869 5.53583 7.11692 5.6776 7.11692 5.85717ZM4.86752 3.29587H3.2608C3.08122 3.29587 2.93945 3.43764 2.93945 3.61722C2.93945 3.79679 3.08122 3.93856 3.2608 3.93856H9.67822C9.85779 3.93856 9.99956 3.79679 9.99956 3.61722C9.99956 3.43764 9.85779 3.29587 9.67822 3.29587H8.08095V2.97453C8.08095 2.44526 7.64619 2.0105 7.11692 2.0105H5.83155C5.30227 2.0105 4.86752 2.44526 4.86752 2.97453V3.29587ZM7.43826 2.97453V3.29587H5.5102V2.97453C5.5102 2.79495 5.65197 2.65319 5.83155 2.65319H7.11692C7.2965 2.65319 7.43826 2.79495 7.43826 2.97453Z" fill="#F23E57"/>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="12"
+                  height="13"
+                  viewBox="0 0 12 13"
+                  fill="none"
+                >
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M3.59159 4.5718V10.0252C3.59159 10.2804 3.69556 10.5261 3.87513 10.7057C4.0547 10.8853 4.30044 10.9892 4.55562 10.9892H8.4023C8.65748 10.9892 8.90321 10.8853 9.08279 10.7057C9.26236 10.5261 9.36633 10.2804 9.36633 10.0252V4.5718H3.59159ZM5.18886 5.85717V9.70384C5.18886 9.88342 5.33063 10.0252 5.5102 10.0252C5.68978 10.0252 5.83155 9.88342 5.83155 9.70384V5.85717C5.83155 5.6776 5.68978 5.53583 5.5102 5.53583C5.33063 5.53583 5.18886 5.6776 5.18886 5.85717ZM7.11692 5.85717V9.70384C7.11692 9.88342 7.25869 10.0252 7.43826 10.0252C7.61784 10.0252 7.75961 9.88342 7.75961 9.70384V5.85717C7.75961 5.6776 7.61784 5.53583 7.43826 5.53583C7.25869 5.53583 7.11692 5.6776 7.11692 5.85717ZM4.86752 3.29587H3.2608C3.08122 3.29587 2.93945 3.43764 2.93945 3.61722C2.93945 3.79679 3.08122 3.93856 3.2608 3.93856H9.67822C9.85779 3.93856 9.99956 3.79679 9.99956 3.61722C9.99956 3.43764 9.85779 3.29587 9.67822 3.29587H8.08095V2.97453C8.08095 2.44526 7.64619 2.0105 7.11692 2.0105H5.83155C5.30227 2.0105 4.86752 2.44526 4.86752 2.97453V3.29587ZM7.43826 2.97453V3.29587H5.5102V2.97453C5.5102 2.79495 5.65197 2.65319 5.83155 2.65319H7.11692C7.2965 2.65319 7.43826 2.79495 7.43826 2.97453Z"
+                    fill="#F23E57"
+                  />
                 </svg>
-                <button className="text-xs p-0 font-semibold cursor-pointer text-red-500">Remove</button>
+                <button className="text-xs p-0 font-semibold cursor-pointer text-red-500">
+                  Remove
+                </button>
               </div>
             </DialogTrigger>
 
@@ -565,7 +979,8 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
                   </DialogTrigger>
                   <div className="py-6 px-14 ">
                     <h2 className="font-roobert font-normal text-black text-xl tracking-[0.25px] leading-[22px]">
-                      Are you sure that you want to delete the attached document?
+                      Are you sure that you want to delete the attached
+                      document?
                     </h2>
                   </div>
                   <div className="py-6 px-14 flex items-center justify-center gap-5">
@@ -580,7 +995,7 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
                       </Button>
                     </DialogTrigger>
                     <DialogTrigger asChild>
-                      <Button 
+                      <Button
                         variant="default"
                         className="w-[229px] h-10 rounded-[70px]"
                         onClick={() => onRemove(index)}
@@ -601,7 +1016,10 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
       {/* Document Type */}
       <div className="flex flex-col gap-6">
         <div className="relative w-full">
-          <Label htmlFor={`doc-type-${index}`} className="absolute -top-2 left-3 bg-white px-1 text-xs text-secondary">
+          <Label
+            htmlFor={`doc-type-${index}`}
+            className="absolute -top-2 left-3 bg-white px-1 text-xs text-secondary"
+          >
             DOCUMENT TYPE
           </Label>
 
@@ -617,15 +1035,31 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
                 className="rounded-xl text-secondary "
               >
                 {value ? value : "Choose Document Type"}
-                <svg xmlns="http://www.w3.org/2000/svg" width="21" height="12" viewBox="0 0 21 12" fill="none" className="ml-2 shrink-0">
-                  <path d="M11.3695 10.9044L19.9192 2.31262C20.1413 2.08267 20.2641 1.77469 20.2614 1.455C20.2586 1.13532 20.1304 0.82952 19.9043 0.603461C19.6782 0.377403 19.3724 0.249177 19.0528 0.246399C18.7331 0.243621 18.4251 0.366514 18.1951 0.588609L10.5074 8.31837L2.84972 0.618574C2.73724 0.502124 2.60271 0.409238 2.45395 0.345339C2.3052 0.281439 2.14521 0.247805 1.98332 0.246398C1.82143 0.244991 1.66088 0.275841 1.51104 0.337146C1.3612 0.398451 1.22507 0.488984 1.11059 0.603462C0.996111 0.71794 0.905577 0.854071 0.844273 1.00391C0.782968 1.15375 0.752119 1.3143 0.753527 1.47619C0.754934 1.63808 0.788568 1.79807 0.852468 1.94683C0.916368 2.09558 1.00925 2.23012 1.1257 2.34259L9.64544 10.9044C9.87408 11.133 10.1841 11.2614 10.5074 11.2614C10.8307 11.2614 11.1408 11.133 11.3695 10.9044Z" fill="#929292"/>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="21"
+                  height="12"
+                  viewBox="0 0 21 12"
+                  fill="none"
+                  className="ml-2 shrink-0"
+                >
+                  <path
+                    d="M11.3695 10.9044L19.9192 2.31262C20.1413 2.08267 20.2641 1.77469 20.2614 1.455C20.2586 1.13532 20.1304 0.82952 19.9043 0.603461C19.6782 0.377403 19.3724 0.249177 19.0528 0.246399C18.7331 0.243621 18.4251 0.366514 18.1951 0.588609L10.5074 8.31837L2.84972 0.618574C2.73724 0.502124 2.60271 0.409238 2.45395 0.345339C2.3052 0.281439 2.14521 0.247805 1.98332 0.246398C1.82143 0.244991 1.66088 0.275841 1.51104 0.337146C1.3612 0.398451 1.22507 0.488984 1.11059 0.603462C0.996111 0.71794 0.905577 0.854071 0.844273 1.00391C0.782968 1.15375 0.752119 1.3143 0.753527 1.47619C0.754934 1.63808 0.788568 1.79807 0.852468 1.94683C0.916368 2.09558 1.00925 2.23012 1.1257 2.34259L9.64544 10.9044C9.87408 11.133 10.1841 11.2614 10.5074 11.2614C10.8307 11.2614 11.1408 11.133 11.3695 10.9044Z"
+                    fill="#929292"
+                  />
                 </svg>
               </Button>
             </PopoverTrigger>
 
-            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 bg-white rounded-xl border border-border" align="start">
+            <PopoverContent
+              className="w-[var(--radix-popover-trigger-width)] p-0 bg-white rounded-xl border border-border"
+              align="start"
+            >
               <Command>
-                <CommandInput placeholder="Search document type..." className="text-sm" />
+                <CommandInput
+                  placeholder="Search document type..."
+                  className="text-sm"
+                />
                 <CommandGroup>
                   {docs.map((doc) => (
                     <CommandItem
@@ -637,7 +1071,12 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
                       }}
                       className="cursor-pointer text-base font-semibold"
                     >
-                      <Check className={cn("mr-2 h-4 w-4 text-primary", value === doc ? "opacity-100" : "opacity-0")} />
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4 text-primary",
+                          value === doc ? "opacity-100" : "opacity-0"
+                        )}
+                      />
                       {doc}
                     </CommandItem>
                   ))}
@@ -648,14 +1087,16 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
         </div>
 
         {/* File Uploader */}
-        <FloatingLabelFileUploader 
-          label="UPLOAD DOCUMENT" 
-          id={`upload-${index}`} 
-          dynamicLabel={value} 
+        <FloatingLabelFileUploader
+          label="UPLOAD DOCUMENT"
+          id={`upload-${index}`}
+          dynamicLabel={value}
           onFileSelect={handleFileSelect}
         />
       </div>
-      <div className="pt-1 pl-3 text-secondary font-roobert text-xs font-normal leading-none">Files Supported: PDF, JPG, JPEG, PNG</div>
+      <div className="pt-1 pl-3 text-secondary font-roobert text-xs font-normal leading-none">
+        Files Supported: PDF, JPG, JPEG, PNG
+      </div>
     </div>
   );
 };
@@ -666,12 +1107,11 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
    - pass dynamicLabel={value} to main uploader
    ---------------------------- */
 
-
 // ... rest of your existing code (FloatingLabelFileUploader, AdditionalDocumentSection, etc.) remains the same ...
 
 /* ----------------------------
    Main KycSetup Component
-   ---------------------------- */const KycSetup = (): JSX.Element => {
+   ---------------------------- */ const KycSetup = (): JSX.Element => {
   // main selector state
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
@@ -713,8 +1153,9 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
               Upload KYC Documents
             </div>
 
-            <div className="text-center text-[#858699] text-base font-normal">
-              Verify your identity to proceed with loan applications. All uploads are secure and encrypted
+            <div className="text-center text-secondary text-base font-normal">
+              Verify your identity to proceed with loan applications. All
+              uploads are secure and encrypted
             </div>
           </div>
         </CardHeader>
@@ -728,7 +1169,10 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
 
           <form className="flex flex-col gap-6" onSubmit={handleSave}>
             <div className="relative w-full">
-              <Label htmlFor="state" className="absolute -top-2 left-3 bg-white px-1 text-xs text-secondary">
+              <Label
+                htmlFor="state"
+                className="absolute -top-2 left-3 bg-white px-1 text-xs text-secondary"
+              >
                 DOCUMENT TYPE
               </Label>
 
@@ -745,15 +1189,31 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
                   >
                     {value ? value : "Choose Document Type"}
 
-                    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="12" viewBox="0 0 21 12" fill="none" className="ml-2 shrink-0">
-                      <path d="M11.3695 10.9044L19.9192 2.31262C20.1413 2.08267 20.2641 1.77469 20.2614 1.455C20.2586 1.13532 20.1304 0.82952 19.9043 0.603461C19.6782 0.377403 19.3724 0.249177 19.0528 0.246399C18.7331 0.243621 18.4251 0.366514 18.1951 0.588609L10.5074 8.31837L2.84972 0.618574C2.73724 0.502124 2.60271 0.409238 2.45395 0.345339C2.3052 0.281439 2.14521 0.247805 1.98332 0.246398C1.82143 0.244991 1.66088 0.275841 1.51104 0.337146C1.3612 0.398451 1.22507 0.488984 1.11059 0.603462C0.996111 0.71794 0.905577 0.854071 0.844273 1.00391C0.782968 1.15375 0.752119 1.3143 0.753527 1.47619C0.754934 1.63808 0.788568 1.79807 0.852468 1.94683C0.916368 2.09558 1.00925 2.23012 1.1257 2.34259L9.64544 10.9044C9.87408 11.133 10.1841 11.2614 10.5074 11.2614C10.8307 11.2614 11.1408 11.133 11.3695 10.9044Z" fill="#929292"/>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="21"
+                      height="12"
+                      viewBox="0 0 21 12"
+                      fill="none"
+                      className="ml-2 shrink-0"
+                    >
+                      <path
+                        d="M11.3695 10.9044L19.9192 2.31262C20.1413 2.08267 20.2641 1.77469 20.2614 1.455C20.2586 1.13532 20.1304 0.82952 19.9043 0.603461C19.6782 0.377403 19.3724 0.249177 19.0528 0.246399C18.7331 0.243621 18.4251 0.366514 18.1951 0.588609L10.5074 8.31837L2.84972 0.618574C2.73724 0.502124 2.60271 0.409238 2.45395 0.345339C2.3052 0.281439 2.14521 0.247805 1.98332 0.246398C1.82143 0.244991 1.66088 0.275841 1.51104 0.337146C1.3612 0.398451 1.22507 0.488984 1.11059 0.603462C0.996111 0.71794 0.905577 0.854071 0.844273 1.00391C0.782968 1.15375 0.752119 1.3143 0.753527 1.47619C0.754934 1.63808 0.788568 1.79807 0.852468 1.94683C0.916368 2.09558 1.00925 2.23012 1.1257 2.34259L9.64544 10.9044C9.87408 11.133 10.1841 11.2614 10.5074 11.2614C10.8307 11.2614 11.1408 11.133 11.3695 10.9044Z"
+                        fill="#929292"
+                      />
                     </svg>
                   </Button>
                 </PopoverTrigger>
 
-                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 bg-white rounded-xl border border-border" align="start">
+                <PopoverContent
+                  className="w-[var(--radix-popover-trigger-width)] p-0 bg-white rounded-xl border border-border"
+                  align="start"
+                >
                   <Command>
-                    <CommandInput placeholder="Search document type..." className="text-sm" />
+                    <CommandInput
+                      placeholder="Search document type..."
+                      className="text-sm"
+                    />
                     <CommandGroup>
                       {docs.map((state) => (
                         <CommandItem
@@ -765,7 +1225,12 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
                           }}
                           className="cursor-pointer text-base font-semibold"
                         >
-                          <Check className={cn("mr-2 h-4 w-4 text-primary", value === state ? "opacity-100" : "opacity-0")} />
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4 text-primary",
+                              value === state ? "opacity-100" : "opacity-0"
+                            )}
+                          />
                           {state}
                         </CommandItem>
                       ))}
@@ -776,31 +1241,50 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
             </div>
 
             {/* Document Uploader - receives dynamicLabel from main selector */}
-            <FloatingLabelFileUploader 
-              label="UPLOAD DOCUMENT" 
-              id="frontUpload" 
-              dynamicLabel={value} 
+            <FloatingLabelFileUploader
+              label="UPLOAD DOCUMENT"
+              id="frontUpload"
+              dynamicLabel={value}
               onFileSelect={handleFileSelect}
             />
           </form>
 
-          <div className="pt-1 pl-3 text-secondary font-roobert text-xs font-normal leading-none">Files Supported: PDF, JPG, JPEG, PNG</div>
+          <div className="pt-1 pl-3 text-secondary font-roobert text-xs font-normal leading-none">
+            Files Supported: PDF, JPG, JPEG, PNG
+          </div>
 
           {/* ===== Additional Documents ===== */}
           {additionalDocs.length > 0 && (
             <div className="">
               {additionalDocs.map((_, idx) => (
-                <AdditionalDocumentSection key={idx} index={idx} onRemove={removeDocument} />
+                <AdditionalDocumentSection
+                  key={idx}
+                  index={idx}
+                  onRemove={removeDocument}
+                />
               ))}
             </div>
           )}
 
           {/* Add More Documents button */}
           <div className="flex justify-end py-3 px-2 items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="9" viewBox="0 0 10 9" fill="none">
-              <path d="M5 0C4.73131 0 4.51351 0.217812 4.51351 0.486486V4.01353H0.986486C0.717812 4.01353 0.5 4.23133 0.5 4.50001C0.5 4.7687 0.717812 4.9865 0.986486 4.9865H4.51351V8.51351C4.51351 8.78219 4.73131 9 5 9C5.26869 9 5.48649 8.78219 5.48649 8.51351V4.9865H9.01351C9.28219 4.9865 9.5 4.7687 9.5 4.50001C9.5 4.23133 9.28219 4.01353 9.01351 4.01353H5.48649V0.486486C5.48649 0.217812 5.26869 0 5 0Z" fill="black"/>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="10"
+              height="9"
+              viewBox="0 0 10 9"
+              fill="none"
+            >
+              <path
+                d="M5 0C4.73131 0 4.51351 0.217812 4.51351 0.486486V4.01353H0.986486C0.717812 4.01353 0.5 4.23133 0.5 4.50001C0.5 4.7687 0.717812 4.9865 0.986486 4.9865H4.51351V8.51351C4.51351 8.78219 4.73131 9 5 9C5.26869 9 5.48649 8.78219 5.48649 8.51351V4.9865H9.01351C9.28219 4.9865 9.5 4.7687 9.5 4.50001C9.5 4.23133 9.28219 4.01353 9.01351 4.01353H5.48649V0.486486C5.48649 0.217812 5.26869 0 5 0Z"
+                fill="black"
+              />
             </svg>
-            <button type="button" onClick={addDocument} className="text-xs cursor-pointer font-semibold text-black">
+            <button
+              type="button"
+              onClick={addDocument}
+              className="text-xs cursor-pointer font-semibold text-black"
+            >
               Add More Documents
             </button>
           </div>
@@ -808,25 +1292,28 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
 
         {/* ===== Footer ===== */}
         <CardFooter className="flex-col gap-2">
-          <Button 
-            type="submit" 
-            size="lg" 
+          <Button
+            type="submit"
+            size="lg"
             variant="outline"
             disabled={!isSaveEnabled}
             className={cn(
               "w-full border-2",
-              isSaveEnabled 
-                ? "border-black text-black hover:bg-gray-50 hover:text-black" 
+              isSaveEnabled
+                ? "border-black text-black hover:bg-gray-50 hover:text-black"
                 : "border-gray-300 text-gray-400 cursor-not-allowed"
             )}
             onClick={handleSave}
           >
             Save
           </Button>
-          
+
           {/* Success Modal - rendered conditionally */}
           {successModalOpen && (
-            <SuccessModal open={successModalOpen} onOpenChange={setSuccessModalOpen} />
+            <SuccessModal
+              open={successModalOpen}
+              onOpenChange={setSuccessModalOpen}
+            />
           )}
         </CardFooter>
       </Card>
