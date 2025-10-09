@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+
+@theme {
+    
+    --font-roobert: 'Roobert_TRIAL', Helvetica, sans-serif;
+    
+    --color-primary: #000000;
+    --color-secondary: #858699; 
+    --color-primary-foreground: #ffff;
+    --color-border: #EAEAEA;
+    --color-card: #fcfcf9;
+}
