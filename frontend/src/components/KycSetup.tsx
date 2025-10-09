@@ -90,72 +90,6 @@ const DocumentIcon = () => (
   </svg>
 );
 
-/* ----------------------------
-   Success Modal Component
-   ---------------------------- */
-// const SuccessModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) => {
-//   return (
-//     <Dialog open={open} onOpenChange={onOpenChange}>
-//       <DialogContent className="p-0 border-0 bg-transparent [&>button]:hidden">
-//         <Card className="relative bg-white rounded-[20px] border border-solid border-border">
-//           {/* CardHeader for heading and separator */}
-//           <CardHeader className="pb-3">
-//             <div className="flex flex-col items-center gap-2">
-//               <h1 className="[font-family:'Inter-Bold',Helvetica] font-bold text-black text-2xl text-center tracking-[0] leading-[22px] whitespace-nowrap">
-//                 KYC Verification
-//               </h1>
-//             </div>
-//             <Separator className="w-full" />
-//           </CardHeader>
-
-//           {/* CardContent for the main content */}
-//           <CardContent className="flex justify-center items-center p-6">
-//             <div className="flex flex-col items-center gap-5 max-w-[401px]">
-//               <p className="w-full [font-family:'Roobert_TRIAL-Regular',Helvetica] font-normal text-[#5f605b] text-sm text-center tracking-[0] leading-[normal]">
-//                 Your documents are being uploaded.
-//               </p>
-
-//               <div className="relative w-[366.46px] h-[195.69px] flex items-center justify-center">
-//                 {/* svg */}
-//               </div>
-
-//               <p className="w-full [font-family:'Roobert_TRIAL-Regular',Helvetica] font-normal text-[#5f605b] text-sm text-center tracking-[0] leading-[normal]">
-//                 Hang tight – this usually takes under a minute.
-//               </p>
-
-//               <div className="w-full h-[63px] flex flex-col items-center gap-[9px]">
-//                 <div className="w-[356px] h-[19px] relative">
-//                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[284px] h-[19px] bg-border rounded-[10px]" />
-//                   <div
-//                     className="absolute top-0.5 left-1/2 -translate-x-1/2 h-[15px] shadow-[0px_1px_4px_#00000040] bg-[linear-gradient(90deg,rgba(171,172,194,1)_65%,rgba(133,134,153,1)_99%)] rounded-[10px] transition-all duration-300"
-//                     style={{ width: `${(284 * 65) / 100}px` }}
-//                   />
-//                 </div>
-
-//                 <div className="w-[358px] h-[18px] [font-family:'Roobert_TRIAL-Bold',Helvetica] font-normal text-sm text-center tracking-[0] leading-[normal]">
-//                   <span className="[font-family:'Roobert_TRIAL-BoldItalic',Helvetica] font-bold italic text-[#0e0e0e]">
-//                     65%
-//                   </span>
-//                   <span className="[font-family:'Roobert_TRIAL-MediumItalic',Helvetica] font-medium italic text-secondary">
-//                     {" "}
-//                     processed...
-//                   </span>
-//                 </div>
-//               </div>
-//             </div>
-//           </CardContent>
-
-//           <button
-//             className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center border border-solid border-border bg-white hover:bg-gray-100 transition-colors"
-//             onClick={() => onOpenChange(false)}
-//           >
-//             <X className="w-3 h-3 text-black" />
-//           </button>
-//         </Card>
-//       </DialogContent>
-//     </Dialog>
-//   );
-// };
 
 const SuccessModal = ({
   open,
@@ -196,544 +130,227 @@ const SuccessModal = ({
   }, [open]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 border-0 bg-transparent max-w-[579px] [&>button]:hidden">
-        <Card className="relative w-[579px] h-[478px] bg-white rounded-[20px] border border-solid border-border">
-          <CardContent className="flex flex-col items-center h-full p-0">
-            {/* Header Section with Full Width Separator */}
-            <div className="w-full pt-6">
-              <div className="flex flex-col items-center gap-3 w-full">
-                <div className="flex flex-col items-center gap-2 w-full">
-                  <h1 className="font-roobert font-bold text-black text-2xl text-center tracking-[0] leading-[22px] whitespace-nowrap">
-                    {isComplete ? "Verification Complete" : "KYC Verification"}
-                  </h1>
+ <Dialog open={open} onOpenChange={onOpenChange}>
+  <DialogContent className="p-0 border-0 bg-transparent max-w-[579px] [&>button]:hidden">
+    <Card className="relative w-[579px] h-[478px] bg-white rounded-[20px] border border-solid border-border">
+      <CardContent className="flex flex-col items-center h-full p-0">
+        {/* Header Section with Full Width Separator */}
+        <div className="w-full pt-6">
+          <div className="flex flex-col items-center gap-3 w-full">
+            <div className="flex flex-col items-center gap-2 w-full">
+              <h1 className="font-roobert font-bold text-black text-2xl text-center tracking-[0] leading-[22px] whitespace-nowrap">
+                {isComplete ? "Verification Complete" : "KYC Verification"}
+              </h1>
+            </div>
+          </div>
+          <Separator className="w-full mt-3" />
+        </div>
+
+        {/* Fixed Layout Structure - Same for both states */}
+        <div className="flex-1 w-full flex flex-col items-center justify-between ">
+          {/* Top Text - Fixed Position */}
+          <div className="w-[401px]">
+            <p className="font-roobert font-normal text-secondary text-sm text-center tracking-[0] leading-[normal] py-1">
+              {!isComplete 
+                ? "Your documents are being uploaded." 
+                : "It will be reviewed shortly."
+              }
+            </p>
+          </div>
+
+          {/* Visual Content - Fixed Container Size */}
+          <div className="relative w-[366.46px] h-[195.69px] flex items-center justify-center">
+            {!isComplete ? (
+            <svg width="367" height="196" viewBox="0 0 367 196" fill="none" xmlns="http://www.w3.org/2000/svg">
+<ellipse cx="141.884" cy="35.2978" rx="35.1006" ry="35.2978" fill="#1E1E1E" fill-opacity="0.03"/>
+<ellipse cx="97.0311" cy="165.9" rx="13.6502" ry="13.7269" fill="#1E1E1E" fill-opacity="0.03"/>
+<ellipse cx="269.41" cy="16.0801" rx="15.9903" ry="16.0801" fill="#1E1E1E" fill-opacity="0.03"/>
+<g filter="url(#filter0_d_5_2022)">
+<rect x="169.049" y="60.1572" width="100.998" height="130.843" rx="10.813" fill="white"/>
+</g>
+<rect x="180.721" y="71.9756" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint0_linear_5_2022)"/>
+<rect x="180.721" y="86.0234" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint1_linear_5_2022)"/>
+<rect x="180.721" y="100.071" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint2_linear_5_2022)"/>
+<rect x="180.721" y="114.119" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint3_linear_5_2022)"/>
+<rect x="180.721" y="128.167" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint4_linear_5_2022)"/>
+<rect x="180.721" y="142.214" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint5_linear_5_2022)"/>
+<rect x="180.721" y="156.262" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint6_linear_5_2022)"/>
+<rect x="180.721" y="170.31" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint7_linear_5_2022)"/>
+<g filter="url(#filter1_d_5_2022)">
+<rect x="129.955" y="32.1602" width="100.998" height="130.843" rx="10.813" fill="white"/>
+</g>
+<ellipse cx="152.07" cy="60.5331" rx="11.6813" ry="11.7469" fill="url(#paint8_linear_5_2022)"/>
+<rect x="177.041" y="51.3184" width="38.4584" height="6.50599" rx="3.25299" fill="url(#paint9_linear_5_2022)"/>
+<rect x="140.389" y="83.124" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint10_linear_5_2022)"/>
+<rect x="140.389" y="97.1719" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint11_linear_5_2022)"/>
+<rect x="140.389" y="111.219" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint12_linear_5_2022)"/>
+<rect x="140.389" y="125.267" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint13_linear_5_2022)"/>
+<rect x="140.389" y="139.315" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint14_linear_5_2022)"/>
+<rect x="177.041" y="62.5234" width="20.4872" height="6.50599" rx="3.25299" fill="url(#paint15_linear_5_2022)"/>
+<defs>
+<filter id="filter0_d_5_2022" x="165.445" y="57.6342" width="108.207" height="138.051" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="1.0813"/>
+<feGaussianBlur stdDeviation="1.80216"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_5_2022"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_5_2022" result="shape"/>
+</filter>
+<filter id="filter1_d_5_2022" x="115.371" y="18.6576" width="130.166" height="160.01" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feMorphology radius="3.77089" operator="dilate" in="SourceAlpha" result="effect1_dropShadow_5_2022"/>
+<feOffset dy="1.0813"/>
+<feGaussianBlur stdDeviation="5.40649"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_5_2022"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_5_2022" result="shape"/>
+</filter>
+<linearGradient id="paint0_linear_5_2022" x1="218.281" y1="71.9756" x2="218.281" y2="78.4816" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint1_linear_5_2022" x1="218.281" y1="86.0234" x2="218.281" y2="92.5294" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint2_linear_5_2022" x1="218.281" y1="100.071" x2="218.281" y2="106.577" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint3_linear_5_2022" x1="218.281" y1="114.119" x2="218.281" y2="120.625" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint4_linear_5_2022" x1="218.281" y1="128.167" x2="218.281" y2="134.673" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint5_linear_5_2022" x1="218.281" y1="142.214" x2="218.281" y2="148.72" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint6_linear_5_2022" x1="218.281" y1="156.262" x2="218.281" y2="162.768" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint7_linear_5_2022" x1="218.281" y1="170.31" x2="218.281" y2="176.816" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint8_linear_5_2022" x1="152.07" y1="48.7861" x2="152.07" y2="72.28" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint9_linear_5_2022" x1="196.27" y1="51.3184" x2="196.27" y2="57.8243" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint10_linear_5_2022" x1="177.949" y1="83.124" x2="177.949" y2="89.63" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint11_linear_5_2022" x1="177.949" y1="97.1719" x2="177.949" y2="103.678" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint12_linear_5_2022" x1="177.949" y1="111.219" x2="177.949" y2="117.725" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint13_linear_5_2022" x1="177.949" y1="125.267" x2="177.949" y2="131.773" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint14_linear_5_2022" x1="177.949" y1="139.315" x2="177.949" y2="145.821" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint15_linear_5_2022" x1="187.285" y1="62.5234" x2="187.285" y2="69.0294" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+</defs>
+            </svg>
+
+
+            ) : (
+              // Success Image - Forced to fit container
+              <img 
+                src={Img} 
+                className="w-full h-full object-contain" 
+              />
+            )}
+          </div>
+
+          {/* Bottom Text - Fixed Position */}
+          <div className="w-[358px]">
+            <p className="font-roobert font-normal text-secondary text-sm text-center tracking-[0] leading-[normal]">
+              {!isComplete 
+                ? "Hang tight – this usually takes under a minute." 
+                : ""
+              }
+            </p>
+          </div>
+
+          {/* Dynamic Bottom Section */}
+          <div className="w-full flex flex-col items-center">
+            {!isComplete ? (
+              // Progress Bar for Processing State
+              <div className="w-full h-[63px] flex flex-col items-center gap-[9px]">
+                <div className="w-[356px] h-[19px] flex justify-center">
+                  <div className="relative w-[284px] h-[19px]">
+                    <div className="absolute top-0 w-full h-[19px] bg-border rounded-[10px]" />
+                    <div
+                      className="absolute top-0.5 h-[15px] shadow-[0px_1px_4px_#00000040] bg-[linear-gradient(90deg,rgba(171,172,194,1)_65%,rgba(133,134,153,1)_99%)] rounded-[10px] transition-all duration-100"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="w-[358px] h-[18px] font-roobert font-normal text-sm text-center tracking-[0] leading-[normal]">
+                  <span className="font-roobert font-bold italic text-primary">
+                    {progress}%
+                  </span>
+                  <span className="font-roobert font-medium italic text-secondary">
+                    {" "}
+                    processed...
+                  </span>
                 </div>
               </div>
-              <Separator className="w-full mt-3" />
-            </div>
+            ) : (
+              // Button for Success State
+              <div className="w-full flex justify-center ">
+                <Button
+                  className="w-[443px] h-14 rounded-[70px] relative -top-4"
+                  onClick={() => onOpenChange(false)}
+                >
+                  <span className="font-roobert font-semibold text-sm text-center">
+                 Okay
+                  </span>
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </CardContent>
 
-            {/* Content Section */}
-            <div className="flex-1 flex justify-center items-center">
-              {!isComplete ? (
-                // Processing State
-                <div className="flex w-[401px] flex-col items-center gap-5">
-                  <p className="w-[401px] font-roobert font-normal text-secondary text-sm text-center tracking-[0] leading-[normal]">
-                    Your documents are being uploaded.
-                  </p>
-
-                  <div className="relative  flex items-center justify-center">
-                    <svg
-                      width="367"
-                      height="196"
-                      viewBox="0 0 367 196"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <ellipse
-                        cx="141.884"
-                        cy="35.2978"
-                        rx="35.1006"
-                        ry="35.2978"
-                        fill="#1E1E1E"
-                        fill-opacity="0.03"
-                      />
-                      <ellipse
-                        cx="97.0311"
-                        cy="165.9"
-                        rx="13.6502"
-                        ry="13.7269"
-                        fill="#1E1E1E"
-                        fill-opacity="0.03"
-                      />
-                      <ellipse
-                        cx="269.41"
-                        cy="16.0801"
-                        rx="15.9903"
-                        ry="16.0801"
-                        fill="#1E1E1E"
-                        fill-opacity="0.03"
-                      />
-                      <g filter="url(#filter0_d_5_2022)">
-                        <rect
-                          x="169.049"
-                          y="60.1572"
-                          width="100.998"
-                          height="130.843"
-                          rx="10.813"
-                          fill="white"
-                        />
-                      </g>
-                      <rect
-                        x="180.721"
-                        y="71.9756"
-                        width="75.1197"
-                        height="6.50599"
-                        rx="3.25299"
-                        fill="url(#paint0_linear_5_2022)"
-                      />
-                      <rect
-                        x="180.721"
-                        y="86.0234"
-                        width="75.1197"
-                        height="6.50599"
-                        rx="3.25299"
-                        fill="url(#paint1_linear_5_2022)"
-                      />
-                      <rect
-                        x="180.721"
-                        y="100.071"
-                        width="75.1197"
-                        height="6.50599"
-                        rx="3.25299"
-                        fill="url(#paint2_linear_5_2022)"
-                      />
-                      <rect
-                        x="180.721"
-                        y="114.119"
-                        width="75.1197"
-                        height="6.50599"
-                        rx="3.25299"
-                        fill="url(#paint3_linear_5_2022)"
-                      />
-                      <rect
-                        x="180.721"
-                        y="128.167"
-                        width="75.1197"
-                        height="6.50599"
-                        rx="3.25299"
-                        fill="url(#paint4_linear_5_2022)"
-                      />
-                      <rect
-                        x="180.721"
-                        y="142.214"
-                        width="75.1197"
-                        height="6.50599"
-                        rx="3.25299"
-                        fill="url(#paint5_linear_5_2022)"
-                      />
-                      <rect
-                        x="180.721"
-                        y="156.262"
-                        width="75.1197"
-                        height="6.50599"
-                        rx="3.25299"
-                        fill="url(#paint6_linear_5_2022)"
-                      />
-                      <rect
-                        x="180.721"
-                        y="170.31"
-                        width="75.1197"
-                        height="6.50599"
-                        rx="3.25299"
-                        fill="url(#paint7_linear_5_2022)"
-                      />
-                      <g filter="url(#filter1_d_5_2022)">
-                        <rect
-                          x="129.955"
-                          y="32.1602"
-                          width="100.998"
-                          height="130.843"
-                          rx="10.813"
-                          fill="white"
-                        />
-                      </g>
-                      <ellipse
-                        cx="152.07"
-                        cy="60.5331"
-                        rx="11.6813"
-                        ry="11.7469"
-                        fill="url(#paint8_linear_5_2022)"
-                      />
-                      <rect
-                        x="177.041"
-                        y="51.3184"
-                        width="38.4584"
-                        height="6.50599"
-                        rx="3.25299"
-                        fill="url(#paint9_linear_5_2022)"
-                      />
-                      <rect
-                        x="140.389"
-                        y="83.124"
-                        width="75.1197"
-                        height="6.50599"
-                        rx="3.25299"
-                        fill="url(#paint10_linear_5_2022)"
-                      />
-                      <rect
-                        x="140.389"
-                        y="97.1719"
-                        width="75.1197"
-                        height="6.50599"
-                        rx="3.25299"
-                        fill="url(#paint11_linear_5_2022)"
-                      />
-                      <rect
-                        x="140.389"
-                        y="111.219"
-                        width="75.1197"
-                        height="6.50599"
-                        rx="3.25299"
-                        fill="url(#paint12_linear_5_2022)"
-                      />
-                      <rect
-                        x="140.389"
-                        y="125.267"
-                        width="75.1197"
-                        height="6.50599"
-                        rx="3.25299"
-                        fill="url(#paint13_linear_5_2022)"
-                      />
-                      <rect
-                        x="140.389"
-                        y="139.315"
-                        width="75.1197"
-                        height="6.50599"
-                        rx="3.25299"
-                        fill="url(#paint14_linear_5_2022)"
-                      />
-                      <rect
-                        x="177.041"
-                        y="62.5234"
-                        width="20.4872"
-                        height="6.50599"
-                        rx="3.25299"
-                        fill="url(#paint15_linear_5_2022)"
-                      />
-                      <defs>
-                        <filter
-                          id="filter0_d_5_2022"
-                          x="165.445"
-                          y="57.6342"
-                          width="108.207"
-                          height="138.051"
-                          filterUnits="userSpaceOnUse"
-                          color-interpolation-filters="sRGB"
-                        >
-                          <feFlood
-                            flood-opacity="0"
-                            result="BackgroundImageFix"
-                          />
-                          <feColorMatrix
-                            in="SourceAlpha"
-                            type="matrix"
-                            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                            result="hardAlpha"
-                          />
-                          <feOffset dy="1.0813" />
-                          <feGaussianBlur stdDeviation="1.80216" />
-                          <feComposite in2="hardAlpha" operator="out" />
-                          <feColorMatrix
-                            type="matrix"
-                            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"
-                          />
-                          <feBlend
-                            mode="normal"
-                            in2="BackgroundImageFix"
-                            result="effect1_dropShadow_5_2022"
-                          />
-                          <feBlend
-                            mode="normal"
-                            in="SourceGraphic"
-                            in2="effect1_dropShadow_5_2022"
-                            result="shape"
-                          />
-                        </filter>
-                        <filter
-                          id="filter1_d_5_2022"
-                          x="115.371"
-                          y="18.6576"
-                          width="130.166"
-                          height="160.01"
-                          filterUnits="userSpaceOnUse"
-                          color-interpolation-filters="sRGB"
-                        >
-                          <feFlood
-                            flood-opacity="0"
-                            result="BackgroundImageFix"
-                          />
-                          <feColorMatrix
-                            in="SourceAlpha"
-                            type="matrix"
-                            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                            result="hardAlpha"
-                          />
-                          <feMorphology
-                            radius="3.77089"
-                            operator="dilate"
-                            in="SourceAlpha"
-                            result="effect1_dropShadow_5_2022"
-                          />
-                          <feOffset dy="1.0813" />
-                          <feGaussianBlur stdDeviation="5.40649" />
-                          <feComposite in2="hardAlpha" operator="out" />
-                          <feColorMatrix
-                            type="matrix"
-                            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"
-                          />
-                          <feBlend
-                            mode="normal"
-                            in2="BackgroundImageFix"
-                            result="effect1_dropShadow_5_2022"
-                          />
-                          <feBlend
-                            mode="normal"
-                            in="SourceGraphic"
-                            in2="effect1_dropShadow_5_2022"
-                            result="shape"
-                          />
-                        </filter>
-                        <linearGradient
-                          id="paint0_linear_5_2022"
-                          x1="218.281"
-                          y1="71.9756"
-                          x2="218.281"
-                          y2="78.4816"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F0F0F0" />
-                          <stop offset="1" stop-color="#EAEAEA" />
-                        </linearGradient>
-                        <linearGradient
-                          id="paint1_linear_5_2022"
-                          x1="218.281"
-                          y1="86.0234"
-                          x2="218.281"
-                          y2="92.5294"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F0F0F0" />
-                          <stop offset="1" stop-color="#EAEAEA" />
-                        </linearGradient>
-                        <linearGradient
-                          id="paint2_linear_5_2022"
-                          x1="218.281"
-                          y1="100.071"
-                          x2="218.281"
-                          y2="106.577"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F0F0F0" />
-                          <stop offset="1" stop-color="#EAEAEA" />
-                        </linearGradient>
-                        <linearGradient
-                          id="paint3_linear_5_2022"
-                          x1="218.281"
-                          y1="114.119"
-                          x2="218.281"
-                          y2="120.625"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F0F0F0" />
-                          <stop offset="1" stop-color="#EAEAEA" />
-                        </linearGradient>
-                        <linearGradient
-                          id="paint4_linear_5_2022"
-                          x1="218.281"
-                          y1="128.167"
-                          x2="218.281"
-                          y2="134.673"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F0F0F0" />
-                          <stop offset="1" stop-color="#EAEAEA" />
-                        </linearGradient>
-                        <linearGradient
-                          id="paint5_linear_5_2022"
-                          x1="218.281"
-                          y1="142.214"
-                          x2="218.281"
-                          y2="148.72"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F0F0F0" />
-                          <stop offset="1" stop-color="#EAEAEA" />
-                        </linearGradient>
-                        <linearGradient
-                          id="paint6_linear_5_2022"
-                          x1="218.281"
-                          y1="156.262"
-                          x2="218.281"
-                          y2="162.768"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F0F0F0" />
-                          <stop offset="1" stop-color="#EAEAEA" />
-                        </linearGradient>
-                        <linearGradient
-                          id="paint7_linear_5_2022"
-                          x1="218.281"
-                          y1="170.31"
-                          x2="218.281"
-                          y2="176.816"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F0F0F0" />
-                          <stop offset="1" stop-color="#EAEAEA" />
-                        </linearGradient>
-                        <linearGradient
-                          id="paint8_linear_5_2022"
-                          x1="152.07"
-                          y1="48.7861"
-                          x2="152.07"
-                          y2="72.28"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F0F0F0" />
-                          <stop offset="1" stop-color="#EAEAEA" />
-                        </linearGradient>
-                        <linearGradient
-                          id="paint9_linear_5_2022"
-                          x1="196.27"
-                          y1="51.3184"
-                          x2="196.27"
-                          y2="57.8243"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F0F0F0" />
-                          <stop offset="1" stop-color="#EAEAEA" />
-                        </linearGradient>
-                        <linearGradient
-                          id="paint10_linear_5_2022"
-                          x1="177.949"
-                          y1="83.124"
-                          x2="177.949"
-                          y2="89.63"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F0F0F0" />
-                          <stop offset="1" stop-color="#EAEAEA" />
-                        </linearGradient>
-                        <linearGradient
-                          id="paint11_linear_5_2022"
-                          x1="177.949"
-                          y1="97.1719"
-                          x2="177.949"
-                          y2="103.678"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F0F0F0" />
-                          <stop offset="1" stop-color="#EAEAEA" />
-                        </linearGradient>
-                        <linearGradient
-                          id="paint12_linear_5_2022"
-                          x1="177.949"
-                          y1="111.219"
-                          x2="177.949"
-                          y2="117.725"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F0F0F0" />
-                          <stop offset="1" stop-color="#EAEAEA" />
-                        </linearGradient>
-                        <linearGradient
-                          id="paint13_linear_5_2022"
-                          x1="177.949"
-                          y1="125.267"
-                          x2="177.949"
-                          y2="131.773"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F0F0F0" />
-                          <stop offset="1" stop-color="#EAEAEA" />
-                        </linearGradient>
-                        <linearGradient
-                          id="paint14_linear_5_2022"
-                          x1="177.949"
-                          y1="139.315"
-                          x2="177.949"
-                          y2="145.821"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F0F0F0" />
-                          <stop offset="1" stop-color="#EAEAEA" />
-                        </linearGradient>
-                        <linearGradient
-                          id="paint15_linear_5_2022"
-                          x1="187.285"
-                          y1="62.5234"
-                          x2="187.285"
-                          y2="69.0294"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stop-color="#F0F0F0" />
-                          <stop offset="1" stop-color="#EAEAEA" />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                  </div>
-
-                  <p className="w-[358px] font-roobert font-normal text-secondary text-sm text-center tracking-[0] leading-[normal]">
-                    Hang tight – this usually takes under a minute.
-                  </p>
-
-                  <div className="w-full h-[63px] flex flex-col items-center gap-[9px]">
-                    <div className="w-[356px] h-[19px] flex justify-center">
-                      <div className="relative w-[284px] h-[19px]">
-                        <div className="absolute top-0 w-full h-[19px] bg-border rounded-[10px]" />
-
-                        <div
-                          className="absolute top-0.5 h-[15px] shadow-[0px_1px_4px_#00000040] bg-[linear-gradient(90deg,rgba(171,172,194,1)_65%,rgba(133,134,153,1)_99%)] rounded-[10px] transition-all duration-100"
-                          style={{ width: `${progress}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="w-[358px] h-[18px] font-roobert font-normal text-sm text-center tracking-[0] leading-[normal]">
-                      <span className="font-roobert font-bold italic text-primary">
-                        {progress}%
-                      </span>
-                      <span className="font-roobert font-medium italic text-secondary">
-                        {" "}
-                        processed...
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                // Success State
-                <div className="flex w-[401px] flex-col items-center gap-5">
-                  <p className="w-[401px] font-roobert font-normal text-secondary text-sm text-center tracking-[0] leading-[normal]">
-                    It will be reviewed shortly.{" "}
-                  </p>
-
-                  <div className="relative w-[366.46px] h-[195.69px] flex items-center justify-center">
-                    <img src={Img} />
-                  </div>
-
-                  <p className="w-[358px] font-roobert font-normal text-[#5f605b] text-sm text-center tracking-[0] leading-[normal]">
-                    Your KYC verification is now complete and your account is
-                    ready to use.
-                  </p>
-
-                  <div className="w-full flex justify-center mt-4">
-                    <Button
-                      className="w-[229px] h-10 rounded-[70px]"
-                      onClick={() => onOpenChange(false)}
-                    >
-                      <span className="font-roobert font-semibold text-sm text-center">
-                        Continue
-                      </span>
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-
-          <DialogTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-4 right-4 w-8 h-8 rounded-full border border-solid border-border hover:bg-gray-100"
-              onClick={() => onOpenChange(false)}
-            >
-              <X className="h-3 w-3" />
-            </Button>
-          </DialogTrigger>
-        </Card>
-      </DialogContent>
-    </Dialog>
+      <DialogTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-4 right-4 w-8 h-8 rounded-full border border-solid border-border hover:bg-gray-100"
+          onClick={() => onOpenChange(false)}
+        >
+          <X className="h-3 w-3" />
+        </Button>
+      </DialogTrigger>
+    </Card>
+  </DialogContent>
+</Dialog>
   );
 };
 
