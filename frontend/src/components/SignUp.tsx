@@ -72,9 +72,10 @@ export function SignUp() {
           <CardFooter className="flex flex-col ">
             <div className="flex items-center justify-center gap-2 pb-4">
               <Checkbox id="terms" />
-              <Label htmlFor="terms">
+              <div       className=  " text-xs  flex items-center gap-2  leading-none  select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 "
+ >
                 I am 18 years old and i can enter in a contract{" "}
-              </Label>
+              </div>
             </div>
 
             <Button variant="default" size="lg" className="w-full rounded-full">

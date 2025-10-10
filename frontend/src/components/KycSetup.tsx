@@ -499,7 +499,7 @@ const FloatingLabelFileUploader = ({
     <div className="relative w-full">
       <Label
         htmlFor={id}
-        className="absolute -top-2 left-3 bg-white px-1 text-xs text-secondary"
+           
       >
         {effectiveLabel}
       </Label>
@@ -557,7 +557,7 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
   };
 
   return (
-    <div className="">
+    <div    >
       <div className="flex justify-between">
         <div className="relative -top-0 py-4 self-stretch justify-start text-sm font-bold uppercase tracking-wider text-black">
           ADDITIONAL DOCUMENTS
@@ -635,7 +635,7 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
         <div className="relative w-full">
           <Label
             htmlFor={`doc-type-${index}`}
-            className="absolute -top-2 left-3 bg-white px-1 text-xs text-secondary"
+               
           >
             DOCUMENT TYPE
           </Label>
@@ -788,7 +788,7 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
             <div className="relative w-full">
               <Label
                 htmlFor="state"
-                className="absolute -top-2 left-3 bg-white px-1 text-xs text-secondary"
+                   
               >
                 DOCUMENT TYPE
               </Label>
@@ -872,7 +872,7 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
 
           {/* ===== Additional Documents ===== */}
           {additionalDocs.length > 0 && (
-            <div className="">
+            <div    >
               {additionalDocs.map((_, idx) => (
                 <AdditionalDocumentSection
                   key={idx}

@@ -26,9 +26,9 @@ const Dashboard: FunctionComponent = () => {
   ];
 
   const quickAccessItems = [
-    { label: 'My Loans', icon: '📄' },
-    { label: 'Apply for a new loan', icon: '➕' },
-    { label: 'Repayments', icon: '💰' },
+    { label: 'My Loans' },
+    { label: 'Apply for a new loan' },
+    { label: 'Repayments' },
   ];
 
   const filterButtons = [

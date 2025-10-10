@@ -13,14 +13,14 @@ export function SOTP() {
       <div className="h-screen flex flex-col justify-center items-center">
         <div className="w-full max-w-sm flex flex-col items-center gap-6 md:gap-16">
           <div className="flex flex-col items-center">
-            <div className="text-black text-center text-xl font-bold font-inter leading-tight tracking-wider">
+            <div className="  text-center text-xl font-bold font-inter leading-tight tracking-wider">
               VERIFY OTP
             </div>
             <div className="w-72 text-center text-base font-inter">
-              <span className="text-black font-normal">
+              <span className="  font-normal">
                 We have sent an OTP to{" "}
               </span>
-              <span className="text-black font-extrabold">8168864861</span>
+              <span className="  font-extrabold">8168864861</span>
             </div>
           </div>
 
@@ -33,7 +33,7 @@ export function SOTP() {
                       <InputOTPGroup key={index}>
                         <InputOTPSlot
                           index={index}
-                          className="w-14 h-[60px] text-lg font-bold border-black data-[state=active]:border-2 data-[state=active]:ring-black"
+                          className="w-14 h-[60px] text-lg font-bold "
                         />
                       </InputOTPGroup>
                     ))}
@@ -41,14 +41,14 @@ export function SOTP() {
                 </div>
 
                 <div className="self-stretch text-center text-sm font-inter mt-[-8px]">
-                  <span className="text-black font-normal">Expect OTP in </span>
-                  <span className="text-black font-bold">28 seconds</span>
+                  <span className="  ">Expect OTP in </span>
+                  <span className="  font-bold">28 seconds</span>
                 </div>
               </div>
 
               <div className="self-stretch text-center text-sm font-inter mt-[-8px]">
-                <span className="text-black font-normal">Issue with OTP, </span>
-                <span className="text-black font-semibold underline cursor-pointer">
+                <span className="">Issue with OTP, </span>
+                <span className="  font-semibold underline cursor-pointer">
                   Change registered Number{" "}
                 </span>
               </div>

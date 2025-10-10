@@ -12,7 +12,6 @@
 }
 
 
-
 @theme {
     
     --font-roobert: 'Roobert', Helvetica, sans-serif;
@@ -24,5 +23,11 @@
     --color-card: #fcfcf9;
     --color-secHeading: #9D9D9D;
     --color-bgCard: rgba(154, 198, 248, 0.10)
+}
+
+/* Ensure ScrollArea behaves horizontally */
+[data-radix-scroll-area-viewport] {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
 }
 

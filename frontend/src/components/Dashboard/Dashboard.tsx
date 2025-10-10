@@ -1,22 +1,17 @@
 import { Sidebar } from "./Sidebar";
 import { DashboardHeader } from "./DashboardHeader";
 import { LoanCard } from "./LoanCard";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { PlusCircle, TrendingUp, Wallet, Star } from "lucide-react";
 import { TotalLoan } from "./TotalLoan";
 import QuickAccessCard from "./QuickAccessCard";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export default function Dashboard() {
-  // Example hardcoded data (replace later with API data)
-  const totalLoan = "₹10,00,000";
-  const outstandingBalance = "₹5,00,000";
-  const repaymentDue = "₹40,000";
-  const activeLoans = 6;
-  const creditScore = 750;
-
   // Example loans
   const loans = [
+    { amount: "₹10,333", bank: "IDFC First Bank" },
+    { amount: "₹10,333", bank: "IDFC First Bank" },
+    { amount: "₹10,333", bank: "IDFC First Bank" },
+    { amount: "₹10,333", bank: "IDFC First Bank" },
     { amount: "₹10,333", bank: "IDFC First Bank" },
     { amount: "₹10,333", bank: "IDFC First Bank" },
     { amount: "₹10,333", bank: "IDFC First Bank" },
@@ -30,52 +25,12 @@ export default function Dashboard() {
       <main className="ml-64 flex-1 min-h-screen p-6 sm:p-8 transition-all">
         <DashboardHeader />
 
-        {/* Total Loan Card
-        <Card className="mt-6 bg-gradient-to-r from-[#f9f9f5] to-[#eaeaea] border-none">
-          <CardContent className="flex flex-col sm:flex-row items-center justify-between p-6">
-            <div>
-              <p className="text-sm text-[#858699]">Total Loan Approved</p>
-              <h2 className="text-3xl font-semibold mt-1">{totalLoan}</h2>
-            </div>
-            <Button className="bg-black text-white rounded-full px-6 py-2 mt-4 sm:mt-0">
-              Apply for a Loan
-            </Button>
-          </CardContent>
-        </Card> */}
         <div className="flex relative pt-10">
           {" "}
           <TotalLoan />
           <QuickAccessCard />
         </div>
 
-        {/* 
-        Summary Cards
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
-          <SummaryCard label="Outstanding Balance" value={outstandingBalance} icon={Wallet} />
-          <SummaryCard label="Repayment Due" value={repaymentDue} icon={TrendingUp} />
-          <SummaryCard label="Active Loans" value={activeLoans} icon={Star} />
-          <SummaryCard label="Credit Score" value={creditScore} icon={Star} />
-        </div> */}
-
-        {/* Quick Access
-        <Card className="mt-6">
-          <CardContent className="flex items-center justify-around p-6">
-            {[
-              { label: "My Loans", icon: Wallet },
-              { label: "Apply for a new loan", icon: PlusCircle },
-              { label: "Repayments", icon: TrendingUp },
-            ].map((item) => (
-              <div key={item.label} className="flex flex-col items-center gap-2">
-                <div className="p-3 rounded-full bg-[#f5f6f9] hover:bg-[#eaeaea] transition">
-                  <item.icon className="h-5 w-5 text-[#001336]" />
-                </div>
-                <span className="text-sm font-medium text-[#001336]">{item.label}</span>
-              </div>
-            ))}
-          </CardContent>
-        </Card> */}
-
-        {/* My Loans Section */}
         <section className="pt-3">
           <h2 className="text-lg font-semibold">My Loans</h2>
 
@@ -92,7 +47,7 @@ export default function Dashboard() {
               </button>
             </div>
 
-            <button className=" flex gap-3 text-sm mt-3 text-[#001336] py-1 hover:underline">
+            <button className="flex gap-3 text-sm mt-3 text-[#001336] py-1 hover:underline">
               View all{" "}
               <div className="flex justify-center items-center">
                 <svg
@@ -111,34 +66,19 @@ export default function Dashboard() {
             </button>
           </div>
 
-          <div className="flex flex-wrap gap-4 mt-5">
-            {loans.map((loan, i) => (
-              <LoanCard key={i} amount={loan.amount} bank={loan.bank} />
-            ))}
-          </div>
+          {/* ✅ Scrollable Carousel Section */}
+          <ScrollArea className=" mt-5 max-w-6xl scroll-smooth overflow-x-auto" >
+            <div className="flex gap-4 pb-4">
+              {loans.map((loan, i) => (
+                <div key={i} className="min-w-[293px]">
+                  <LoanCard amount={loan.amount} bank={loan.bank} />
+                </div>
+              ))}
+            </div>
+           <ScrollBar className="w-full"/>
+          </ScrollArea>
         </section>
       </main>
     </div>
   );
 }
-
-// // 📦 Summary Card Component (inline helper)
-// function SummaryCard({
-//   label,
-//   value,
-//   icon: Icon,
-// }: {
-//   label: string
-//   value: string | number
-//   icon: any
-// }) {
-//   return (
-//     <Card className="text-center hover:shadow-md transition cursor-pointer">
-//       <CardContent className="p-4 flex flex-col items-center justify-center">
-//         <Icon className="h-5 w-5 mb-1 text-[#858699]" />
-//         <p className="text-sm text-[#858699]">{label}</p>
-//         <h3 className="text-lg font-semibold text-[#001336] mt-1">{value}</h3>
-//       </CardContent>
-//     </Card>
-//   )
-// }

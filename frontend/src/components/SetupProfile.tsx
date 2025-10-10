@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import { format } from "date-fns";
-import { Check, ChevronsDown } from "lucide-react"
+import { Check, ChevronsDown } from "lucide-react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -24,7 +24,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 
 const states = [
   "Andhra Pradesh",
@@ -37,13 +37,12 @@ const states = [
   "Tamil Nadu",
   "Uttar Pradesh",
   "West Bengal",
-]
+];
 
 const SetupProfile = (): JSX.Element => {
   const [date, setDate] = React.useState<Date | undefined>();
-  const [open, setOpen] = useState(false)
-  const [value, setValue] = useState("")
-
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
 
   return (
     <div className="p-16 flex justify-center font-roobert items-center bg-white">
@@ -70,7 +69,7 @@ const SetupProfile = (): JSX.Element => {
             <div className="relative">
               <Label
                 htmlFor="fullName"
-                className="absolute -top-2 left-3 bg-white px-1 text-xs text-secondary"
+                 
               >
                 Full Name
               </Label>
@@ -86,8 +85,8 @@ const SetupProfile = (): JSX.Element => {
             <div className="relative">
               <Label
                 htmlFor="dob"
-                className="absolute -top-2 left-3 bg-white px-1 text-xs text-secondary z-10"
-              >
+
+>
                 Date of Birth
               </Label>
 
@@ -145,7 +144,7 @@ const SetupProfile = (): JSX.Element => {
             <div className="relative">
               <Label
                 htmlFor="address"
-                className="absolute -top-2 left-3 bg-white px-1 text-xs text-secondary"
+                 
               >
                 Address
               </Label>
@@ -161,7 +160,7 @@ const SetupProfile = (): JSX.Element => {
             <div className="relative">
               <Label
                 htmlFor="city"
-                className="absolute -top-2 left-3 bg-white px-1 text-xs text-secondary"
+                 
               >
                 City
               </Label>
@@ -169,86 +168,89 @@ const SetupProfile = (): JSX.Element => {
             </div>
 
             {/* State */}
-           <div className="relative w-full">
-      {/* Floating Label */}
-      <Label
-        htmlFor="state"
-        className="absolute -top-2 left-3 bg-white px-1 text-xs text-secondary"
-      >
-        State
-      </Label>
+            <div className="relative w-full">
+              {/* Floating Label */}
+              <Label
+                htmlFor="state"
+                 
+              >
+                State
+              </Label>
 
-      {/* Popover Trigger */}
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            id="state"
-            variant="outline"
-            size="default"
-            type="button"
-            role="combobox"
-            aria-expanded={open}
-            className={cn(
-              // ✅ Matching your Input styles exactly
-              "file:text-foreground placeholder:text-[#858699] placeholder:font-semibold selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-xl border border-[#D8DEE4] bg-transparent px-3 py-7 text-base font-semibold shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-              "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[1px]",
-              "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
-              "flex items-center justify-between text-left",
-              !value && "text-[#858699]"
-            )}
-          >
-            {/* Display Value */}
-            {value ? value : "Choose State"}
-
-            {/* Custom Dropdown Arrow */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="21"
-              height="12"
-              viewBox="0 0 21 12"
-              fill="none"
-              className="ml-2 shrink-0"
-            >
-              <path
-                d="M11.3695 10.9044L19.9192 2.31262C20.1413 2.08267 20.2641 1.77469 20.2614 1.455C20.2586 1.13532 20.1304 0.82952 19.9043 0.603461C19.6782 0.377403 19.3724 0.249177 19.0528 0.246399C18.7331 0.243621 18.4251 0.366514 18.1951 0.588609L10.5074 8.31837L2.84972 0.618574C2.73724 0.502124 2.60271 0.409238 2.45395 0.345339C2.3052 0.281439 2.14521 0.247805 1.98332 0.246398C1.82143 0.244991 1.66088 0.275841 1.51104 0.337146C1.3612 0.398451 1.22507 0.488984 1.11059 0.603462C0.996111 0.71794 0.905577 0.854071 0.844273 1.00391C0.782968 1.15375 0.752119 1.3143 0.753527 1.47619C0.754934 1.63808 0.788568 1.79807 0.852468 1.94683C0.916368 2.09558 1.00925 2.23012 1.1257 2.34259L9.64544 10.9044C9.87408 11.133 10.1841 11.2614 10.5074 11.2614C10.8307 11.2614 11.1408 11.133 11.3695 10.9044Z"
-                fill="#929292"
-              />
-            </svg>
-          </Button>
-        </PopoverTrigger>
-
-        {/* Popover Content (same width as trigger) */}
-        <PopoverContent
-          className="w-[var(--radix-popover-trigger-width)] p-0 bg-white rounded-xl shadow-lg border border-[#E2E8F0]"
-          align="start"
-        >
-          <Command>
-            <CommandInput placeholder="Search state..." className="text-sm" />
-            <CommandGroup>
-              {states.map((state) => (
-                <CommandItem
-                  key={state}
-                  value={state}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue)
-                    setOpen(false)
-                  }}
-                  className="cursor-pointer text-base font-semibold"
-                >
-                  <Check
+              {/* Popover Trigger */}
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="state"
+                    variant="outline"
+                    size="default"
+                    type="button"
+                    role="combobox"
+                    aria-expanded={open}
                     className={cn(
-                      "mr-2 h-4 w-4 text-primary",
-                      value === state ? "opacity-100" : "opacity-0"
+                      // ✅ Matching your Input styles exactly
+                      "file:text-foreground placeholder:text-[#858699] placeholder:font-semibold selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-xl border border-[#D8DEE4] bg-transparent px-3 py-7 text-base font-semibold shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+                      "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[1px]",
+                      "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+                      "flex items-center justify-between text-left",
+                      !value && "text-[#858699]"
                     )}
-                  />
-                  {state}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </Command>
-        </PopoverContent>
-      </Popover>
-    </div>
+                  >
+                    {/* Display Value */}
+                    {value ? value : "Choose State"}
+
+                    {/* Custom Dropdown Arrow */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="21"
+                      height="12"
+                      viewBox="0 0 21 12"
+                      fill="none"
+                      className="ml-2 shrink-0"
+                    >
+                      <path
+                        d="M11.3695 10.9044L19.9192 2.31262C20.1413 2.08267 20.2641 1.77469 20.2614 1.455C20.2586 1.13532 20.1304 0.82952 19.9043 0.603461C19.6782 0.377403 19.3724 0.249177 19.0528 0.246399C18.7331 0.243621 18.4251 0.366514 18.1951 0.588609L10.5074 8.31837L2.84972 0.618574C2.73724 0.502124 2.60271 0.409238 2.45395 0.345339C2.3052 0.281439 2.14521 0.247805 1.98332 0.246398C1.82143 0.244991 1.66088 0.275841 1.51104 0.337146C1.3612 0.398451 1.22507 0.488984 1.11059 0.603462C0.996111 0.71794 0.905577 0.854071 0.844273 1.00391C0.782968 1.15375 0.752119 1.3143 0.753527 1.47619C0.754934 1.63808 0.788568 1.79807 0.852468 1.94683C0.916368 2.09558 1.00925 2.23012 1.1257 2.34259L9.64544 10.9044C9.87408 11.133 10.1841 11.2614 10.5074 11.2614C10.8307 11.2614 11.1408 11.133 11.3695 10.9044Z"
+                        fill="#929292"
+                      />
+                    </svg>
+                  </Button>
+                </PopoverTrigger>
+
+                {/* Popover Content (same width as trigger) */}
+                <PopoverContent
+                  className="w-[var(--radix-popover-trigger-width)] p-0 bg-white rounded-xl shadow-lg border border-[#E2E8F0]"
+                  align="start"
+                >
+                  <Command>
+                    <CommandInput
+                      placeholder="Search state..."
+                      className="text-sm"
+                    />
+                    <CommandGroup>
+                      {states.map((state) => (
+                        <CommandItem
+                          key={state}
+                          value={state}
+                          onSelect={(currentValue) => {
+                            setValue(currentValue);
+                            setOpen(false);
+                          }}
+                          className="cursor-pointer text-base font-semibold"
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4 text-primary",
+                              value === state ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          {state}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
           </form>
         </CardContent>
 
@@ -257,7 +259,6 @@ const SetupProfile = (): JSX.Element => {
           <Button type="submit" size="lg" className="w-full">
             Save
           </Button>
-         
         </CardFooter>
       </Card>
     </div>

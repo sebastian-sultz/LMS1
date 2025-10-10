@@ -15,7 +15,7 @@ export function Login() {
   return (
     <>
       <div className="h-screen flex justify-center items-center">
-        <Card className="w-full max-w-sm border-none">
+        <Card className="w-full max-w-sm border-none bg-white">
           <CardContent>
             <form>
               <div className="flex flex-col gap-6">
@@ -23,7 +23,7 @@ export function Login() {
                   <div className="relative">
                     <Label
                       htmlFor="email"
-                      className="absolute -top-2 left-3 bg-white px-1 text-xs text-secondary"
+                         
                     >
                       {" "}
                       Email/Phone{" "}
