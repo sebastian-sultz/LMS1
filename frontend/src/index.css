@@ -2,13 +2,27 @@
 @import "tw-animate-css";
 
 
+@font-face {
+  font-family: 'Roobert';
+  src: url('/fonts/RoobertUprightsVF.woff') format('woff'),
+       url('/fonts/RoobertUprightsVF.woff') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+
 @theme {
     
-    --font-roobert: 'Roobert_TRIAL', Helvetica, sans-serif;
+    --font-roobert: 'Roobert', Helvetica, sans-serif;
     
     --color-primary: #000000;
     --color-secondary: #858699; 
     --color-primary-foreground: #ffff;
     --color-border: #EAEAEA;
     --color-card: #fcfcf9;
+    --color-secHeading: #9D9D9D;
+    --color-bgCard: rgba(154, 198, 248, 0.10)
 }
+
