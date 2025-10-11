@@ -718,17 +718,7 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
   );
 };
 
-/* ----------------------------
-   Main KycSetup (fixed)
-   - restored DOCUMENT TYPE selector (main)
-   - pass dynamicLabel={value} to main uploader
-   ---------------------------- */
-
-// ... rest of your existing code (FloatingLabelFileUploader, AdditionalDocumentSection, etc.) remains the same ...
-
-/* ----------------------------
-   Main KycSetup Component
-   ---------------------------- */ const KycSetup = (): JSX.Element => {
+ const KycSetup = (): JSX.Element => {
   // main selector state
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");

@@ -1,9 +1,9 @@
 import * as React from "react";
 import { useState } from "react";
 import { format } from "date-fns";
-import { Check, ChevronsDown } from "lucide-react";
+import { Check } from "lucide-react";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -50,7 +50,7 @@ const SetupProfile = (): JSX.Element => {
         {/* ===== Header ===== */}
         <CardHeader>
           <div className="flex flex-col items-center">
-            <div className="font-roobert font-bold text-black text-[32px] text-center tracking-[-2px]">
+            <div className="font-roobert font-bold  text-[32px] text-center tracking-[-2px]">
               Setup your profile
             </div>
 
@@ -67,12 +67,7 @@ const SetupProfile = (): JSX.Element => {
           <form className="flex flex-col gap-6">
             {/* Full Name */}
             <div className="relative">
-              <Label
-                htmlFor="fullName"
-                 
-              >
-                Full Name
-              </Label>
+              <Label htmlFor="fullName">Full Name</Label>
               <Input
                 id="fullName"
                 type="text"
@@ -81,25 +76,30 @@ const SetupProfile = (): JSX.Element => {
               />
             </div>
 
+            <div className="relative">
+              <Label htmlFor="email">E-Mail</Label>
+              <Input
+                id="fullName"
+                type="text"
+                placeholder="Enter E-Mail"
+                required
+              />
+            </div>
+
             {/* Date of Birth (using Button + Popover) */}
             <div className="relative">
-              <Label
-                htmlFor="dob"
-
->
-                Date of Birth
-              </Label>
+              <Label htmlFor="dob">Date of Birth</Label>
 
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     id="dob"
-                    variant="outline"
-                    size="default"
+                    variant="combobox"
+                    size="lg"
                     type="button"
                     className={cn(
-                      "w-full justify-between rounded-xl border border-[#D8DEE4] text-left font-semibold text-base py-7 h-9",
-                      !date && "text-[#858699]"
+                      " rounded-xl bg-transparent ",
+                      !date && "text-secondary"
                     )}
                   >
                     {date ? format(date, "dd-MM-yyyy") : "DD-MM-YYYY"}
@@ -142,12 +142,7 @@ const SetupProfile = (): JSX.Element => {
 
             {/* Address */}
             <div className="relative">
-              <Label
-                htmlFor="address"
-                 
-              >
-                Address
-              </Label>
+              <Label htmlFor="address">Address</Label>
               <Input
                 id="address"
                 type="text"
@@ -158,42 +153,28 @@ const SetupProfile = (): JSX.Element => {
 
             {/* City */}
             <div className="relative">
-              <Label
-                htmlFor="city"
-                 
-              >
-                City
-              </Label>
+              <Label htmlFor="city">City</Label>
               <Input id="city" type="text" placeholder="Enter City" required />
             </div>
 
             {/* State */}
             <div className="relative w-full">
               {/* Floating Label */}
-              <Label
-                htmlFor="state"
-                 
-              >
-                State
-              </Label>
+              <Label htmlFor="state">State</Label>
 
               {/* Popover Trigger */}
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     id="state"
-                    variant="outline"
-                    size="default"
+                    variant="combobox"
+                    size="lg"
                     type="button"
                     role="combobox"
                     aria-expanded={open}
                     className={cn(
-                      // ✅ Matching your Input styles exactly
-                      "file:text-foreground placeholder:text-[#858699] placeholder:font-semibold selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-xl border border-[#D8DEE4] bg-transparent px-3 py-7 text-base font-semibold shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-                      "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[1px]",
-                      "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
-                      "flex items-center justify-between text-left",
-                      !value && "text-[#858699]"
+                      " rounded-xl bg-transparent ",
+                      !value && "text-secondary"
                     )}
                   >
                     {/* Display Value */}

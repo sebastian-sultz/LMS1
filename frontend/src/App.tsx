@@ -36,7 +36,7 @@ import { Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import { Login } from "./components/Login";
 import { SignUp } from "./components/SignUp";
-import { SMobileNo } from "./components/SMobileNo";
+import { SignUp2 } from "./components/SignUp2";
 import { SOTP } from "./components/SOTP";
 import SetupProfile from "./components/SetupProfile";
 import KycSetup from "./components/KycSetup";
@@ -56,7 +56,7 @@ function App() {
           <Link to="/signup" className="hover:underline">
             SignUp
           </Link>
-          <Link to="/signupM" className="hover:underline">
+          <Link to="/signup2" className="hover:underline">
             SMobileNo
           </Link>
           <Link to="/sotp" className="hover:underline">
@@ -79,8 +79,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup2" element={<SignUp2 />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/signupM" element={<SMobileNo />} />
           <Route path="/sotp" element={<SOTP />} />
           <Route path="/profileSetup" element={<SetupProfile />} />
           <Route path="/kycSetup" element={<KycSetup />} />
