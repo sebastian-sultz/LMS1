@@ -5,6 +5,8 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { SignUp } from './components/SignUp';
 import { SOTP } from './components/SOTP';
 import { LoginOTP } from './components/LoginOTP';
+import { OTPVerification } from "@/components/OTPVerification";
+
 import { Login } from './components/Login';
 import SetupProfile from './components/SetupProfile';
 import KycSetup from './components/KycSetup';

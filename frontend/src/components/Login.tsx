@@ -75,7 +75,7 @@ export function Login() {
                       id="emailOrPhone"
                       name="emailOrPhone"
                       type="text"
-                      placeholder="Enter your email or phone number"
+                      placeholder="Enter your Email or Phone Number"
                       required
                       value={formData.emailOrPhone}
                       onChange={handleChange}

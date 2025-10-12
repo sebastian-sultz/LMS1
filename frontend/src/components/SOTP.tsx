@@ -86,7 +86,7 @@ export function SOTP() {
             <div className="  text-center text-xl font-bold font-inter leading-tight tracking-wider">
               VERIFY OTP
             </div>
-            <div className="w-72 text-center text-base font-inter">
+            <div className=" text-center text-base font-inter">
               <span className="  font-normal">
                 We have sent an OTP to{" "}
               </span>

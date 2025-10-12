@@ -102,11 +102,11 @@ export function LoginOTP() {
                 We have sent an OTP to{" "}
               </span>
               <span className="font-extrabold">{emailOrPhone}</span>
-              {isAdmin && (
+              {/* {isAdmin && (
                 <div className="mt-2 text-sm text-blue-600 font-semibold">
                   👑 Admin Login
                 </div>
-              )}
+              )} */}
             </div>
           </div>
 
