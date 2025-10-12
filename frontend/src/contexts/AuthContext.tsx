@@ -1,4 +1,4 @@
-// contexts/AuthContext.tsx - FIXED
+// contexts/AuthContext.tsx - Expose setToken and setUser
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { apiService } from '../services/api';
 
@@ -15,6 +15,8 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
+  setUser: (user: User | null) => void; // Add
+  setToken: (token: string | null) => void; // Add
   requestLoginOtp: (emailOrPhone: string) => Promise<{ isAdmin: boolean }>;
   verifyLoginOtp: (emailOrPhone: string, otp: string) => Promise<{ redirectTo: string }>;
   signup: (phoneNumber: string, referralCode?: string) => Promise<{requiresOtp: boolean}>;
@@ -156,6 +158,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value = {
     user,
     token,
+    setUser, // Add
+    setToken, // Add
     signup,
     verifyOtp,
     requestLoginOtp,

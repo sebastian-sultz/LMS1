@@ -98,13 +98,14 @@ const DocumentIcon = () => (
 const SuccessModal = ({
   open,
   onOpenChange,
-  redirectPath = '/dashboard' // Default redirect path
+  redirectPath = '/login' // Changed default to '/login'
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   redirectPath?: string;
 }) => {
   const navigate = useNavigate();
+  const { logout } = useAuth(); // Add useAuth for logout
   const [progress, setProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
 
@@ -137,6 +138,12 @@ const SuccessModal = ({
   const handleOkay = () => {
     onOpenChange(false);
     console.log("🔄 Navigating to:", redirectPath);
+    
+    // Flush token if redirecting to login
+    if (redirectPath === '/login') {
+      logout();
+    }
+    
     navigate(redirectPath);
   };
 
@@ -647,7 +654,7 @@ const KycSetup = (): JSX.Element => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [redirectPath, setRedirectPath] = useState('/dashboard');
+  const [redirectPath, setRedirectPath] = useState('/login');
 
 
   // additional docs array
@@ -907,4 +914,4 @@ const handleSave = async (e: React.FormEvent) => {
   );
 };
 
-export default KycSetup;
+export default KycSetup; 

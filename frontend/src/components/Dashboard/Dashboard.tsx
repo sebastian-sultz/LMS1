@@ -5,7 +5,24 @@ import { TotalLoan } from "./TotalLoan";
 import QuickAccessCard from "./QuickAccessCard";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from "react";
+
+
 export default function Dashboard() {
+
+
+  const { token, isLoading: authLoading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!authLoading && !token) {
+      navigate('/login');
+    }
+  }, [authLoading, token, navigate]);
+
+
   // Example loans
   const loans = [
     { amount: "₹10,333", bank: "IDFC First Bank" },
