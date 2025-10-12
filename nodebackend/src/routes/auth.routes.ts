@@ -1,9 +1,11 @@
+// routes/auth.routes.ts - Fixed version
 import { Router } from 'express';
 import { 
   signup, 
   verifyOtp, 
-  login, 
-  resendOtp 
+  resendOtp,
+  requestLoginOtp,
+  verifyLoginOtp
 } from '../controllers/auth.controller';
 import { validateRequest } from '../middleware/validation.middleware';
 import { authSchemas } from '../middleware/validation.middleware';
@@ -22,10 +24,17 @@ router.post(
   verifyOtp
 );
 
+// New unified login routes
 router.post(
-  '/login',
-  validateRequest(authSchemas.login),
-  login
+  '/request-login-otp',
+  validateRequest(authSchemas.requestLoginOtp),
+  requestLoginOtp
+);
+
+router.post(
+  '/verify-login-otp',
+  validateRequest(authSchemas.verifyLoginOtp),
+  verifyLoginOtp
 );
 
 router.post(

@@ -1,3 +1,4 @@
+// models/User.model.ts - Update the IUser interface and schema
 import mongoose, { Document, Schema, Types } from 'mongoose';
 
 export interface IKycDocument {
@@ -21,6 +22,7 @@ export interface IUser extends Document {
   referralCode?: string;
   isProfileSetup: boolean;
   isKycDone: boolean;
+  isAdmin?: boolean; // Add this field
   profile?: IUserProfile;
   kycDocuments: IKycDocument[];
   otp?: string;
@@ -103,6 +105,10 @@ const UserSchema = new Schema({
     type: Boolean,
     default: false
   },
+  isAdmin: {
+    type: Boolean,
+    default: false // Default to false for regular users
+  },
   profile: UserProfileSchema,
   kycDocuments: [KycDocumentSchema],
   otp: {
@@ -119,5 +125,6 @@ const UserSchema = new Schema({
 UserSchema.index({ phoneNumber: 1 });
 UserSchema.index({ email: 1 });
 UserSchema.index({ isProfileSetup: 1, isKycDone: 1 });
+UserSchema.index({ isAdmin: 1 }); // Add index for admin queries
 
 export default mongoose.model<IUser>('User', UserSchema);

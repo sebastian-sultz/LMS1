@@ -1,5 +1,7 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
+const API_BASE_URL = 'http://localhost:5000/api';
+// services/api.ts - Add new login methods
 class ApiService {
   private async request(endpoint: string, options: RequestInit = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
@@ -29,12 +31,17 @@ class ApiService {
   private async authRequest(endpoint: string, options: RequestInit = {}) {
     const token = localStorage.getItem('authToken');
     
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      ...options.headers,
+    };
+
+    console.log('🔑 Auth Request Headers:', headers);
+    
     return this.request(endpoint, {
       ...options,
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        ...options.headers,
-      },
+      headers,
     });
   }
 
@@ -46,17 +53,25 @@ class ApiService {
     });
   }
 
-  async verifyOtp(phoneNumber: string, otp: string) {
-    return this.request('/auth/verify-otp', {
+ async verifyOtp(phoneNumber: string, otp: string) {
+  return this.request('/auth/verify-otp', {
+    method: 'POST',
+    body: JSON.stringify({ phoneNumber, otp }),
+  });
+}
+
+  // New unified login methods
+  async requestLoginOtp(emailOrPhone: string) {
+    return this.request('/auth/request-login-otp', {
       method: 'POST',
-      body: JSON.stringify({ phoneNumber, otp }),
+      body: JSON.stringify({ emailOrPhone }),
     });
   }
 
-  async login(email: string, otp: string) {
-    return this.request('/auth/login', {
+  async verifyLoginOtp(emailOrPhone: string, otp: string) {
+    return this.request('/auth/verify-login-otp', {
       method: 'POST',
-      body: JSON.stringify({ email, otp }),
+      body: JSON.stringify({ emailOrPhone, otp }),
     });
   }
 
@@ -76,6 +91,8 @@ class ApiService {
     city: string;
     state: string;
   }) {
+    console.log('📤 Setup Profile Data:', profileData);
+    
     return this.authRequest('/user/setup-profile', {
       method: 'POST',
       body: JSON.stringify(profileData),

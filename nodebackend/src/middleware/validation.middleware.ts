@@ -1,3 +1,4 @@
+// middleware/validation.middleware.ts - Add new validation schemas
 import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
 
@@ -37,8 +38,12 @@ export const authSchemas = {
     otp: Joi.string().length(6).required()
   }),
 
-  login: Joi.object({
-    email: Joi.string().email().required(),
+  requestLoginOtp: Joi.object({
+    emailOrPhone: Joi.string().required()
+  }),
+
+  verifyLoginOtp: Joi.object({
+    emailOrPhone: Joi.string().required(),
     otp: Joi.string().length(6).required()
   }),
 

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import User, { IUser } from '../models/User.model';
 
-// Extend the Request interface locally for this file
+// Extend the Request interface for authenticated requests
 interface AuthenticatedRequest extends Request {
   user: IUser;
 }
@@ -10,7 +10,10 @@ interface AuthenticatedRequest extends Request {
 interface JwtPayload {
   id: string;
 }
+// In your backend routes (user.routes.ts), you might need to adjust authentication
+// For signup flow endpoints, consider making them public or handling auth differently
 
+// Or update your auth middleware to handle signup flow
 export const authenticate = async (
   req: Request,
   res: Response,
@@ -19,12 +22,22 @@ export const authenticate = async (
   try {
     const authHeader = req.header('Authorization');
     
+    // 🔥 Allow signup flow endpoints to work without token
+    const isSignupFlow = req.path.includes('/setup-profile') || req.path.includes('/upload-kyc');
+    
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      res.status(401).json({ 
-        success: false, 
-        message: 'Access denied. No token provided.' 
-      });
-      return;
+      if (isSignupFlow) {
+        // For signup flow, we might handle authentication differently
+        // You can proceed without user context and handle auth in the controller
+        next();
+        return;
+      } else {
+        res.status(401).json({ 
+          success: false, 
+          message: 'Access denied. No token provided.' 
+        });
+        return;
+      }
     }
 
     const token = authHeader.replace('Bearer ', '');
@@ -49,7 +62,7 @@ export const authenticate = async (
       return;
     }
 
-    // Use type assertion to add user to request
+    // Add user to request object using type assertion
     (req as AuthenticatedRequest).user = user;
     next();
   } catch (error) {

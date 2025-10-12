@@ -1,53 +1,120 @@
+// components/SetupProfile - Add token removal if redirect to login
 import * as React from "react";
 import { useState } from "react";
 import { format } from "date-fns";
 import { Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router";
+import { apiService } from "@/services/api";
 
 const states = [
-  "Andhra Pradesh",
-  "Bihar",
-  "Delhi",
-  "Gujarat",
-  "Karnataka",
-  "Maharashtra",
-  "Rajasthan",
-  "Tamil Nadu",
-  "Uttar Pradesh",
-  "West Bengal",
+  "Andhra Pradesh", "Bihar", "Delhi", "Gujarat", "Karnataka", 
+  "Maharashtra", "Rajasthan", "Tamil Nadu", "Uttar Pradesh", "West Bengal"
 ];
 
 const SetupProfile = (): JSX.Element => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const [date, setDate] = React.useState<Date | undefined>();
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    address: "",
+    city: "",
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    console.log(`Input changed - ${name}:`, value);
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  
+  // Validate all required fields
+  if (!formData.fullName || formData.fullName.trim() === "") {
+    alert("Please enter your full name");
+    return;
+  }
+  
+  if (!formData.email || formData.email.trim() === "") {
+    alert("Please enter your email");
+    return;
+  }
+  
+  if (!date) {
+    alert("Please select your date of birth");
+    return;
+  }
+  
+  if (!formData.address || formData.address.trim() === "") {
+    alert("Please enter your address");
+    return;
+  }
+  
+  if (!formData.city || formData.city.trim() === "") {
+    alert("Please enter your city");
+    return;
+  }
+  
+  if (!selectedState) {
+    alert("Please select your state");
+    return;
+  }
+
+ setIsLoading(true);
+  try {
+    const profileData = {
+      fullName: formData.fullName.trim(),
+      email: formData.email.trim(),
+      dob: format(date, 'yyyy-MM-dd'),
+      address: formData.address.trim(),
+      city: formData.city.trim(),
+      state: selectedState
+    };
+
+    console.log("📤 Sending to backend:", profileData);
+
+    const response = await apiService.setupProfile(profileData);
+    console.log("✅ Profile setup successful:", response);
+    
+    // Use the redirectTo from backend response
+    const redirectTo = response.data.redirectTo || '/kyc';
+    console.log("🔄 Redirecting to:", redirectTo);
+    
+    // If redirecting to login, clear auth token
+    if (redirectTo === '/login') {
+      localStorage.removeItem('authToken');
+    }
+    
+    navigate(redirectTo);
+  } catch (error: any) {
+    console.error('❌ Profile setup failed:', error);
+    alert(error.message || 'Failed to setup profile. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="p-16 flex justify-center font-roobert items-center bg-white">
       <Card className="w-full max-w-xl px-14 ">
-        {/* ===== Header ===== */}
         <CardHeader>
           <div className="flex flex-col items-center">
             <div className="font-roobert font-bold  text-[32px] text-center tracking-[-2px]">
@@ -62,34 +129,41 @@ const SetupProfile = (): JSX.Element => {
           </div>
         </CardHeader>
 
-        {/* ===== Form ===== */}
         <CardContent>
-          <form className="flex flex-col gap-6">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             {/* Full Name */}
             <div className="relative">
               <Label htmlFor="fullName">Full Name</Label>
               <Input
                 id="fullName"
+                name="fullName"
                 type="text"
                 placeholder="Enter Full Name"
                 required
+                value={formData.fullName}
+                onChange={handleInputChange}
+                className="w-full"
               />
             </div>
 
+            {/* Email */}
             <div className="relative">
               <Label htmlFor="email">E-Mail</Label>
               <Input
-                id="fullName"
-                type="text"
+                id="email"
+                name="email"
+                type="email"
                 placeholder="Enter E-Mail"
                 required
+                value={formData.email}
+                onChange={handleInputChange}
+                className="w-full"
               />
             </div>
 
-            {/* Date of Birth (using Button + Popover) */}
+            {/* Date of Birth */}
             <div className="relative">
               <Label htmlFor="dob">Date of Birth</Label>
-
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -98,7 +172,7 @@ const SetupProfile = (): JSX.Element => {
                     size="lg"
                     type="button"
                     className={cn(
-                      " rounded-xl bg-transparent ",
+                      "w-full rounded-xl bg-transparent justify-start",
                       !date && "text-secondary"
                     )}
                   >
@@ -107,9 +181,8 @@ const SetupProfile = (): JSX.Element => {
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 22 22"
                       fill="none"
-                      className="opacity-70 h-7 w-7" // <-- change h-5 w-5 to any size (e.g. h-4 w-4 or h-6 w-6)
+                      className="opacity-70 h-7 w-7 ml-auto"
                     >
-                      {" "}
                       <path
                         d="M16.7502 3.56V2C16.7502 1.59 16.4102 1.25 16.0002 1.25C15.5902 1.25 15.2502 1.59 15.2502 2V3.5H8.75023V2C8.75023 1.59 8.41023 1.25 8.00023 1.25C7.59023 1.25 7.25023 1.59 7.25023 2V3.56C4.55023 3.81 3.24023 5.42 3.04023 7.81C3.02023 8.1 3.26023 8.34 3.54023 8.34H20.4602C20.7502 8.34 20.9902 8.09 20.9602 7.81C20.7602 5.42 19.4502 3.81 16.7502 3.56Z"
                         fill="#929292"
@@ -122,7 +195,6 @@ const SetupProfile = (): JSX.Element => {
                   </Button>
                 </PopoverTrigger>
 
-                {/* ✅ Ensures white background inside Popover */}
                 <PopoverContent
                   className="w-auto p-0 bg-white border border-[#E5E7EB] shadow-md rounded-xl"
                   align="start"
@@ -145,24 +217,34 @@ const SetupProfile = (): JSX.Element => {
               <Label htmlFor="address">Address</Label>
               <Input
                 id="address"
+                name="address"
                 type="text"
                 placeholder="Enter Address"
                 required
+                value={formData.address}
+                onChange={handleInputChange}
+                className="w-full"
               />
             </div>
 
             {/* City */}
             <div className="relative">
               <Label htmlFor="city">City</Label>
-              <Input id="city" type="text" placeholder="Enter City" required />
+              <Input 
+                id="city" 
+                name="city"
+                type="text" 
+                placeholder="Enter City" 
+                required 
+                value={formData.city}
+                onChange={handleInputChange}
+                className="w-full"
+              />
             </div>
 
             {/* State */}
             <div className="relative w-full">
-              {/* Floating Label */}
               <Label htmlFor="state">State</Label>
-
-              {/* Popover Trigger */}
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                   <Button
@@ -173,21 +255,18 @@ const SetupProfile = (): JSX.Element => {
                     role="combobox"
                     aria-expanded={open}
                     className={cn(
-                      " rounded-xl bg-transparent ",
-                      !value && "text-secondary"
+                      "w-full rounded-xl bg-transparent justify-start",
+                      !selectedState && "text-secondary"
                     )}
                   >
-                    {/* Display Value */}
-                    {value ? value : "Choose State"}
-
-                    {/* Custom Dropdown Arrow */}
+                    {selectedState ? selectedState : "Choose State"}
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="21"
                       height="12"
                       viewBox="0 0 21 12"
                       fill="none"
-                      className="ml-2 shrink-0"
+                      className="ml-auto shrink-0"
                     >
                       <path
                         d="M11.3695 10.9044L19.9192 2.31262C20.1413 2.08267 20.2641 1.77469 20.2614 1.455C20.2586 1.13532 20.1304 0.82952 19.9043 0.603461C19.6782 0.377403 19.3724 0.249177 19.0528 0.246399C18.7331 0.243621 18.4251 0.366514 18.1951 0.588609L10.5074 8.31837L2.84972 0.618574C2.73724 0.502124 2.60271 0.409238 2.45395 0.345339C2.3052 0.281439 2.14521 0.247805 1.98332 0.246398C1.82143 0.244991 1.66088 0.275841 1.51104 0.337146C1.3612 0.398451 1.22507 0.488984 1.11059 0.603462C0.996111 0.71794 0.905577 0.854071 0.844273 1.00391C0.782968 1.15375 0.752119 1.3143 0.753527 1.47619C0.754934 1.63808 0.788568 1.79807 0.852468 1.94683C0.916368 2.09558 1.00925 2.23012 1.1257 2.34259L9.64544 10.9044C9.87408 11.133 10.1841 11.2614 10.5074 11.2614C10.8307 11.2614 11.1408 11.133 11.3695 10.9044Z"
@@ -197,7 +276,6 @@ const SetupProfile = (): JSX.Element => {
                   </Button>
                 </PopoverTrigger>
 
-                {/* Popover Content (same width as trigger) */}
                 <PopoverContent
                   className="w-[var(--radix-popover-trigger-width)] p-0 bg-white rounded-xl shadow-lg border border-[#E2E8F0]"
                   align="start"
@@ -213,7 +291,8 @@ const SetupProfile = (): JSX.Element => {
                           key={state}
                           value={state}
                           onSelect={(currentValue) => {
-                            setValue(currentValue);
+                            console.log("State selected:", currentValue);
+                            setSelectedState(currentValue);
                             setOpen(false);
                           }}
                           className="cursor-pointer text-base font-semibold"
@@ -221,7 +300,7 @@ const SetupProfile = (): JSX.Element => {
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4 text-primary",
-                              value === state ? "opacity-100" : "opacity-0"
+                              selectedState === state ? "opacity-100" : "opacity-0"
                             )}
                           />
                           {state}
@@ -235,10 +314,15 @@ const SetupProfile = (): JSX.Element => {
           </form>
         </CardContent>
 
-        {/* ===== Footer ===== */}
         <CardFooter className="flex-col gap-2">
-          <Button type="submit" size="lg" className="w-full">
-            Save
+          <Button 
+            type="submit" 
+            size="lg" 
+            className="w-full"
+            onClick={handleSubmit}
+            disabled={isLoading}
+          >
+            {isLoading ? "Saving..." : "Save"}
           </Button>
         </CardFooter>
       </Card>

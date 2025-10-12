@@ -1,93 +1,148 @@
-// import { Route, Routes } from "react-router";
-// import "./App.css";
-// import { Login } from "./components/Login";
-// import { SignUp } from "./components/SignUp";
-// import { SMobileNo } from "./components/SMobileNo";
-// import { SOTP } from "./components/SOTP";
-// import SetupProfile from "./components/SetupProfile";
-// import KycSetup from "./components/KycSetup";
-// import Dashboard from "./components/Dashboard/Dashboard";
-// // import Dashboard from "./components/Dashboard";
-// function App() {
-//   return (
-//     <>
-    
-//         <Routes>
-//           <Route path="/" element={<Login/>}/>
-//           <Route path="/login" element={<Login />} />
-//           <Route path="/signup" element={<SignUp />} />
-//           <Route path="/signupM" element={<SMobileNo />} />
-//           <Route path="/sotp" element={<SOTP/>}/>
-//           <Route path="/profileSetup" element={<SetupProfile/>}/>
-//           <Route path="/kycSetup" element={<KycSetup/>}/>
-//           <Route path="/dash" element={<Dashboard/>}/>
+// App.tsx - FIXED VERSION
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { SignUp } from './components/SignUp';
+import { SOTP } from './components/SOTP';
+import { LoginOTP } from './components/LoginOTP';
+import { Login } from './components/Login';
+import SetupProfile from './components/SetupProfile';
+import KycSetup from './components/KycSetup';
+import Dashboard from './components/Dashboard/Dashboard';
+import AdminDashboard from './components/AdminDashboard';
 
-//         </Routes>
+// Protected route component for regular users
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+  
+  return user ? <>{children}</> : <Navigate to="/login" />;
+};
+
+// Admin protected route component
+const AdminProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+  
+  // Check if user exists and is admin
+  return user && user.isAdmin ? <>{children}</> : <Navigate to="/login" />;
+};
+
+// Public route component (redirect if already authenticated)
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+  
+  // If user is authenticated, redirect based on their type and progress
+  if (user) {
+    if (user.isAdmin) {
+      return <Navigate to="/admin/dashboard" />;
+    }
+    
+    if (!user.isProfileSetup) {
+      return <Navigate to="/profile-setup" />;
+    } else if (!user.isKycDone) {
+      return <Navigate to="/kyc" />;
+    } else {
+      return <Navigate to="/dashboard" />;
+    }
+  }
+  
+  return <>{children}</>;
+};
+
+// 🔥 CRITICAL FIX: Add SignupFlowRoute for profile-setup and kyc
+// These routes should be accessible during signup process without requiring auth token
+const SignupFlowRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+  
+  // Allow access during signup flow even without user context
+  // The backend will handle the authentication for these routes
+  return <>{children}</>;
+};
+
+// Update the routes to include login and admin dashboard
+function AppRoutes() {
+  return (
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/signup" element={
+        <PublicRoute>
+          <SignUp />
+        </PublicRoute>
+      } />
       
-    
-//     </>
-//   );
-// }
-
-// export default App;
-
-
-import { Route, Routes, Link } from "react-router-dom";
-import "./App.css";
-import { Login } from "./components/Login";
-import { SignUp } from "./components/SignUp";
-import { SignUp2 } from "./components/SignUp2";
-import { SOTP } from "./components/SOTP";
-import SetupProfile from "./components/SetupProfile";
-import KycSetup from "./components/KycSetup";
-import Dashboard from "./components/Dashboard/Dashboard";
+      <Route path="/verify-otp" element={
+        <PublicRoute>
+          <SOTP />
+        </PublicRoute>
+      } />
+      
+      <Route path="/login" element={
+        <PublicRoute>
+          <Login />
+        </PublicRoute>
+      } />
+      
+      {/* Add Login OTP Route */}
+      <Route path="/verify-login-otp" element={
+        <PublicRoute>
+          <LoginOTP />
+        </PublicRoute>
+      } />
+      
+      {/* 🔥 CRITICAL FIX: Signup Flow Routes - NO ProtectedRoute wrapper */}
+      {/* These routes handle their own authentication during signup process */}
+      <Route path="/profile-setup" element={<SetupProfile />} />
+      <Route path="/kyc" element={<KycSetup />} />
+      
+      {/* Protected Routes for Logged-in Users */}
+      <Route path="/dashboard" element={
+        <ProtectedRoute>
+          <Dashboard />
+        </ProtectedRoute>
+      } />
+      
+      {/* Admin Routes */}
+      <Route path="/admin/dashboard" element={
+        <AdminProtectedRoute>
+          <AdminDashboard />
+        </AdminProtectedRoute>
+      } />
+      
+      {/* Fallback routes */}
+      <Route path="/" element={<Navigate to="/signup" />} />
+      
+      {/* 404 page */}
+      <Route path="*" element={
+        <div className="flex justify-center items-center h-screen">
+          <h1 className="text-2xl font-bold">404 - Page Not Found</h1>
+        </div>
+      } />
+    </Routes>
+  );
+}
 
 function App() {
   return (
-    <>
-      {/* ✅ Navbar */}
-      <nav className="w-full bg-[#001336] text-white py-3 px-6 flex justify-between items-center shadow-md fixed top-0 left-0 z-50">
-        <h1 className="font-semibold text-lg">App Navigation</h1>
-
-        <div className="flex gap-4 text-sm">
-          <Link to="/" className="hover:underline">
-            Login
-          </Link>
-          <Link to="/signup" className="hover:underline">
-            SignUp
-          </Link>
-          <Link to="/signup2" className="hover:underline">
-            SMobileNo
-          </Link>
-          <Link to="/sotp" className="hover:underline">
-            SOTP
-          </Link>
-          <Link to="/profileSetup" className="hover:underline">
-            SetupProfile
-          </Link>
-          <Link to="/kycSetup" className="hover:underline">
-            KycSetup
-          </Link>
-          <Link to="/dash" className="hover:underline">
-            Dashboard
-          </Link>
-        </div>
-      </nav>
-
-      {/* ✅ Add top padding so content doesn’t hide behind navbar */}
-      <div className="pt-16">
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup2" element={<SignUp2 />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/sotp" element={<SOTP />} />
-          <Route path="/profileSetup" element={<SetupProfile />} />
-          <Route path="/kycSetup" element={<KycSetup />} />
-          <Route path="/dash" element={<Dashboard />} />
-        </Routes>
-      </div>
-    </>
+    <AuthProvider>
+      <Router>
+        <AppRoutes />
+      </Router>
+    </AuthProvider>
   );
 }
 
