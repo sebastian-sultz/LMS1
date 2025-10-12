@@ -1,6 +1,6 @@
-// components/SetupProfile - Add token removal if redirect to login
+// components/SetupProfile.tsx - Add auth check and error handling
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Add useEffect
 import { format } from "date-fns";
 import { Check } from "lucide-react";
 
@@ -22,7 +22,7 @@ const states = [
 ];
 
 const SetupProfile = (): JSX.Element => {
-  const { user } = useAuth();
+  const { user, token, isLoading: authLoading } = useAuth(); // Add token and authLoading
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [date, setDate] = React.useState<Date | undefined>();
@@ -34,6 +34,13 @@ const SetupProfile = (): JSX.Element => {
     address: "",
     city: "",
   });
+
+  // Add auth check
+  useEffect(() => {
+    if (!authLoading && !token) {
+      navigate('/login');
+    }
+  }, [authLoading, token, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -106,7 +113,12 @@ const handleSubmit = async (e: React.FormEvent) => {
     navigate(redirectTo);
   } catch (error: any) {
     console.error('❌ Profile setup failed:', error);
-    alert(error.message || 'Failed to setup profile. Please try again.');
+    if (error.message?.includes('Unauthorized') || error.message?.includes('Access denied') || error.message?.includes('token')) {
+      localStorage.removeItem('authToken');
+      navigate('/login');
+    } else {
+      alert(error.message || 'Failed to setup profile. Please try again.');
+    }
   } finally {
     setIsLoading(false);
   }

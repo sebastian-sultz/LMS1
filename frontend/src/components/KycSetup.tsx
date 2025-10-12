@@ -1,4 +1,6 @@
 import { apiService } from "@/services/api";
+import { useAuth } from "@/contexts/AuthContext";
+
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router"; // Add this import
 import { Check, X } from "lucide-react";
@@ -629,9 +631,16 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
     </div>
   );
 };
+const KycSetup = (): JSX.Element => {
+  const { token, isLoading: authLoading } = useAuth(); // Add
+  const navigate = useNavigate();
 
- const KycSetup = (): JSX.Element => {
-  const navigate = useNavigate(); // Add navigate here too
+  // Add auth check
+  useEffect(() => {
+    if (!authLoading && !token) {
+      navigate('/login');
+    }
+  }, [authLoading, token, navigate]);
   // main selector state
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
@@ -666,41 +675,46 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
 // ... (the full code, but change in handleSave)
 
 const handleSave = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (isSaveEnabled) {
-    setIsLoading(true);
-    try {
-      const fileUrl = "https://example.com/documents/kyc-document.pdf";
-      
-      console.log("📤 Uploading KYC document:", { docType: value, fileUrl });
-      
-      const response = await apiService.uploadKyc({
-        docType: value,
-        fileUrl: fileUrl
-      });
-      
-      console.log("✅ KYC upload successful:", response);
-      
-      const redirectTo = response.data.redirectTo || '/login';
-      console.log("🔄 Redirecting to:", redirectTo);
-      
-      // Clear auth token if redirecting to login
-      if (redirectTo === '/login') {
-        localStorage.removeItem('authToken');
+    e.preventDefault();
+    if (isSaveEnabled) {
+      setIsLoading(true);
+      try {
+        const fileUrl = "https://example.com/documents/kyc-document.pdf";
+        
+        console.log("📤 Uploading KYC document:", { docType: value, fileUrl });
+        
+        const response = await apiService.uploadKyc({
+          docType: value,
+          fileUrl: fileUrl
+        });
+        
+        console.log("✅ KYC upload successful:", response);
+        
+        const redirectTo = response.data.redirectTo || '/login'; 
+        console.log("🔄 Redirecting to:", redirectTo);
+        
+        // Clear auth token when redirecting to login
+        if (redirectTo === '/login') {
+          localStorage.removeItem('authToken');
+        }
+        
+        // Set the redirect path and show modal
+        setRedirectPath(redirectTo);
+        setSuccessModalOpen(true);
+        
+      } catch (error: any) {
+        console.error('❌ KYC upload failed:', error);
+        if (error.message?.includes('Unauthorized') || error.message?.includes('Access denied') || error.message?.includes('token')) {
+          localStorage.removeItem('authToken');
+          navigate('/login');
+        } else {
+          alert(error.message || 'Failed to upload KYC document. Please try again.');
+        }
+      } finally {
+        setIsLoading(false);
       }
-      
-      // Set the redirect path and show modal
-      setRedirectPath(redirectTo);
-      setSuccessModalOpen(true);
-      
-    } catch (error: any) {
-      console.error('❌ KYC upload failed:', error);
-      alert(error.message || 'Failed to upload KYC document. Please try again.');
-    } finally {
-      setIsLoading(false);
     }
-  }
-};
+  };
 
 // Rest of the code remains the same
 

@@ -31,12 +31,15 @@ class ApiService {
   private async authRequest(endpoint: string, options: RequestInit = {}) {
     const token = localStorage.getItem('authToken');
     
-    const headers = {
+    const headers: any = {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
       ...options.headers,
     };
 
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
     console.log('🔑 Auth Request Headers:', headers);
     
     return this.request(endpoint, {
