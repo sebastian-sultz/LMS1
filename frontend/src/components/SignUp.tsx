@@ -39,22 +39,22 @@ export function SignUp() {
     try {
       const result = await signup(formData.phoneNumber, formData.referralCode);
       
-      console.log("🔄 Signup result:", result);
+      console.log(" Signup result:", result);
       
       if (result.requiresOtp) {
-        // New user - proceed to OTP verification
-        console.log("➡️ New user - redirecting to OTP verification");
+        //  proceed to OTP verification
+        console.log(" New user - redirecting to OTP verification");
         localStorage.setItem('tempPhoneNumber', formData.phoneNumber);
         navigate('/verify-otp', { 
           state: { phoneNumber: formData.phoneNumber } 
         });
       } else {
-        // Existing user - ALWAYS redirect to login
-        console.log("➡️ Existing user - redirecting to login");
+        // redirect to login
+        console.log("Existing user - redirecting to login");
         navigate('/login');
       }
     } catch (error: any) {
-      console.error('❌ Signup failed:', error);
+      console.error(' Signup failed:', error);
       alert(error.message || 'Signup failed. Please try again.');
     } finally {
       setIsLoading(false);

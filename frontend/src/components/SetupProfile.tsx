@@ -1,28 +1,50 @@
 // components/SetupProfile.tsx - Add auth check and error handling
 import * as React from "react";
-import { useState, useEffect } from "react"; // Add useEffect
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router";
 import { apiService } from "@/services/api";
 
 const states = [
-  "Andhra Pradesh", "Bihar", "Delhi", "Gujarat", "Karnataka", 
-  "Maharashtra", "Rajasthan", "Tamil Nadu", "Uttar Pradesh", "West Bengal"
+  "Andhra Pradesh",
+  "Bihar",
+  "Delhi",
+  "Gujarat",
+  "Karnataka",
+  "Maharashtra",
+  "Rajasthan",
+  "Tamil Nadu",
+  "Uttar Pradesh",
+  "West Bengal",
 ];
 
 const SetupProfile = (): JSX.Element => {
-  const { user, token, isLoading: authLoading } = useAuth(); // Add token and authLoading
+  const { user, token, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [date, setDate] = React.useState<Date | undefined>();
@@ -35,94 +57,95 @@ const SetupProfile = (): JSX.Element => {
     city: "",
   });
 
-  // Add auth check
   useEffect(() => {
     if (!authLoading && !token) {
-      navigate('/login');
+      navigate("/login");
     }
   }, [authLoading, token, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     console.log(`Input changed - ${name}:`, value);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  
-  // Validate all required fields
-  if (!formData.fullName || formData.fullName.trim() === "") {
-    alert("Please enter your full name");
-    return;
-  }
-  
-  if (!formData.email || formData.email.trim() === "") {
-    alert("Please enter your email");
-    return;
-  }
-  
-  if (!date) {
-    alert("Please select your date of birth");
-    return;
-  }
-  
-  if (!formData.address || formData.address.trim() === "") {
-    alert("Please enter your address");
-    return;
-  }
-  
-  if (!formData.city || formData.city.trim() === "") {
-    alert("Please enter your city");
-    return;
-  }
-  
-  if (!selectedState) {
-    alert("Please select your state");
-    return;
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
- setIsLoading(true);
-  try {
-    const profileData = {
-      fullName: formData.fullName.trim(),
-      email: formData.email.trim(),
-      dob: format(date, 'yyyy-MM-dd'),
-      address: formData.address.trim(),
-      city: formData.city.trim(),
-      state: selectedState
-    };
-
-    console.log("📤 Sending to backend:", profileData);
-
-    const response = await apiService.setupProfile(profileData);
-    console.log("✅ Profile setup successful:", response);
-    
-    // Use the redirectTo from backend response
-    const redirectTo = response.data.redirectTo || '/kyc';
-    console.log("🔄 Redirecting to:", redirectTo);
-    
-    // If redirecting to login, clear auth token
-    if (redirectTo === '/login') {
-      localStorage.removeItem('authToken');
+    // Validate all required fields
+    if (!formData.fullName || formData.fullName.trim() === "") {
+      alert("Please enter your full name");
+      return;
     }
-    
-    navigate(redirectTo);
-  } catch (error: any) {
-    console.error('❌ Profile setup failed:', error);
-    if (error.message?.includes('Unauthorized') || error.message?.includes('Access denied') || error.message?.includes('token')) {
-      localStorage.removeItem('authToken');
-      navigate('/login');
-    } else {
-      alert(error.message || 'Failed to setup profile. Please try again.');
+
+    if (!formData.email || formData.email.trim() === "") {
+      alert("Please enter your email");
+      return;
     }
-  } finally {
-    setIsLoading(false);
-  }
-};
+
+    if (!date) {
+      alert("Please select your date of birth");
+      return;
+    }
+
+    if (!formData.address || formData.address.trim() === "") {
+      alert("Please enter your address");
+      return;
+    }
+
+    if (!formData.city || formData.city.trim() === "") {
+      alert("Please enter your city");
+      return;
+    }
+
+    if (!selectedState) {
+      alert("Please select your state");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const profileData = {
+        fullName: formData.fullName.trim(),
+        email: formData.email.trim(),
+        dob: format(date, "yyyy-MM-dd"),
+        address: formData.address.trim(),
+        city: formData.city.trim(),
+        state: selectedState,
+      };
+
+      console.log("Sending to backend:", profileData);
+
+      const response = await apiService.setupProfile(profileData);
+      console.log("Profile setup successful:", response);
+
+      const redirectTo = response.data.redirectTo || "/kyc";
+      console.log("Redirecting to:", redirectTo);
+
+      if (redirectTo === "/login") {
+        localStorage.removeItem("authToken");
+      }
+
+      navigate(redirectTo);
+    } catch (error: any) {
+      console.error(" Profile setup failed:", error);
+      if (
+        error.message?.includes("Unauthorized") ||
+        error.message?.includes("Access denied") ||
+        error.message?.includes("token")
+      ) {
+        localStorage.removeItem("authToken");
+        navigate("/login");
+      } else {
+        alert(error.message || "Failed to setup profile. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="p-16 flex justify-center font-roobert items-center bg-white">
@@ -184,7 +207,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     size="lg"
                     type="button"
                     className={cn(
-                      "w-full rounded-xl bg-transparent justify-start",
+                      "w-full rounded-xl justify-start",
                       !date && "text-secondary"
                     )}
                   >
@@ -216,8 +239,16 @@ const handleSubmit = async (e: React.FormEvent) => {
                       mode="single"
                       selected={date}
                       onSelect={setDate}
-                      initialFocus
-                      className="bg-white"
+                      className="rounded-md border shadow-sm"
+                      disabled={(date) =>
+                        date >
+                          new Date(
+                            new Date().setFullYear(
+                              new Date().getFullYear() - 18
+                            )
+                          ) || date < new Date("1900-01-01")
+                      }
+                      captionLayout="dropdown"
                     />
                   </div>
                 </PopoverContent>
@@ -242,12 +273,12 @@ const handleSubmit = async (e: React.FormEvent) => {
             {/* City */}
             <div className="relative">
               <Label htmlFor="city">City</Label>
-              <Input 
-                id="city" 
+              <Input
+                id="city"
                 name="city"
-                type="text" 
-                placeholder="Enter City" 
-                required 
+                type="text"
+                placeholder="Enter City"
+                required
                 value={formData.city}
                 onChange={handleInputChange}
                 className="w-full"
@@ -267,7 +298,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     role="combobox"
                     aria-expanded={open}
                     className={cn(
-                      "w-full rounded-xl bg-transparent justify-start",
+                      "w-full rounded-xl justify-start",
                       !selectedState && "text-secondary"
                     )}
                   >
@@ -312,7 +343,9 @@ const handleSubmit = async (e: React.FormEvent) => {
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4 text-primary",
-                              selectedState === state ? "opacity-100" : "opacity-0"
+                              selectedState === state
+                                ? "opacity-100"
+                                : "opacity-0"
                             )}
                           />
                           {state}
@@ -327,9 +360,9 @@ const handleSubmit = async (e: React.FormEvent) => {
         </CardContent>
 
         <CardFooter className="flex-col gap-2">
-          <Button 
-            type="submit" 
-            size="lg" 
+          <Button
+            type="submit"
+            size="lg"
             className="w-full"
             onClick={handleSubmit}
             disabled={isLoading}

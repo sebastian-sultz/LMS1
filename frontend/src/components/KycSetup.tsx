@@ -678,14 +678,13 @@ const KycSetup = (): JSX.Element => {
   );
   const isSaveEnabled = hasPan && hasAadhaar;
 
-  // Added: Function to upload a single file to Cloudinary and return the secure URL
   const uploadToCloudinary = async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', 'loan_preset'); // Replace with your actual upload preset
+    formData.append('upload_preset', 'loan_preset'); 
 
     const response = await fetch(
-      `https://api.cloudinary.com/v1_1/dd55izwf2/upload`, // Replace YOUR_CLOUD_NAME with your Cloudinary cloud name
+      `https://api.cloudinary.com/v1_1/dd55izwf2/upload`, 
       {
         method: 'POST',
         body: formData,
@@ -704,10 +703,9 @@ const KycSetup = (): JSX.Element => {
     if (isSaveEnabled) {
       setIsLoading(true);
       try {
-        // Added: Collect all valid documents (those with type and file)
         const validDocs = documents.filter((doc) => doc.type && doc.file);
 
-        // Added: Upload each file to Cloudinary sequentially or in parallel (using Promise.all for efficiency)
+        // Upload each file to Cloudinary  (using Promise.all for efficiency)
         const uploadedUrls = await Promise.all(
           validDocs.map(async (doc) => {
             const fileUrl = await uploadToCloudinary(doc.file!);
@@ -715,11 +713,11 @@ const KycSetup = (): JSX.Element => {
           })
         );
 
-        // Added: Send each uploaded document's details to the backend for saving to MongoDB
+        //  saving to MongoDB
         for (const uploadedDoc of uploadedUrls) {
-          console.log("📤 Uploading KYC document to backend:", uploadedDoc);
+          console.log(" Uploading KYC document to backend:", uploadedDoc);
           const response = await apiService.uploadKyc(uploadedDoc);
-          console.log("✅ KYC upload successful:", response);
+          console.log(" KYC upload successful:", response);
         }
 
         const redirectTo = "/login"; 
@@ -731,7 +729,7 @@ const KycSetup = (): JSX.Element => {
 
         setSuccessModalOpen(true);
       } catch (error: any) {
-        console.error("❌ KYC upload failed:", error);
+        console.error(" KYC upload failed:", error);
         if (
           error.message?.includes("Unauthorized") ||
           error.message?.includes("Access denied") ||

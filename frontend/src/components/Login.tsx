@@ -1,4 +1,4 @@
-// components/Login.tsx - Updated to navigate to SOTP component
+// components/Login.tsx - 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -36,13 +36,11 @@ export function Login() {
     try {
       const result = await requestLoginOtp(formData.emailOrPhone);
       
-      // Store the email/phone for OTP verification and navigate to SOTP component
       localStorage.setItem('loginEmailOrPhone', formData.emailOrPhone);
       localStorage.setItem('isAdminLogin', result.isAdmin.toString());
       
-      console.log(`✅ OTP sent to ${formData.emailOrPhone}, isAdmin: ${result.isAdmin}`);
+      console.log(` OTP sent to ${formData.emailOrPhone}, isAdmin: ${result.isAdmin}`);
       
-      // Navigate to SOTP component for OTP verification
       navigate('/verify-login-otp', { 
         state: { 
           emailOrPhone: formData.emailOrPhone,
@@ -50,7 +48,7 @@ export function Login() {
         } 
       });
     } catch (error: any) {
-      console.error('❌ OTP request failed:', error);
+      console.error(' OTP request failed:', error);
       alert(error.message || 'Failed to send OTP. Please try again.');
     } finally {
       setIsLoading(false);

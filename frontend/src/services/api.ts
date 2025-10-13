@@ -1,7 +1,7 @@
 // const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const API_BASE_URL = 'http://localhost:5000/api';
-// services/api.ts - Add new login methods
+
 class ApiService {
   private async request(endpoint: string, options: RequestInit = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
@@ -40,7 +40,7 @@ class ApiService {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    console.log('🔑 Auth Request Headers:', headers);
+    console.log('Auth Request Headers:', headers);
     
     return this.request(endpoint, {
       ...options,
@@ -63,7 +63,6 @@ class ApiService {
   });
 }
 
-  // New unified login methods
   async requestLoginOtp(emailOrPhone: string) {
     return this.request('/auth/request-login-otp', {
       method: 'POST',
@@ -94,7 +93,7 @@ class ApiService {
     city: string;
     state: string;
   }) {
-    console.log('📤 Setup Profile Data:', profileData);
+    console.log(' Setup Profile Data:', profileData);
     
     return this.authRequest('/user/setup-profile', {
       method: 'POST',

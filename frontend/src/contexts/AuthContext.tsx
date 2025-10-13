@@ -1,4 +1,4 @@
-// contexts/AuthContext.tsx - Expose setToken and setUser
+// contexts/AuthContext.tsx -
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { apiService } from '../services/api';
 
@@ -15,8 +15,8 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  setUser: (user: User | null) => void; // Add
-  setToken: (token: string | null) => void; // Add
+  setUser: (user: User | null) => void;
+  setToken: (token: string | null) => void; 
   requestLoginOtp: (emailOrPhone: string) => Promise<{ isAdmin: boolean }>;
   verifyLoginOtp: (emailOrPhone: string, otp: string) => Promise<{ redirectTo: string }>;
   signup: (phoneNumber: string, referralCode?: string) => Promise<{requiresOtp: boolean}>;
@@ -67,19 +67,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const requestLoginOtp = async (emailOrPhone: string) => {
     try {
-      console.log("📞 Requesting login OTP for:", emailOrPhone);
+      console.log("Requesting login OTP for:", emailOrPhone);
       const response = await apiService.requestLoginOtp(emailOrPhone);
-      console.log("✅ OTP requested successfully:", response.data);
+      console.log("OTP requested successfully:", response.data);
       return { isAdmin: response.data.isAdmin || false };
     } catch (error: any) {
-      console.error('❌ Request login OTP failed:', error);
+      console.error(' Request login OTP failed:', error);
       throw error;
     }
   };
 
   const verifyLoginOtp = async (emailOrPhone: string, otp: string) => {
     try {
-      console.log("🔐 Verifying login OTP for:", emailOrPhone);
+      console.log(" Verifying login OTP for:", emailOrPhone);
       const response = await apiService.verifyLoginOtp(emailOrPhone, otp);
       
       if (response.data.token) {
@@ -90,41 +90,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       return response.data;
     } catch (error: any) {
-      console.error('❌ Verify login OTP failed:', error);
+      console.error(' Verify login OTP failed:', error);
       throw error;
     }
   };
 
   const signup = async (phoneNumber: string, referralCode?: string) => {
     try {
-      console.log("📞 Signing up user with phone:", phoneNumber);
+      console.log(" Signing up user with phone:", phoneNumber);
       const response = await apiService.signup(phoneNumber, referralCode);
       
-      console.log("📨 Signup response:", response);
+      console.log(" Signup response:", response);
       
       // Check if requires OTP (new or incomplete)
       if (response.data.otp) {
-        console.log("🆕 Requires OTP");
+        console.log(" Requires OTP");
         setTempPhoneNumber(phoneNumber);
         return {
           requiresOtp: true
         };
       } else {
         // Complete existing - redirect to login
-        console.log("✅ Complete existing - redirecting to login");
+        console.log(" Complete existing - redirecting to login");
         return {
           requiresOtp: false
         };
       }
     } catch (error: any) {
-      console.error('❌ Signup error:', error);
+      console.error(' Signup error:', error);
       throw error;
     }
   };
 
   const verifyOtp = async (phoneNumber: string, otp: string) => {
     try {
-      console.log("🔐 Verifying OTP for signup:", phoneNumber);
+      console.log("Verifying OTP for signup:", phoneNumber);
       const response = await apiService.verifyOtp(phoneNumber, otp);
       
       // Set token and user
@@ -136,10 +136,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       clearTempPhoneNumber();
       
-      console.log("✅ OTP verified, redirecting to:", response.data.redirectTo);
+      console.log("OTP verified, redirecting to:", response.data.redirectTo);
       return response.data;
     } catch (error: any) {
-      console.error('❌ OTP verification failed:', error);
+      console.error(' OTP verification failed:', error);
       throw error;
     }
   };
@@ -158,8 +158,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value = {
     user,
     token,
-    setUser, // Add
-    setToken, // Add
+    setUser, 
+    setToken, 
     signup,
     verifyOtp,
     requestLoginOtp,

@@ -56,7 +56,6 @@ export function OTPVerification() {
     }
   }, [timer]);
 
-  // Handle OTP verification
   const handleVerifyOtp = async () => {
     if (otp.length !== totalSlots) {
       alert("Please enter the complete OTP");
@@ -72,14 +71,13 @@ export function OTPVerification() {
         result = await verifyOtp(emailOrPhone, otp);
       }
 
-      // Clear temporary data
       localStorage.removeItem("otpPhoneNumber");
       localStorage.removeItem("otpEmailOrPhone");
 
-      console.log("✅ OTP verified successfully:", result.redirectTo);
+      console.log(" OTP verified successfully:", result.redirectTo);
       navigate(result.redirectTo);
     } catch (error: any) {
-      console.error("❌ OTP verification failed:", error);
+      console.error(" OTP verification failed:", error);
       alert(error.message || "OTP verification failed. Please try again.");
     } finally {
       setIsLoading(false);

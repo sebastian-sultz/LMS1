@@ -8,20 +8,20 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
   try {
     const { phoneNumber, referralCode } = req.body;
 
-    console.log('📞 Signup request for:', phoneNumber);
+    console.log(' Signup request for:', phoneNumber);
 
     // Check if user already exists
     let user = await User.findOne({ phoneNumber });
 
     if (user) {
-      console.log('✅ User exists - checking progress:', {
+      console.log(' User exists - checking progress:', {
         isProfileSetup: user.isProfileSetup,
         isKycDone: user.isKycDone
       });
       
       if (user.isProfileSetup && user.isKycDone) {
         // Complete - redirect to login, no OTP
-        console.log('🔄 User complete - redirecting to login');
+        console.log(' User complete - redirecting to login');
         res.status(200).json({
           success: true,
           message: 'User already exists and setup complete',
@@ -35,7 +35,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
         user.otpExpiry = getOtpExpiry();
         await user.save();
 
-        console.log('🔄 User incomplete - sending OTP to continue:', user.otp);
+        console.log(' User incomplete - sending OTP to continue:', user.otp);
         res.status(200).json({
           success: true,
           message: 'OTP sent to continue setup',
@@ -57,7 +57,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
     await user.save();
 
-    console.log(`✅ New user created with OTP: ${user.otp}`);
+    console.log(` New user created with OTP: ${user.otp}`);
 
     res.status(201).json({
       success: true,
@@ -80,12 +80,12 @@ export const verifyOtp = async (req: Request, res: Response): Promise<void> => {
   try {
     const { phoneNumber, otp } = req.body;
 
-    console.log('🔐 Verifying OTP for:', phoneNumber, 'OTP:', otp);
+    console.log(' Verifying OTP for:', phoneNumber, 'OTP:', otp);
 
     const user = await User.findOne({ phoneNumber });
 
     if (!user) {
-      console.log('❌ User not found in database');
+      console.log(' User not found in database');
       res.status(404).json({
         success: false,
         message: 'User not found'
@@ -93,13 +93,13 @@ export const verifyOtp = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    console.log('📱 User found, OTP from DB:', user.otp);
-    console.log('📱 User profile setup status:', user.isProfileSetup);
-    console.log('📱 User KYC status:', user.isKycDone);
+    console.log(' User found, OTP from DB:', user.otp);
+    console.log(' User profile setup status:', user.isProfileSetup);
+    console.log(' User KYC status:', user.isKycDone);
 
     // Check if OTP exists and is valid
     if (!user.otp) {
-      console.log('❌ No OTP found for user');
+      console.log(' No OTP found for user');
       res.status(400).json({
         success: false,
         message: 'No OTP found for this user. Please request a new OTP.'
@@ -108,7 +108,7 @@ export const verifyOtp = async (req: Request, res: Response): Promise<void> => {
     }
 
     if (user.otp !== otp) {
-      console.log('❌ OTP mismatch');
+      console.log(' OTP mismatch');
       res.status(400).json({
         success: false,
         message: 'Invalid OTP'
@@ -118,7 +118,7 @@ export const verifyOtp = async (req: Request, res: Response): Promise<void> => {
 
     // Check if OTP is expired
     if (user.otpExpiry && isOtpExpired(user.otpExpiry)) {
-      console.log('❌ OTP expired');
+      console.log(' OTP expired');
       res.status(400).json({
         success: false,
         message: 'OTP has expired'
@@ -134,8 +134,8 @@ export const verifyOtp = async (req: Request, res: Response): Promise<void> => {
     // Generate token
     const token = generateToken(user._id.toString());
 
-    console.log('✅ OTP verified successfully for user:', user._id);
-    console.log('📊 User status after OTP verification:', {
+    console.log(' OTP verified successfully for user:', user._id);
+    console.log(' User status after OTP verification:', {
       isProfileSetup: user.isProfileSetup,
       isKycDone: user.isKycDone
     });
@@ -147,7 +147,7 @@ export const verifyOtp = async (req: Request, res: Response): Promise<void> => {
       redirectTo = '/login';
     }
 
-    console.log('🔄 Redirecting to:', redirectTo);
+    console.log(' Redirecting to:', redirectTo);
 
     res.status(200).json({
       success: true,
@@ -177,11 +177,11 @@ export const requestLoginOtp = async (req: Request, res: Response): Promise<void
   try {
     const { emailOrPhone } = req.body;
 
-    console.log('🔐 Login OTP request for:', emailOrPhone);
+    console.log(' Login OTP request for:', emailOrPhone);
 
     // Check if it's admin login
     if (emailOrPhone === 'admin@loanapp.com') {
-      console.log('👑 Admin OTP requested');
+      console.log(' Admin OTP requested');
       
       res.status(200).json({
         success: true,
@@ -240,11 +240,11 @@ export const verifyLoginOtp = async (req: Request, res: Response): Promise<void>
   try {
     const { emailOrPhone, otp } = req.body;
 
-    console.log('🔐 Verifying login OTP for:', emailOrPhone, 'OTP:', otp);
+    console.log(' Verifying login OTP for:', emailOrPhone, 'OTP:', otp);
 
     // Check if it's admin login
     if (emailOrPhone === 'admin@loanapp.com') {
-      console.log('👑 Admin login attempt');
+      console.log(' Admin login attempt');
       
       // Verify admin OTP
       if (otp !== '123456') {
@@ -275,7 +275,7 @@ export const verifyLoginOtp = async (req: Request, res: Response): Promise<void>
           }
         });
         await adminUser.save();
-        console.log('✅ Admin user created in database');
+        console.log(' Admin user created in database');
       }
 
       const token = generateToken(adminUser._id.toString());
@@ -316,7 +316,7 @@ export const verifyLoginOtp = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    console.log('📱 User OTP from DB:', user.otp);
+    console.log(' User OTP from DB:', user.otp);
 
     // Check if OTP exists and is valid
     if (!user.otp) {
@@ -358,7 +358,7 @@ export const verifyLoginOtp = async (req: Request, res: Response): Promise<void>
       redirectTo = '/dashboard';
     }
 
-    console.log('🔄 Login successful, redirecting to:', redirectTo);
+    console.log(' Login successful, redirecting to:', redirectTo);
 
     res.status(200).json({
       success: true,
