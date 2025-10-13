@@ -70,12 +70,12 @@ export function Login() {
               <div className="flex flex-col gap-6">
                 <div className="grid gap-4">
                   <div className="relative">
-                    <Label htmlFor="emailOrPhone">Email or Phone Number</Label>
+                    <Label htmlFor="emailOrPhone">Email/Phone</Label>
                     <Input
                       id="emailOrPhone"
                       name="emailOrPhone"
                       type="text"
-                      placeholder="Enter your Email or Phone Number"
+                      placeholder="Enter Email or Phone Number"
                       required
                       value={formData.emailOrPhone}
                       onChange={handleChange}

@@ -2,7 +2,7 @@ import { apiService } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
 
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router"; // Add this import
+import { useNavigate } from "react-router";
 import { Check, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,13 @@ import {
   CommandInput,
   CommandItem,
 } from "@/components/ui/command";
-import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import Img from "../assets/image.png";
 
@@ -97,15 +103,15 @@ const DocumentIcon = () => (
 
 const SuccessModal = ({
   open,
-  onOpenChange,
-  redirectPath = '/login' // Changed default to '/login'
+  onOpenChange: parentOnOpenChange,
+  redirectPath = "/login",
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   redirectPath?: string;
 }) => {
   const navigate = useNavigate();
-  const { logout } = useAuth(); // Add useAuth for logout
+  const { logout } = useAuth();
   const [progress, setProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
 
@@ -135,20 +141,23 @@ const SuccessModal = ({
     }
   }, [open]);
 
-  const handleOkay = () => {
-    onOpenChange(false);
-    console.log("🔄 Navigating to:", redirectPath);
-    
-    // Flush token if redirecting to login
-    if (redirectPath === '/login') {
-      logout();
+  const handleOpenChange = (newOpen: boolean) => {
+    parentOnOpenChange(newOpen);
+    if (!newOpen) {
+      console.log("🔄 Navigating to:", redirectPath);
+      if (redirectPath === "/login") {
+        logout();
+      }
+      navigate(redirectPath);
     }
-    
-    navigate(redirectPath);
+  };
+
+  const handleOkay = () => {
+    handleOpenChange(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="p-0 border-0 bg-transparent max-w-[579px] [&>button]:hidden">
         <DialogTitle className="sr-only">KYC Verification</DialogTitle>
         <DialogDescription className="sr-only">
@@ -170,42 +179,41 @@ const SuccessModal = ({
             <div className="flex-1 w-full flex flex-col items-center justify-between">
               <div className="w-[401px]">
                 <p className="font-roobert font-normal text-secondary text-sm text-center tracking-[0] leading-[normal] py-1">
-                  {!isComplete 
-                    ? "Your documents are being uploaded." 
-                    : "It will be reviewed shortly."
-                  }
+                  {!isComplete
+                    ? "Your documents are being uploaded."
+                    : "It will be reviewed shortly."}
                 </p>
               </div>
 
               <div className="relative w-[366.46px] h-[195.69px] flex items-center justify-center">
                 {!isComplete ? (
                   <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            className="w-4 h-4"
-          >
-            <path
-              d="M7 17L17 7"
-              stroke="black"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M7 7H17V17"
-              stroke="black"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="w-4 h-4"
+                  >
+                    <path
+                      d="M7 17L17 7"
+                      stroke="black"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M7 7H17V17"
+                      stroke="black"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                 ) : (
-                  <img 
-                    src={Img} 
-                    className="w-full h-full object-contain" 
+                  <img
+                    src={Img}
+                    className="w-full h-full object-contain"
                     alt="Success"
                   />
                 )}
@@ -213,10 +221,7 @@ const SuccessModal = ({
 
               <div className="w-[358px]">
                 <p className="font-roobert font-normal text-secondary text-sm text-center tracking-[0] leading-[normal]">
-                  {!isComplete 
-                    ? "Hang tight – this usually takes under a minute." 
-                    : ""
-                  }
+                  {!isComplete ? "Hang tight – this usually takes under a minute." : ""}
                 </p>
               </div>
 
@@ -264,7 +269,7 @@ const SuccessModal = ({
               variant="ghost"
               size="icon"
               className="absolute top-4 right-4 w-8 h-8 rounded-full border border-solid border-border hover:bg-gray-100"
-              onClick={() => onOpenChange(false)}
+              onClick={() => handleOpenChange(false)}
             >
               <X className="h-3 w-3" />
             </Button>
@@ -275,16 +280,12 @@ const SuccessModal = ({
   );
 };
 
-/* ----------------------------
-   FloatingLabelFileUploader
-   - dynamicLabel is OPTIONAL
-   - typed file input ref and selectedFile for TS
-   ---------------------------- */
 type FloatingLabelFileUploaderProps = {
   label?: string;
   id?: string;
   dynamicLabel?: string | null;
   onFileSelect: (file: File | null) => void;
+  selectedFile: File | null;
 };
 
 const FloatingLabelFileUploader = ({
@@ -292,12 +293,11 @@ const FloatingLabelFileUploader = ({
   id = "documentUpload",
   dynamicLabel,
   onFileSelect,
+  selectedFile,
 }: FloatingLabelFileUploaderProps) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Determine effective label
   const effectiveLabel = selectedFile
     ? (dynamicLabel || label).toUpperCase()
     : label;
@@ -311,7 +311,6 @@ const FloatingLabelFileUploader = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
     if (file) {
-      setSelectedFile(file);
       onFileSelect(file);
     }
   };
@@ -334,14 +333,12 @@ const FloatingLabelFileUploader = ({
     setIsDragging(false);
     const file = e.dataTransfer.files?.[0] ?? null;
     if (file) {
-      setSelectedFile(file);
       onFileSelect(file);
     }
   };
 
   const handleUploadAnother = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setSelectedFile(null);
     onFileSelect(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
     fileInputRef.current?.click();
@@ -418,24 +415,16 @@ const FloatingLabelFileUploader = ({
 
   return (
     <div className="relative w-full">
-      <Label
-        htmlFor={id}
-           
-      >
-        {effectiveLabel}
-      </Label>
+      <Label htmlFor={id}>{effectiveLabel}</Label>
 
       <div
         id={id}
         className={cn(
           "w-full rounded-xl border border-secondary cursor-pointer",
-          "h-14 flex items-center px-3 py-4", // Fixed Height
-          "border-dashed", // Always dashed
-          // Styling when no file is selected
+          "h-14 flex items-center px-3 py-4",
+          "border-dashed",
           !selectedFile && " bg-white hover:border-secondary",
-          // Styling when a file IS selected (light grey background)
           selectedFile && "  cursor-default ",
-          // Dragging state
           isDragging ? "border-blue-500 bg-blue-50/50" : ""
         )}
         onClick={handleWrapperClick}
@@ -443,7 +432,6 @@ const FloatingLabelFileUploader = ({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        {/* Hidden File Input */}
         <input
           type="file"
           ref={fileInputRef}
@@ -452,119 +440,122 @@ const FloatingLabelFileUploader = ({
           accept=".pdf,.jpg,.jpeg,.png"
         />
 
-        {/* Content Display */}
         {promptContent}
       </div>
     </div>
   );
 };
 
-/* ----------------------------
-   AdditionalDocumentSection
-   - Renders a document-type selector + uploader + Remove (AlertDialog)
-   ---------------------------- */
-type AdditionalDocProps = {
-  index: number;
-  onRemove: (index: number) => void;
+type Document = {
+  id: number;
+  type: string;
+  file: File | null;
+  isFixed: boolean;
 };
 
-const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+type DocumentUploadSectionProps = {
+  doc: Document;
+  onTypeChange: (id: number, type: string) => void;
+  onFileChange: (id: number, file: File | null) => void;
+  onRemove?: (id: number) => void;
+  headerLabel: string;
+};
 
-  const handleFileSelect = (file: File | null) => {
-    setSelectedFile(file);
-  };
+const DocumentUploadSection = ({
+  doc,
+  onTypeChange,
+  onFileChange,
+  onRemove,
+  headerLabel,
+}: DocumentUploadSectionProps) => {
+  const [open, setOpen] = useState(false);
 
   return (
-    <div    >
-      <div className="flex justify-between">
-        <div className="relative -top-0 py-4 self-stretch justify-start text-sm font-bold uppercase tracking-wider text-black">
-          ADDITIONAL DOCUMENTS
-        </div>
-        <div className="flex justify-end">
-          <Dialog>
-            <DialogTrigger asChild>
-              <div className="flex justify-center items-center cursor-pointer gap-1">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="12"
-                  height="13"
-                  viewBox="0 0 12 13"
-                  fill="none"
-                >
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M3.59159 4.5718V10.0252C3.59159 10.2804 3.69556 10.5261 3.87513 10.7057C4.0547 10.8853 4.30044 10.9892 4.55562 10.9892H8.4023C8.65748 10.9892 8.90321 10.8853 9.08279 10.7057C9.26236 10.5261 9.36633 10.2804 9.36633 10.0252V4.5718H3.59159ZM5.18886 5.85717V9.70384C5.18886 9.88342 5.33063 10.0252 5.5102 10.0252C5.68978 10.0252 5.83155 9.88342 5.83155 9.70384V5.85717C5.83155 5.6776 5.68978 5.53583 5.5102 5.53583C5.33063 5.53583 5.18886 5.6776 5.18886 5.85717ZM7.11692 5.85717V9.70384C7.11692 9.88342 7.25869 10.0252 7.43826 10.0252C7.61784 10.0252 7.75961 9.88342 7.75961 9.70384V5.85717C7.75961 5.6776 7.61784 5.53583 7.43826 5.53583C7.25869 5.53583 7.11692 5.6776 7.11692 5.85717ZM4.86752 3.29587H3.2608C3.08122 3.29587 2.93945 3.43764 2.93945 3.61722C2.93945 3.79679 3.08122 3.93856 3.2608 3.93856H9.67822C9.85779 3.93856 9.99956 3.79679 9.99956 3.61722C9.99956 3.43764 9.85779 3.29587 9.67822 3.29587H8.08095V2.97453C8.08095 2.44526 7.64619 2.0105 7.11692 2.0105H5.83155C5.30227 2.0105 4.86752 2.44526 4.86752 2.97453V3.29587ZM7.43826 2.97453V3.29587H5.5102V2.97453C5.5102 2.79495 5.65197 2.65319 5.83155 2.65319H7.11692C7.2965 2.65319 7.43826 2.79495 7.43826 2.97453Z"
-                    fill="#F23E57"
-                  />
-                </svg>
-                <button className="text-xs p-0 font-semibold cursor-pointer text-red-500">
-                  Remove
-                </button>
-              </div>
-            </DialogTrigger>
-
-            <DialogContent className="p-0 border-0 bg-transparent max-w-[579px] [&>button]:hidden">
-              <Card className="relative w-[579px] bg-white rounded-[20px] border border-solid border-border">
-                <CardContent className="p-0">
-                  <DialogTrigger asChild>
-                    <button className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center border border-solid border-border bg-white hover:bg-gray-50 transition-colors">
-                      <X className="w-3 h-3 text-black" />
+    <div>
+      {headerLabel && (
+        <div className="flex justify-between">
+          <div className="relative -top-0 py-4 self-stretch justify-start text-sm font-bold uppercase tracking-wider text-black">
+            {headerLabel}
+          </div>
+          {onRemove && (
+            <div className="flex justify-end">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <div className="flex justify-center items-center cursor-pointer gap-1">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="12"
+                      height="13"
+                      viewBox="0 0 12 13"
+                      fill="none"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                        d="M3.59159 4.5718V10.0252C3.59159 10.2804 3.69556 10.5261 3.87513 10.7057C4.0547 10.8853 4.30044 10.9892 4.55562 10.9892H8.4023C8.65748 10.9892 8.90321 10.8853 9.08279 10.7057C9.26236 10.5261 9.36633 10.2804 9.36633 10.0252V4.5718H3.59159ZM5.18886 5.85717V9.70384C5.18886 9.88342 5.33063 10.0252 5.5102 10.0252C5.68978 10.0252 5.83155 9.88342 5.83155 9.70384V5.85717C5.83155 5.6776 5.68978 5.53583 5.5102 5.53583C5.33063 5.53583 5.18886 5.6776 5.18886 5.85717ZM7.11692 5.85717V9.70384C7.11692 9.88342 7.25869 10.0252 7.43826 10.0252C7.61784 10.0252 7.75961 9.88342 7.75961 9.70384V5.85717C7.75961 5.6776 7.61784 5.53583 7.43826 5.53583C7.25869 5.53583 7.11692 5.6776 7.11692 5.85717ZM4.86752 3.29587H3.2608C3.08122 3.29587 2.93945 3.43764 2.93945 3.61722C2.93945 3.79679 3.08122 3.93856 3.2608 3.93856H9.67822C9.85779 3.93856 9.99956 3.79679 9.99956 3.61722C9.99956 3.43764 9.85779 3.29587 9.67822 3.29587H8.08095V2.97453C8.08095 2.44526 7.64619 2.0105 7.11692 2.0105H5.83155C5.30227 2.0105 4.86752 2.44526 4.86752 2.97453V3.29587ZM7.43826 2.97453V3.29587H5.5102V2.97453C5.5102 2.79495 5.65197 2.65319 5.83155 2.65319H7.11692C7.2965 2.65319 7.43826 2.79495 7.43826 2.97453Z"
+                        fill="#F23E57"
+                      />
+                    </svg>
+                    <button className="text-xs p-0 font-semibold cursor-pointer text-red-500">
+                      Remove
                     </button>
-                  </DialogTrigger>
-                  <div className="py-6 px-14 ">
-                    <h2 className="font-roobert font-normal text-black text-xl tracking-[0.25px] leading-[22px]">
-                      Are you sure that you want to delete the attached
-                      document?
-                    </h2>
                   </div>
-                  <div className="py-6 px-14 flex items-center justify-center gap-5">
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-[229px] h-10 rounded-[70px]"
-                      >
-                        <span className="font-roobert font-semibold text-sm text-center ">
-                          No, Go Back
-                        </span>
-                      </Button>
-                    </DialogTrigger>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="default"
-                        className="w-[229px] h-10 rounded-[70px]"
-                        onClick={() => onRemove(index)}
-                      >
-                        <span className="font-roobert font-semibold text-sm text-center ">
-                          Yes, Confirm
-                        </span>
-                      </Button>
-                    </DialogTrigger>
-                  </div>
-                </CardContent>
-              </Card>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
+                </DialogTrigger>
 
-      {/* Document Type */}
+                <DialogContent className="p-0 border-0 bg-transparent max-w-[579px] [&>button]:hidden">
+                  <Card className="relative w-[579px] bg-white rounded-[20px] border border-solid border-border">
+                    <CardContent className="p-0">
+                      <DialogTrigger asChild>
+                        <button className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center border border-solid border-border bg-white hover:bg-gray-50 transition-colors">
+                          <X className="w-3 h-3 text-black" />
+                        </button>
+                      </DialogTrigger>
+                      <div className="py-6 px-14 ">
+                        <h2 className="font-roobert font-normal text-black text-xl tracking-[0.25px] leading-[22px]">
+                          Are you sure that you want to delete the attached
+                          document?
+                        </h2>
+                      </div>
+                      <div className="py-6 px-14 flex items-center justify-center gap-5">
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-[229px] h-10 rounded-[70px]"
+                          >
+                            <span className="font-roobert font-semibold text-sm text-center ">
+                              No, Go Back
+                            </span>
+                          </Button>
+                        </DialogTrigger>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="default"
+                            className="w-[229px] h-10 rounded-[70px]"
+                            onClick={() => onRemove(doc.id)}
+                          >
+                            <span className="font-roobert font-semibold text-sm text-center ">
+                              Yes, Confirm
+                            </span>
+                          </Button>
+                        </DialogTrigger>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </DialogContent>
+              </Dialog>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="flex flex-col gap-6">
         <div className="relative w-full">
-          <Label
-            htmlFor={`doc-type-${index}`}
-               
-          >
-            DOCUMENT TYPE
-          </Label>
+          <Label htmlFor={`doc-type-${doc.id}`}>DOCUMENT TYPE</Label>
 
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button
-                id={`doc-type-${index}`}
+                id={`doc-type-${doc.id}`}
                 variant="combobox"
                 size="lg"
                 type="button"
@@ -572,7 +563,7 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
                 aria-expanded={open}
                 className="rounded-xl text-secondary "
               >
-                {value ? value : "Choose Document Type"}
+                {doc.type || "Choose Document Type"}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="21"
@@ -599,12 +590,12 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
                   className="text-sm"
                 />
                 <CommandGroup>
-                  {docs.map((doc) => (
+                  {docs.map((docType) => (
                     <CommandItem
-                      key={doc}
-                      value={doc}
+                      key={docType}
+                      value={docType}
                       onSelect={(currentValue) => {
-                        setValue(currentValue);
+                        onTypeChange(doc.id, currentValue);
                         setOpen(false);
                       }}
                       className="cursor-pointer text-base font-semibold"
@@ -612,10 +603,10 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
                       <Check
                         className={cn(
                           "mr-2 h-4 w-4 text-primary",
-                          value === doc ? "opacity-100" : "opacity-0"
+                          doc.type === docType ? "opacity-100" : "opacity-0"
                         )}
                       />
-                      {doc}
+                      {docType}
                     </CommandItem>
                   ))}
                 </CommandGroup>
@@ -624,12 +615,12 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
           </Popover>
         </div>
 
-        {/* File Uploader */}
         <FloatingLabelFileUploader
           label="UPLOAD DOCUMENT"
-          id={`upload-${index}`}
-          dynamicLabel={value}
-          onFileSelect={handleFileSelect}
+          id={`upload-${doc.id}`}
+          dynamicLabel={doc.type}
+          onFileSelect={(file) => onFileChange(doc.id, file)}
+          selectedFile={doc.file}
         />
       </div>
       <div className="pt-1 pl-3 text-secondary font-roobert text-xs font-normal leading-none">
@@ -638,84 +629,92 @@ const AdditionalDocumentSection = ({ index, onRemove }: AdditionalDocProps) => {
     </div>
   );
 };
+
 const KycSetup = (): JSX.Element => {
-  const { token, isLoading: authLoading } = useAuth(); // Add
+  const { token, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
 
-  // Add auth check
   useEffect(() => {
     if (!authLoading && !token) {
-      navigate('/login');
+      navigate("/login");
     }
   }, [authLoading, token, navigate]);
-  // main selector state
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const [documents, setDocuments] = useState<Document[]>([
+    { id: 0, type: "", file: null, isFixed: true },
+  ]);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [redirectPath, setRedirectPath] = useState('/login');
-
-
-  // additional docs array
-  const [additionalDocs, setAdditionalDocs] = useState<number[]>([]);
+  const [redirectPath, setRedirectPath] = useState("/login");
 
   const addDocument = () => {
-    setAdditionalDocs((prev) => [...prev, prev.length]);
+    setDocuments((prev) => [
+      ...prev,
+      { id: prev.length, type: "", file: null, isFixed: false },
+    ]);
   };
 
-  const removeDocument = (index: number) => {
-    setAdditionalDocs((prev) => prev.filter((_, i) => i !== index));
+  const removeDocument = (id: number) => {
+    setDocuments((prev) => prev.filter((doc) => doc.id !== id));
   };
 
-  const handleFileSelect = (file: File | null) => {
-    setSelectedFile(file);
+  const handleTypeChange = (id: number, type: string) => {
+    setDocuments((prev) =>
+      prev.map((doc) => (doc.id === id ? { ...doc, type } : doc))
+    );
   };
 
-  // Check if Save button should be enabled
-  const isSaveEnabled = value && selectedFile;
+  const handleFileChange = (id: number, file: File | null) => {
+    setDocuments((prev) =>
+      prev.map((doc) => (doc.id === id ? { ...doc, file } : doc))
+    );
+  };
 
+  const hasPan = documents.some(
+    (doc) => doc.type === "PAN Card" && doc.file
+  );
+  const hasAadhaar = documents.some(
+    (doc) => doc.type === "Aadhaar Card" && doc.file
+  );
+  const isSaveEnabled = hasPan && hasAadhaar;
 
-// Update the handleSave function
-// In KycSetup.tsx - Update the handleSave function
-// components/KycSetup - Add token removal
-// ... (the full code, but change in handleSave)
-
-const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async () => {
     if (isSaveEnabled) {
       setIsLoading(true);
       try {
-        const fileUrl = "https://example.com/documents/kyc-document.pdf";
-        
-        console.log("📤 Uploading KYC document:", { docType: value, fileUrl });
-        
-        const response = await apiService.uploadKyc({
-          docType: value,
-          fileUrl: fileUrl
-        });
-        
-        console.log("✅ KYC upload successful:", response);
-        
-        const redirectTo = response.data.redirectTo || '/login'; 
-        console.log("🔄 Redirecting to:", redirectTo);
-        
-        // Clear auth token when redirecting to login
-        if (redirectTo === '/login') {
-          localStorage.removeItem('authToken');
+        for (const doc of documents) {
+          if (doc.file && doc.type) {
+            const fileUrl = "https://example.com/documents/kyc-document.pdf";
+            console.log("📤 Uploading KYC document:", { docType: doc.type, fileUrl });
+            
+            const response = await apiService.uploadKyc({
+              docType: doc.type,
+              fileUrl,
+            });
+            
+            console.log("✅ KYC upload successful:", response);
+          }
         }
-        
-        // Set the redirect path and show modal
+
+        const redirectTo = "/login"; 
         setRedirectPath(redirectTo);
+
+        if (redirectTo === "/login") {
+          localStorage.removeItem("authToken");
+        }
+
         setSuccessModalOpen(true);
-        
       } catch (error: any) {
-        console.error('❌ KYC upload failed:', error);
-        if (error.message?.includes('Unauthorized') || error.message?.includes('Access denied') || error.message?.includes('token')) {
-          localStorage.removeItem('authToken');
-          navigate('/login');
+        console.error("❌ KYC upload failed:", error);
+        if (
+          error.message?.includes("Unauthorized") ||
+          error.message?.includes("Access denied") ||
+          error.message?.includes("token")
+        ) {
+          localStorage.removeItem("authToken");
+          navigate("/login");
         } else {
-          alert(error.message || 'Failed to upload KYC document. Please try again.');
+          alert(error.message || "Failed to upload KYC document. Please try again.");
         }
       } finally {
         setIsLoading(false);
@@ -723,12 +722,9 @@ const handleSave = async (e: React.FormEvent) => {
     }
   };
 
-// Rest of the code remains the same
-
   return (
     <div className="p-16 flex justify-center font-inter items-center bg-white">
       <Card className="w-full max-w-xl px-14 ">
-        {/* ===== Header ===== */}
         <CardHeader>
           <div className="flex flex-col items-center">
             <div className="font-bold text-black text-[32px] text-center tracking-[-2px]">
@@ -742,113 +738,29 @@ const handleSave = async (e: React.FormEvent) => {
           </div>
         </CardHeader>
 
-        {/* ===== Form ===== */}
         <CardContent>
-          {/* Label for the section */}
           <div className="relative -top-4 font-roobert pt-3 self-stretch justify-start text-sm font-bold uppercase tracking-wider">
             DOCUMENTS
           </div>
 
-          <form className="flex flex-col gap-6" onSubmit={handleSave}>
-            <div className="relative w-full">
-              <Label
-                htmlFor="state"
-                   
-              >
-                DOCUMENT TYPE
-              </Label>
+          <DocumentUploadSection
+            doc={documents[0]}
+            onTypeChange={handleTypeChange}
+            onFileChange={handleFileChange}
+            headerLabel=""
+          />
 
-              <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="state"
-                    variant="combobox"
-                    size="lg"
-                    type="button"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="rounded-xl text-secondary "
-                  >
-                    {value ? value : "Choose Document Type"}
-
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="21"
-                      height="12"
-                      viewBox="0 0 21 12"
-                      fill="none"
-                      className="ml-2 shrink-0"
-                    >
-                      <path
-                        d="M11.3695 10.9044L19.9192 2.31262C20.1413 2.08267 20.2641 1.77469 20.2614 1.455C20.2586 1.13532 20.1304 0.82952 19.9043 0.603461C19.6782 0.377403 19.3724 0.249177 19.0528 0.246399C18.7331 0.243621 18.4251 0.366514 18.1951 0.588609L10.5074 8.31837L2.84972 0.618574C2.73724 0.502124 2.60271 0.409238 2.45395 0.345339C2.3052 0.281439 2.14521 0.247805 1.98332 0.246398C1.82143 0.244991 1.66088 0.275841 1.51104 0.337146C1.3612 0.398451 1.22507 0.488984 1.11059 0.603462C0.996111 0.71794 0.905577 0.854071 0.844273 1.00391C0.782968 1.15375 0.752119 1.3143 0.753527 1.47619C0.754934 1.63808 0.788568 1.79807 0.852468 1.94683C0.916368 2.09558 1.00925 2.23012 1.1257 2.34259L9.64544 10.9044C9.87408 11.133 10.1841 11.2614 10.5074 11.2614C10.8307 11.2614 11.1408 11.133 11.3695 10.9044Z"
-                        fill="#929292"
-                      />
-                    </svg>
-                  </Button>
-                </PopoverTrigger>
-
-                <PopoverContent
-                  className="w-[var(--radix-popover-trigger-width)] p-0 bg-white rounded-xl border border-border"
-                  align="start"
-                >
-                  <Command>
-                    <CommandInput
-                      placeholder="Search document type..."
-                      className="text-sm"
-                    />
-                    <CommandGroup>
-                      {docs.map((state) => (
-                        <CommandItem
-                          key={state}
-                          value={state}
-                          onSelect={(currentValue) => {
-                            setValue(currentValue);
-                            setOpen(false);
-                          }}
-                          className="cursor-pointer text-base font-semibold"
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4 text-primary",
-                              value === state ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                          {state}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            {/* Document Uploader - receives dynamicLabel from main selector */}
-            <FloatingLabelFileUploader
-              label="UPLOAD DOCUMENT"
-              id="frontUpload"
-              dynamicLabel={value}
-              onFileSelect={handleFileSelect}
+          {documents.slice(1).map((doc) => (
+            <DocumentUploadSection
+              key={doc.id}
+              doc={doc}
+              onTypeChange={handleTypeChange}
+              onFileChange={handleFileChange}
+              onRemove={removeDocument}
+              headerLabel="ADDITIONAL DOCUMENTS"
             />
-          </form>
+          ))}
 
-          <div className="pt-1 pl-3 text-secondary font-roobert text-xs font-normal leading-none">
-            Files Supported: PDF, JPG, JPEG, PNG
-          </div>
-
-          {/* ===== Additional Documents ===== */}
-          {additionalDocs.length > 0 && (
-            <div    >
-              {additionalDocs.map((_, idx) => (
-                <AdditionalDocumentSection
-                  key={idx}
-                  index={idx}
-                  onRemove={removeDocument}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Add More Documents button */}
           <div className="flex justify-end py-3 px-2 items-center gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -872,10 +784,8 @@ const handleSave = async (e: React.FormEvent) => {
           </div>
         </CardContent>
 
-        {/* ===== Footer ===== */}
         <CardFooter className="flex-col gap-2">
           <Button
-            type="submit"
             size="lg"
             variant="outline"
             disabled={!isSaveEnabled || isLoading}
@@ -890,22 +800,11 @@ const handleSave = async (e: React.FormEvent) => {
             {isLoading ? "Saving..." : "Save"}
           </Button>
 
-          {/* Manual navigation fallback */}
-          <div className="mt-4 text-center">
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/dashboard')}
-              className="text-sm"
-            >
-              Go to Dashboard (Manual Navigation)
-            </Button>
-          </div>
-
-          {/* Success Modal - rendered conditionally */}
           {successModalOpen && (
             <SuccessModal
               open={successModalOpen}
               onOpenChange={setSuccessModalOpen}
+              redirectPath={redirectPath}
             />
           )}
         </CardFooter>
@@ -914,4 +813,4 @@ const handleSave = async (e: React.FormEvent) => {
   );
 };
 
-export default KycSetup; 
+export default KycSetup;

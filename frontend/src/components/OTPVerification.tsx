@@ -1,6 +1,4 @@
 // components/OTPVerification.tsx
-import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import {
   InputOTP,
@@ -8,45 +6,47 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLocation, useNavigate } from "react-router";
+import { useEffect, useState } from "react";
 
 const totalSlots = 6;
 
-interface OTPVerificationProps {
-  flow: "login" | "signup"; // determines logic path
-}
-
-export function OTPVerification({ flow }: OTPVerificationProps) {
-  const {
-    verifyLoginOtp,
-    verifyOtp,
-    resendOtp, // only used for signup now
-  } = useAuth();
-
+export function OTPVerification() {
+  const { verifyOtp, verifyLoginOtp, resendOtp } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [timer, setTimer] = useState(30);
-  const [identifier, setIdentifier] = useState(""); // phone or email
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [emailOrPhone, setEmailOrPhone] = useState("");
+  const [isLoginFlow, setIsLoginFlow] = useState(false);
 
-  // Load identifier from state or localStorage
+  // Detect flow type (signup or login)
   useEffect(() => {
-    if (flow === "signup") {
-      const phone = location.state?.phoneNumber || localStorage.getItem("tempPhoneNumber");
-      if (phone) setIdentifier(phone);
-      else navigate("/signup");
+    if (location.state?.phoneNumber) {
+      setEmailOrPhone(location.state.phoneNumber);
+      setIsLoginFlow(false);
+      localStorage.setItem("otpPhoneNumber", location.state.phoneNumber);
+    } else if (location.state?.emailOrPhone) {
+      setEmailOrPhone(location.state.emailOrPhone);
+      setIsLoginFlow(true);
+      localStorage.setItem("otpEmailOrPhone", location.state.emailOrPhone);
     } else {
-      const emailOrPhone = location.state?.emailOrPhone || localStorage.getItem("loginEmailOrPhone");
-      const admin = location.state?.isAdmin || localStorage.getItem("isAdminLogin") === "true";
-      if (emailOrPhone) {
-        setIdentifier(emailOrPhone);
-        setIsAdmin(admin);
+      // Try localStorage backup
+      const storedPhone = localStorage.getItem("otpPhoneNumber");
+      const storedEmail = localStorage.getItem("otpEmailOrPhone");
+      if (storedPhone) {
+        setEmailOrPhone(storedPhone);
+        setIsLoginFlow(false);
+      } else if (storedEmail) {
+        setEmailOrPhone(storedEmail);
+        setIsLoginFlow(true);
       } else {
         navigate("/login");
       }
     }
-  }, [flow, location, navigate]);
+  }, [location, navigate]);
 
   // Timer countdown
   useEffect(() => {
@@ -56,7 +56,7 @@ export function OTPVerification({ flow }: OTPVerificationProps) {
     }
   }, [timer]);
 
-  // OTP Verification handler
+  // Handle OTP verification
   const handleVerifyOtp = async () => {
     if (otp.length !== totalSlots) {
       alert("Please enter the complete OTP");
@@ -66,52 +66,42 @@ export function OTPVerification({ flow }: OTPVerificationProps) {
     setIsLoading(true);
     try {
       let result;
-      if (flow === "signup") {
-        result = await verifyOtp(identifier, otp);
-        localStorage.removeItem("tempPhoneNumber");
+      if (isLoginFlow) {
+        result = await verifyLoginOtp(emailOrPhone, otp);
       } else {
-        result = await verifyLoginOtp(identifier, otp);
-        localStorage.removeItem("loginEmailOrPhone");
-        localStorage.removeItem("isAdminLogin");
+        result = await verifyOtp(emailOrPhone, otp);
       }
 
-      console.log("✅ OTP verified successfully, redirecting to:", result.redirectTo);
+      // Clear temporary data
+      localStorage.removeItem("otpPhoneNumber");
+      localStorage.removeItem("otpEmailOrPhone");
+
+      console.log("✅ OTP verified successfully:", result.redirectTo);
       navigate(result.redirectTo);
     } catch (error: any) {
-      console.error("OTP verification failed:", error);
+      console.error("❌ OTP verification failed:", error);
       alert(error.message || "OTP verification failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Resend OTP handler
+  // Resend OTP
   const handleResendOtp = async () => {
     try {
-      if (flow === "signup") {
-        await resendOtp(identifier);
-        alert("OTP resent successfully!");
-      } else {
-        // If you add resendLoginOtp() later, you can call it here.
-        alert("OTP resent successfully! Use '123456' for testing.");
-      }
+      await resendOtp(emailOrPhone);
       setTimer(30);
       setOtp("");
+      alert("OTP resent successfully!");
     } catch (error: any) {
       alert(error.message || "Failed to resend OTP. Please try again.");
     }
   };
 
-  // Change identifier (go back)
-  const handleChangeIdentifier = () => {
-    if (flow === "signup") {
-      localStorage.removeItem("tempPhoneNumber");
-      navigate("/signup");
-    } else {
-      localStorage.removeItem("loginEmailOrPhone");
-      localStorage.removeItem("isAdminLogin");
-      navigate("/login");
-    }
+  const handleChangeNumberOrEmail = () => {
+    localStorage.removeItem("otpPhoneNumber");
+    localStorage.removeItem("otpEmailOrPhone");
+    navigate(isLoginFlow ? "/login" : "/signup");
   };
 
   return (
@@ -124,13 +114,8 @@ export function OTPVerification({ flow }: OTPVerificationProps) {
           <div className="text-center text-base font-inter">
             <span className="font-normal">We have sent an OTP to </span>
             <span className="font-extrabold">
-              {flow === "signup" ? `+91 ${identifier}` : identifier}
+              { emailOrPhone}
             </span>
-            {isAdmin && (
-              <div className="mt-2 text-sm text-blue-600 font-semibold">
-                👑 Admin Login
-              </div>
-            )}
           </div>
         </div>
 
@@ -162,12 +147,12 @@ export function OTPVerification({ flow }: OTPVerificationProps) {
             </div>
 
             <div className="self-stretch text-center text-sm font-inter mt-[-8px]">
-              <span>Issue with OTP, </span>
+              <span>Issue with OTP? </span>
               <span
                 className="font-semibold underline cursor-pointer"
-                onClick={handleChangeIdentifier}
+                onClick={handleChangeNumberOrEmail}
               >
-                Change {flow === "signup" ? "registered Number" : "email/phone"}
+                Change {isLoginFlow ? "email/phone" : "number"}
               </span>
             </div>
 
@@ -180,6 +165,18 @@ export function OTPVerification({ flow }: OTPVerificationProps) {
             >
               {isLoading ? "Verifying..." : "Verify OTP"}
             </Button>
+
+            {timer === 0 && (
+              <div className="text-center text-sm mt-2">
+                Didn’t receive the OTP?{" "}
+                <span
+                  className="underline font-semibold cursor-pointer"
+                  onClick={handleResendOtp}
+                >
+                  Resend OTP
+                </span>
+              </div>
+            )}
           </form>
         </div>
       </div>

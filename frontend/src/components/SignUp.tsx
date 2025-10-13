@@ -87,6 +87,7 @@ export function SignUp() {
                       id="phoneNumber"
                       name="phoneNumber"
                       type="tel"
+                      maxLength={10}
                       placeholder="1234567890"
                       className="pl-17"
                       required
