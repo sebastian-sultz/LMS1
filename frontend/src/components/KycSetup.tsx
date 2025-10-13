@@ -678,22 +678,48 @@ const KycSetup = (): JSX.Element => {
   );
   const isSaveEnabled = hasPan && hasAadhaar;
 
+  // Added: Function to upload a single file to Cloudinary and return the secure URL
+  const uploadToCloudinary = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'loan_preset'); // Replace with your actual upload preset
+
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/dd55izwf2/upload`, // Replace YOUR_CLOUD_NAME with your Cloudinary cloud name
+      {
+        method: 'POST',
+        body: formData,
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Cloudinary upload failed: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.secure_url; // This is the uploaded file's URL
+  };
+
   const handleSave = async () => {
     if (isSaveEnabled) {
       setIsLoading(true);
       try {
-        for (const doc of documents) {
-          if (doc.file && doc.type) {
-            const fileUrl = "https://example.com/documents/kyc-document.pdf";
-            console.log("📤 Uploading KYC document:", { docType: doc.type, fileUrl });
-            
-            const response = await apiService.uploadKyc({
-              docType: doc.type,
-              fileUrl,
-            });
-            
-            console.log("✅ KYC upload successful:", response);
-          }
+        // Added: Collect all valid documents (those with type and file)
+        const validDocs = documents.filter((doc) => doc.type && doc.file);
+
+        // Added: Upload each file to Cloudinary sequentially or in parallel (using Promise.all for efficiency)
+        const uploadedUrls = await Promise.all(
+          validDocs.map(async (doc) => {
+            const fileUrl = await uploadToCloudinary(doc.file!);
+            return { docType: doc.type, fileUrl };
+          })
+        );
+
+        // Added: Send each uploaded document's details to the backend for saving to MongoDB
+        for (const uploadedDoc of uploadedUrls) {
+          console.log("📤 Uploading KYC document to backend:", uploadedDoc);
+          const response = await apiService.uploadKyc(uploadedDoc);
+          console.log("✅ KYC upload successful:", response);
         }
 
         const redirectTo = "/login"; 
