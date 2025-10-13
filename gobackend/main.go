@@ -1,33 +1,17 @@
 package main
 
 import (
-	"fmt"
-	"gobackend/helper"
-	"strings"
+	"loan-management-system/database"
+	"loan-management-system/routes"
 )
 
-var firstNames []string
-var numberOfName int
-
 func main() {
+	// Initialize database
+	database.ConnectDB()
 
-	fmt.Printf("How many username you want to enter usually user enters %v?", helper.GlobalVar)
-	fmt.Scan(&numberOfName)
+	// Setup router
+	router := routes.SetupRouter()
 
-	names, isNameValid := helper.InputOutput(numberOfName)
-
-	if isNameValid {
-		for _, name := range names {
-
-			var firstName = strings.Fields(name)
-			if len(firstName) > 0 {
-				firstNames = append(firstNames, firstName[0])
-			}
-
-		}
-
-		fmt.Printf("All the firstnames are: %v \n", firstNames)
-		fmt.Printf("All the Names are: %v \n", names)
-	}
-
+	// Start server
+	router.Run(":8080")
 }

@@ -385,6 +385,8 @@ export const verifyLoginOtp = async (req: Request, res: Response): Promise<void>
   }
 };
 
+
+
 export const resendOtp = async (req: Request, res: Response): Promise<void> => {
   try {
     const { phoneNumber } = req.body;
