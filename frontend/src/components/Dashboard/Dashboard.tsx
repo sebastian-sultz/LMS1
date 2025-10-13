@@ -9,11 +9,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from "react";
 
-
 export default function Dashboard() {
-
-
-  const { token, isLoading: authLoading } = useAuth();
+  const { token, isLoading: authLoading, user, logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,7 +18,6 @@ export default function Dashboard() {
       navigate('/login');
     }
   }, [authLoading, token, navigate]);
-
 
   // Example loans
   const loans = [
@@ -37,10 +33,10 @@ export default function Dashboard() {
 
   return (
     <div className="flex font-roobert">
-      <Sidebar />
+      <Sidebar onLogout={logout} />
 
       <main className="ml-64 flex-1 min-h-screen p-6 sm:p-8 transition-all">
-        <DashboardHeader />
+        <DashboardHeader user={user} />
 
         <div className="flex relative pt-10">
           {" "}
@@ -83,7 +79,6 @@ export default function Dashboard() {
             </button>
           </div>
 
-          {/* ✅ Scrollable Carousel Section */}
           <ScrollArea className=" mt-5 max-w-6xl scroll-smooth overflow-x-auto" >
             <div className="flex gap-4 pb-4">
               {loans.map((loan, i) => (
