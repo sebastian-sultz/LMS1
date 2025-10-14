@@ -15,6 +15,7 @@ import KycSetup from "./components/KycSetup";
 import Dashboard from "./components/Dashboard/Dashboard";
 import AdminDashboard from "./components/AdminDashboard";
 import { OTPVerification } from "@/components/OTPVerification";
+import ApplyLoan from "./components/Dashboard/ApplyLoan";
 
 // ✅ Protected route for logged-in users
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -147,6 +148,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="/dashboard/apply-loan"
+        element={
+          <ProtectedRoute>
+            <ApplyLoan />
           </ProtectedRoute>
         }
       />
