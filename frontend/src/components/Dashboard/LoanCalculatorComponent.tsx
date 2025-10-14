@@ -32,10 +32,10 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
     {/* Issued By Section */}
     <div className="absolute left-[30px] bottom-[6px] w-[calc(100%-60px)] flex justify-between items-center">
       <span className="text-blue-500 text-xs font-normal font-roobert">
-        Issued by:
+Estimated Monthly Payment:
       </span>
       <span className="text-stone-950 text-xs font-semibold font-roobert">
-        idfz
+       1000
       </span>
     </div>
    </CardFooter>
