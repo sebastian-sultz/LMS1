@@ -1,11 +1,11 @@
 import { cn } from "@/lib/utils"
-import { Home, Wallet, Settings, LogOut } from "lucide-react"
-import { useState } from "react"
+import {  LogOut } from "lucide-react"
+import { useLocation, useNavigate } from "react-router-dom"
 
 const menuItems = [
-  { name: "Dashboard", icon: Home },
-  { name: "Loans", icon: Wallet },
-  { name: "Settings", icon: Settings },
+  { name: "Dashboard",  path: "/dashboard" },
+  { name: "Apply For Loan", path: "/dashboard/apply-loan" },
+  { name: "Settings", path: "/dashboard/settings" },
 ]
 
 interface SidebarProps {
@@ -13,7 +13,13 @@ interface SidebarProps {
 }
 
 export function Sidebar({ onLogout }: SidebarProps) {
-  const [active, setActive] = useState("Dashboard")
+  const location = useLocation();
+  const navigate = useNavigate();
+  const currentPath = location.pathname;
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+  }
 
   const handleLogout = () => {
     if (onLogout) {
@@ -21,19 +27,26 @@ export function Sidebar({ onLogout }: SidebarProps) {
     }
   }
 
+  // Helper function to check if a menu item is active
+  const isActive = (path: string) => {
+    return currentPath === path;
+  }
+
   return (
     <aside className="fixed left-0 top-0 h-screen w-56 bg-[#001336] text-white flex flex-col justify-between transition-all duration-300 md:w-64 sm:w-20">
       <div>
         <nav className="mt-11 space-y-2 px-4">
           {menuItems.map((item) => {
-            const isActive = active === item.name
+           
+            const active = isActive(item.path);
+            
             return (
               <button
                 key={item.name}
-                onClick={() => setActive(item.name)}
+                onClick={() => handleNavigation(item.path)}
                 className={cn(
                   "flex items-center gap-2 w-full rounded-full px-4 py-3 text-sm font-medium transition",
-                  isActive
+                  active
                     ? "bg-white text-[#001336]"
                     : "text-gray-300 hover:bg-white/10"
                 )}

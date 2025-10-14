@@ -114,6 +114,30 @@ class ApiService {
   async getProfile() {
     return this.authRequest('/user/profile');
   }
+
+
+  async applyLoan(data: { amount: number; repaymentTerm: number; loanType: string }) {
+    return this.authRequest('/loan/apply', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getMyLoans() {
+    return this.authRequest('/loan/my-loans', {
+      method: 'GET',
+    });
+  }
+
+  // Optional: Add more like getRepayments(loanId: string)
+  async getRepayments(loanId: string) {
+    return this.authRequest(`/loan/${loanId}/repayments`, {
+      method: 'GET',
+    });
+  }
+
+
+
 }
 
 export const apiService = new ApiService();

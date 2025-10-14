@@ -1,3 +1,4 @@
+// Updated ApplyLoan.tsx - Fully dynamic with backend submission
 import { Sidebar } from "./Sidebar";
 import { DashboardHeader } from "./DashboardHeader";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "../ui/input";
 import LoanCalculatorComponent from "./LoanCalculatorComponent";
+import { apiService } from '@/services/api'; // Import for API calls
 
 export default function ApplyLoan() {
   const { token, isLoading: authLoading, user, logout } = useAuth();
@@ -30,6 +32,62 @@ export default function ApplyLoan() {
   }, [authLoading, token, navigate]);
 
   const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    loanAmount: '',
+    repaymentTerm: '',
+    loanType: ''
+  });
+  const [emi, setEmi] = useState(0); // For calculator
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSelectChange = (field: string) => (value: string) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  // Calculate EMI (simple formula, match Go logic)
+  const calculateEMI = () => {
+    const amount = parseFloat(formData.loanAmount);
+    const term = parseInt(formData.repaymentTerm);
+    if (!amount || !term) return;
+    // Assuming rates: home=8%, car=9%, gold=7% (match Go's interestRates map)
+    const rates: Record<string, number> = { home: 8, car: 9, gold: 7 };
+    const rate = rates[formData.loanType] || 8;
+    const monthlyRate = rate / 12 / 100;
+    const emi = amount * monthlyRate * Math.pow(1 + monthlyRate, term) / (Math.pow(1 + monthlyRate, term) - 1);
+    setEmi(Math.round(emi));
+  };
+
+  // Submit to backend
+  const handleSubmit = async () => {
+    if (!formData.loanAmount || !formData.repaymentTerm || !formData.loanType) {
+      alert('Please fill all fields');
+      return;
+    }
+    try {
+      const response = await apiService.authRequest('/loan/apply', {
+        method: 'POST',
+        body: JSON.stringify({
+          amount: parseFloat(formData.loanAmount),
+          repaymentTerm: parseInt(formData.repaymentTerm),
+          loanType: formData.loanType
+        }),
+      });
+      alert('Loan applied successfully!');
+      navigate('/dashboard'); // Redirect to dashboard
+    } catch (error: any) {
+      alert(error.message || 'Failed to apply');
+    }
+  };
+
+  // Proceed to step 2 and calculate
+  const goToStep2 = (e: React.MouseEvent) => {
+    e.preventDefault();
+    calculateEMI();
+    setStep(2);
+  };
 
   return (
     <div className="flex font-roobert">
@@ -85,11 +143,13 @@ export default function ApplyLoan() {
                         placeholder="Enter Amount"
                         required
                         className="w-full"
+                        value={formData.loanAmount}
+                        onChange={handleInputChange}
                       />
                     </div>
                     <div className="relative flex-1">
                       <Label htmlFor="repaymentTerm">Repayment Term</Label>
-                      <Select>
+                      <Select onValueChange={handleSelectChange('repaymentTerm')} value={formData.repaymentTerm}>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Choose Repayment Term" />
                         </SelectTrigger>
@@ -109,7 +169,7 @@ export default function ApplyLoan() {
 
                   <div className="relative w-full">
                     <Label htmlFor="loanType">Loan Type</Label>
-                    <Select>
+                    <Select onValueChange={handleSelectChange('loanType')} value={formData.loanType}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Choose Loan Type" />
                       </SelectTrigger>
@@ -124,9 +184,9 @@ export default function ApplyLoan() {
                     </Select>
                   </div>
                   <Button
-                    type="submit"
+                    type="button"
                     className="w-52"
-                    onClick={() => setStep(2)}
+                    onClick={goToStep2}
                   >
                     Save
                   </Button>
@@ -134,7 +194,12 @@ export default function ApplyLoan() {
               </>
             ) : (
               <>
-                <LoanCalculatorComponent />
+                <LoanCalculatorComponent 
+                  amount={formData.loanAmount} 
+                  term={formData.repaymentTerm} 
+                  type={formData.loanType} 
+                  emi={emi} 
+                />
 
                 <div className="flex justify-between py-6">
                   <Button
@@ -145,7 +210,7 @@ export default function ApplyLoan() {
                     Back
                   </Button>
                   <Button
-                    onClick={() => alert("Submitted!")} 
+                    onClick={handleSubmit}
                     className="w-52"
                   >
                     Submit
