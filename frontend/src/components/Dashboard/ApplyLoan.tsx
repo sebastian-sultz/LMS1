@@ -14,35 +14,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 import { Input } from "../ui/input";
+import LoanCalculatorComponent from "./LoanCalculatorComponent";
 
 export default function ApplyLoan() {
   const { token, isLoading: authLoading, user, logout } = useAuth();
@@ -64,8 +39,8 @@ export default function ApplyLoan() {
         <DashboardHeader user={user} />
 
         <div className="relative pt-10">
-          <div className="w-full flex flex-col items-center">
-            <div className="flex items-center justify-between w-1/3">
+          <div className="w-1/3">
+            <div className="flex items-center">
               <div className="rounded-full w-8 h-8 flex items-center justify-center bg-black text-white">
                 1
               </div>
@@ -84,12 +59,12 @@ export default function ApplyLoan() {
                 2
               </div>
             </div>
-            <div className="flex justify-between w-1/3 mt-2">
-              <div className="text-center">
+            <div className="flex justify-between mt-2">
+              <div className="text-left">
                 <p className="text-sm font-medium">Step 1</p>
                 <p className="text-xs text-gray-600">Loan Details</p>
               </div>
-              <div className="text-center">
+              <div className="text-right">
                 <p className="text-sm font-medium">Step 2</p>
                 <p className="text-xs text-gray-600">Review & Submit</p>
               </div>
@@ -148,28 +123,35 @@ export default function ApplyLoan() {
                       </SelectContent>
                     </Select>
                   </div>
-                </form>
-
-                  <Button type="submit" size="lg" className="w-full" onClick={() => setStep(2)}>
+                  <Button
+                    type="submit"
+                    className="w-52"
+                    onClick={() => setStep(2)}
+                  >
                     Save
                   </Button>
-               
+                </form>
               </>
             ) : (
-              <div className="flex space-x-4">
-                <button
-                  onClick={() => setStep(1)}
-                  className="px-4 py-2 bg-gray-200 text-black rounded-md hover:bg-gray-300"
-                >
-                  Back
-                </button>
-                <button
-                  onClick={() => alert("Submitted!")} // Placeholder for submit action
-                  className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800"
-                >
-                  Submit
-                </button>
-              </div>
+              <>
+                <LoanCalculatorComponent />
+
+                <div className="flex justify-between py-6">
+                  <Button
+                    onClick={() => setStep(1)}
+                    variant="outline"
+                    className="w-52"
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    onClick={() => alert("Submitted!")} 
+                    className="w-52"
+                  >
+                    Submit
+                  </Button>
+                </div>
+              </>
             )}
           </div>
         </div>
