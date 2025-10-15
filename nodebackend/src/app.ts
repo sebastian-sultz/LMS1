@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
-import loanRoutes from './routes/loan.routes';
+// import loanRoutes from './routes/loan.routes';
 
 const app = express();
 
@@ -24,7 +24,7 @@ app.use(limiter);
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   credentials: true
 }));
 
@@ -37,7 +37,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 
 //Go
-app.use('/api/loan', loanRoutes);
+// app.use('/api/loan', loanRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {

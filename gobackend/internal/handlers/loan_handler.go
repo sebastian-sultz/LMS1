@@ -4,6 +4,7 @@ import (
 	"loan-microservice/internal/services"
 	"net/http"
 
+	jwt "github.com/appleboy/gin-jwt/v3"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -17,20 +18,25 @@ func NewLoanHandler(service services.LoanService) *LoanHandler {
 }
 
 type ApplyLoanRequest struct {
-	UserID   string  `json:"user_id" binding:"required"`
-	Name     string  `json:"name" binding:"required"`
 	Amount   float64 `json:"amount" binding:"required,gt=0"`
 	Term     int     `json:"term" binding:"required,gt=0"`
 	LoanType string  `json:"type" binding:"required"`
 }
 
 func (h *LoanHandler) ApplyLoan(c *gin.Context) {
+	claims := jwt.ExtractClaims(c)
+	userID, ok := claims["user_id"].(string)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		return
+	}
 	var req ApplyLoanRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	loan, err := h.service.ApplyLoan(req.UserID, req.Name, req.Amount, req.Term, req.LoanType)
+	name := "User"
+	loan, err := h.service.ApplyLoan(userID, name, req.Amount, req.Term, req.LoanType)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -87,7 +93,12 @@ func (h *LoanHandler) RejectLoan(c *gin.Context) {
 }
 
 func (h *LoanHandler) GetUserLoans(c *gin.Context) {
-	userID := c.Param("user_id")
+	claims := jwt.ExtractClaims(c)
+	userID, ok := claims["user_id"].(string)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		return
+	}
 	loans, err := h.service.GetUserLoans(userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

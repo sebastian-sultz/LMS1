@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 const menuItems = [
   { name: "Dashboard",  path: "/dashboard" },
   { name: "Apply For Loan", path: "/dashboard/apply-loan" },
-  { name: "Settings", path: "/dashboard/settings" },
+  { name: "Settings", path: "" },
 ]
 
 interface SidebarProps {
@@ -27,7 +27,6 @@ export function Sidebar({ onLogout }: SidebarProps) {
     }
   }
 
-  // Helper function to check if a menu item is active
   const isActive = (path: string) => {
     return currentPath === path;
   }

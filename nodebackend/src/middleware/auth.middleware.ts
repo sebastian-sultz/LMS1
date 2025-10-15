@@ -2,13 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import User, { IUser } from '../models/User.model';
 
-// Export the interface so routes can import and use it for typing
 export interface AuthenticatedRequest extends Request {
   user: IUser;
 }
 
 interface JwtPayload {
-  id: string;
+  user_id: string;
+  isAdmin?: boolean;
 }
 
 export const authenticate = async (
@@ -46,7 +46,7 @@ export const authenticate = async (
     }
 
     const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
-    const user = await User.findById(decoded.id);
+    const user = await User.findById(decoded.user_id);  // Fixed: use user_id
 
     if (!user) {
       res.status(401).json({ 
@@ -56,7 +56,6 @@ export const authenticate = async (
       return;
     }
 
-    // Cast req to AuthenticatedRequest
     (req as AuthenticatedRequest).user = user;
     next();
   } catch (error) {
@@ -68,17 +67,13 @@ export const authenticate = async (
   }
 };
 
-export const generateToken = (userId: string): string => {
+export const generateToken = (userId: string, isAdmin = false): string => {  // Added isAdmin
   const jwtSecret = process.env.JWT_SECRET;
-  const jwtExpiresIn = process.env.JWT_EXPIRES_IN;
-
-  if (!jwtSecret) {
-    throw new Error('JWT_SECRET is not defined in environment variables');
-  }
-
+  if (!jwtSecret) throw new Error('JWT_SECRET undefined');
+  
   return jwt.sign(
-    { id: userId }, 
-    jwtSecret, 
-    { expiresIn: jwtExpiresIn || '7d' }
+    { user_id: userId, isAdmin }, 
+    jwtSecret,
+    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
 };

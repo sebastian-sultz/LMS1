@@ -1,4 +1,4 @@
-// contexts/AuthContext.tsx -
+// contexts/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { apiService } from '../services/api';
 
@@ -26,6 +26,7 @@ interface AuthContextType {
   tempPhoneNumber: string | null;
   setTempPhoneNumber: (phone: string | null) => void;
   clearTempPhoneNumber: () => void;
+  resendOtp: (phoneNumber: string) => Promise<any>; // Added resendOtp
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -48,22 +49,39 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [tempPhoneNumber, setTempPhoneNumber] = useState<string | null>(null);
 
+  // Initial check on mount
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        try {
-          const response = await apiService.getProfile();
-          setUser(response.data.user);
-        } catch (error) {
-          localStorage.removeItem('authToken');
-          setToken(null);
-        }
+      const storedToken = localStorage.getItem('authToken');
+      if (storedToken) {
+        await fetchProfile(storedToken);
       }
       setIsLoading(false);
     };
     checkAuth();
   }, []);
+
+  // Watch for token changes and fetch profile
+  useEffect(() => {
+    if (token) {
+      fetchProfile(token);
+    } else {
+      setUser(null);
+    }
+  }, [token]);
+
+  // Extracted fetch logic
+  const fetchProfile = async (currentToken: string) => {
+    try {
+      const response = await apiService.getProfile();
+      setUser(response.data.user);
+    } catch (error) {
+      console.error('Failed to fetch profile on token change:', error);
+      localStorage.removeItem('authToken');
+      setToken(null);
+      setUser(null);
+    }
+  };
 
   const requestLoginOtp = async (emailOrPhone: string) => {
     try {
@@ -72,52 +90,49 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log("OTP requested successfully:", response.data);
       return { isAdmin: response.data.isAdmin || false };
     } catch (error: any) {
-      console.error(' Request login OTP failed:', error);
+      console.error('Request login OTP failed:', error);
       throw error;
     }
   };
 
   const verifyLoginOtp = async (emailOrPhone: string, otp: string) => {
     try {
-      console.log(" Verifying login OTP for:", emailOrPhone);
+      console.log("Verifying login OTP for:", emailOrPhone);
       const response = await apiService.verifyLoginOtp(emailOrPhone, otp);
       
       if (response.data.token) {
         localStorage.setItem('authToken', response.data.token);
-        setToken(response.data.token);
-        setUser(response.data.user);
+        setToken(response.data.token); // Triggers profile fetch via useEffect
       }
       
       return response.data;
     } catch (error: any) {
-      console.error(' Verify login OTP failed:', error);
+      console.error('Verify login OTP failed:', error);
       throw error;
     }
   };
 
   const signup = async (phoneNumber: string, referralCode?: string) => {
     try {
-      console.log(" Signing up user with phone:", phoneNumber);
+      console.log("Signing up user with phone:", phoneNumber);
       const response = await apiService.signup(phoneNumber, referralCode);
       
-      console.log(" Signup response:", response);
+      console.log("Signup response:", response);
       
-      // Check if requires OTP (new or incomplete)
       if (response.data.otp) {
-        console.log(" Requires OTP");
+        console.log("Requires OTP");
         setTempPhoneNumber(phoneNumber);
         return {
           requiresOtp: true
         };
       } else {
-        // Complete existing - redirect to login
-        console.log(" Complete existing - redirecting to login");
+        console.log("Complete existing - redirecting to login");
         return {
           requiresOtp: false
         };
       }
     } catch (error: any) {
-      console.error(' Signup error:', error);
+      console.error('Signup error:', error);
       throw error;
     }
   };
@@ -127,11 +142,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log("Verifying OTP for signup:", phoneNumber);
       const response = await apiService.verifyOtp(phoneNumber, otp);
       
-      // Set token and user
       if (response.data.token) {
         localStorage.setItem('authToken', response.data.token);
-        setToken(response.data.token);
-        setUser(response.data.user);
+        setToken(response.data.token); // Triggers profile fetch
       }
       
       clearTempPhoneNumber();
@@ -139,9 +152,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log("OTP verified, redirecting to:", response.data.redirectTo);
       return response.data;
     } catch (error: any) {
-      console.error(' OTP verification failed:', error);
+      console.error('OTP verification failed:', error);
       throw error;
     }
+  };
+
+  const resendOtp = async (phoneNumber: string) => {
+    return apiService.resendOtp(phoneNumber);
   };
 
   const logout = () => {
@@ -169,6 +186,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     tempPhoneNumber,
     setTempPhoneNumber,
     clearTempPhoneNumber,
+    resendOtp,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

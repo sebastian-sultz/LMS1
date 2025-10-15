@@ -1,4 +1,4 @@
-// Updated ApplyLoan.tsx - Fully dynamic with backend submission
+// Updated ApplyLoan.tsx - Fixed payload keys to match Go struct
 import { Sidebar } from "./Sidebar";
 import { DashboardHeader } from "./DashboardHeader";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,7 +19,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "../ui/input";
 import LoanCalculatorComponent from "./LoanCalculatorComponent";
-import { apiService } from '@/services/api'; // Import for API calls
+import { apiService } from '@/services/api'; 
+import { toast } from 'sonner';
 
 export default function ApplyLoan() {
   const { token, isLoading: authLoading, user, logout } = useAuth();
@@ -37,7 +38,7 @@ export default function ApplyLoan() {
     repaymentTerm: '',
     loanType: ''
   });
-  const [emi, setEmi] = useState(0); // For calculator
+  const [emi, setEmi] = useState(0);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -47,12 +48,10 @@ export default function ApplyLoan() {
     setFormData({ ...formData, [field]: value });
   };
 
-  // Calculate EMI (simple formula, match Go logic)
   const calculateEMI = () => {
     const amount = parseFloat(formData.loanAmount);
     const term = parseInt(formData.repaymentTerm);
     if (!amount || !term) return;
-    // Assuming rates: home=8%, car=9%, gold=7% (match Go's interestRates map)
     const rates: Record<string, number> = { home: 8, car: 9, gold: 7 };
     const rate = rates[formData.loanType] || 8;
     const monthlyRate = rate / 12 / 100;
@@ -60,29 +59,25 @@ export default function ApplyLoan() {
     setEmi(Math.round(emi));
   };
 
-  // Submit to backend
   const handleSubmit = async () => {
     if (!formData.loanAmount || !formData.repaymentTerm || !formData.loanType) {
-      alert('Please fill all fields');
+      toast.error('Please fill all fields');
       return;
     }
     try {
-      const response = await apiService.authRequest('/loan/apply', {
-        method: 'POST',
-        body: JSON.stringify({
-          amount: parseFloat(formData.loanAmount),
-          repaymentTerm: parseInt(formData.repaymentTerm),
-          loanType: formData.loanType
-        }),
+      // Fixed: Use keys matching Go struct json tags: amount, term, type
+      await apiService.applyLoan({
+        amount: parseFloat(formData.loanAmount),
+        term: parseInt(formData.repaymentTerm),
+        type: formData.loanType
       });
-      alert('Loan applied successfully!');
-      navigate('/dashboard'); // Redirect to dashboard
+      toast.success('Loan applied successfully!');
+      navigate('/dashboard?status=pending');
     } catch (error: any) {
-      alert(error.message || 'Failed to apply');
+      toast.error(error.message || 'Failed to apply');
     }
   };
 
-  // Proceed to step 2 and calculate
   const goToStep2 = (e: React.MouseEvent) => {
     e.preventDefault();
     calculateEMI();

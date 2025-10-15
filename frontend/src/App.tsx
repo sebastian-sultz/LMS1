@@ -17,6 +17,8 @@ import AdminDashboard from "./components/AdminDashboard";
 import { OTPVerification } from "@/components/OTPVerification";
 import ApplyLoan from "./components/Dashboard/ApplyLoan";
 
+import { Toaster } from 'sonner';
+
 // ✅ Protected route for logged-in users
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
@@ -187,6 +189,7 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
+      <Toaster position="top-right" richColors />
       <Router>
         <AppRoutes />
       </Router>

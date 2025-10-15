@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 const totalSlots = 6;
 
 export function OTPVerification() {
-  const { verifyOtp, verifyLoginOtp, resendOtp } = useAuth();
+  const { verifyOtp, verifyLoginOtp, resendOtp, user } = useAuth(); // Added user
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -74,10 +74,28 @@ export function OTPVerification() {
       localStorage.removeItem("otpPhoneNumber");
       localStorage.removeItem("otpEmailOrPhone");
 
-      console.log(" OTP verified successfully:", result.redirectTo);
-      navigate(result.redirectTo);
+      console.log("OTP verified successfully:", result.redirectTo);
+
+      // Wait for user to be set (polling)
+      const waitForUser = () => new Promise<void>((resolve) => {
+        const interval = setInterval(() => {
+          if (user) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, 50);
+
+        setTimeout(() => {
+          clearInterval(interval);
+          resolve(); // Fallback
+        }, 2000);
+      });
+
+      await waitForUser();
+
+      navigate(result.redirectTo || '/dashboard');
     } catch (error: any) {
-      console.error(" OTP verification failed:", error);
+      console.error("OTP verification failed:", error);
       alert(error.message || "OTP verification failed. Please try again.");
     } finally {
       setIsLoading(false);
@@ -112,7 +130,7 @@ export function OTPVerification() {
           <div className="text-center text-base font-inter">
             <span className="font-normal">We have sent an OTP to </span>
             <span className="font-extrabold">
-              { emailOrPhone}
+              {emailOrPhone}
             </span>
           </div>
         </div>
