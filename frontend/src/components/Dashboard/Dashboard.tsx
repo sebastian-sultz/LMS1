@@ -84,7 +84,7 @@ export default function Dashboard() {
       <main className="ml-64 flex-1 min-h-screen p-6 sm:p-8 transition-all">
         <DashboardHeader user={user} />
 
-        <div className="flex relative pt-10">
+        <div className="flex relative ">
           <TotalLoan totalLoan={totalApproved} onApplyClick={() => navigate('/dashboard/apply-loan')} />
           <QuickAccessCard />
         </div>

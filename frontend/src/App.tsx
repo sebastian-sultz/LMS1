@@ -13,7 +13,7 @@ import SetupProfile from "./components/SetupProfile";
 import KycSetup from "./components/KycSetup";
 // import KycSetup from "./components/KycSetup/KycSetup";
 import Dashboard from "./components/Dashboard/Dashboard";
-import AdminDashboard from "./components/AdminDashboard";
+import AdminDashboard from "./components/Dashboard/AdminDashboard";
 import { OTPVerification } from "@/components/OTPVerification";
 import ApplyLoan from "./components/Dashboard/ApplyLoan";
 
