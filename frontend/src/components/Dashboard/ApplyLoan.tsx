@@ -1,4 +1,4 @@
-// Updated ApplyLoan.tsx - Fixed payload keys to match Go struct
+// Updated ApplyLoan.tsx - Fixed borrowerName inclusion, profile check, input type, and minor UX tweaks
 import { Sidebar } from "./Sidebar";
 import { DashboardHeader } from "./DashboardHeader";
 import { useAuth } from "@/contexts/AuthContext";
@@ -65,11 +65,12 @@ export default function ApplyLoan() {
       return;
     }
     try {
-      // Fixed: Use keys matching Go struct json tags: amount, term, type
+      // Fixed: Include borrowerName from user profile; keys match Go struct json tags: amount, term, type
       await apiService.applyLoan({
         amount: parseFloat(formData.loanAmount),
         term: parseInt(formData.repaymentTerm),
-        type: formData.loanType
+        type: formData.loanType,
+        borrowerName: user.profile.fullName
       });
       toast.success('Loan applied successfully!');
       navigate('/dashboard?status=pending');
@@ -134,12 +135,14 @@ export default function ApplyLoan() {
                       <Input
                         id="loanAmount"
                         name="loanAmount"
-                        type="text"
+                        type="number" // Fixed: Changed to number for better UX
                         placeholder="Enter Amount"
                         required
                         className="w-full"
                         value={formData.loanAmount}
                         onChange={handleInputChange}
+                        min="0"
+                        step="0.01"
                       />
                     </div>
                     <div className="relative flex-1">

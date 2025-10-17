@@ -6,6 +6,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import LoanDashboard from "./LoanDashboard";
 import { Card, CardContent } from "../ui/card";
+import { apiService } from "@/services/api";
+import { Navigate } from "react-router-dom";
 
 export default function AdminDashboard() {
   const { token, isLoading: authLoading, user, logout } = useAuth();
@@ -13,10 +15,11 @@ export default function AdminDashboard() {
 
   const location = useLocation();
   const [loans, setLoans] = useState<any[]>([]);
+  const [overdueCount, setOverdueCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [filteredStatus, setFilteredStatus] = useState<
     "approved" | "pending" | "rejected"
-  >("approved");
+  >("pending"); // Default to pending for admin
 
   useEffect(() => {
     if (!authLoading && !token) {
@@ -42,98 +45,137 @@ export default function AdminDashboard() {
     }
   }, [location.search]);
 
-  // Fetch loans and calculate totals
+  // Fetch all loans on mount (admin only)
+  useEffect(() => {
+    const fetchLoans = async () => {
+      if (!user?.isAdmin) return;
+      try {
+        setError(null);
+        const data = await apiService.getAllLoans();
+        setLoans(data);
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch loans");
+        console.error("Fetch loans error:", err);
+      }
+    };
+
+    fetchLoans();
+  }, [user]);
+
+  // Compute overdue count after loans load (only for approved loans)
+  useEffect(() => {
+    const computeOverdue = async () => {
+      if (!loans.length || !user?.isAdmin) {
+        setOverdueCount(0);
+        return;
+      }
+
+      let count = 0;
+      const approvedLoans = loans.filter((loan) => normalizeStatus(loan.Status) === "approved");
+
+      for (const loan of approvedLoans) {
+        try {
+          const repayments = await apiService.getRepayments(loan.ID);
+          const hasOverdue = repayments.some(
+            (rep: any) => new Date(rep.DueDate) < new Date() && rep.Status === "pending"
+          );
+          if (hasOverdue) count++;
+        } catch (err) {
+          console.error(`Error fetching repayments for loan ${loan.ID}:`, err);
+        }
+      }
+
+      setOverdueCount(count);
+    };
+
+    computeOverdue();
+  }, [loans, user]);
 
   const normalizeStatus = (status: string) => status?.toLowerCase().trim();
-
 
   const countByStatus = (status: string) =>
     loans.filter((loan) => normalizeStatus(loan.Status) === status).length;
 
+  const filteredLoans = loans.filter((loan) => normalizeStatus(loan.Status) === filteredStatus);
+
+  const handleRefresh = async () => {
+    try {
+      const data = await apiService.getAllLoans();
+      setLoans(data);
+    } catch (err: any) {
+      setError(err.message || "Failed to refresh loans");
+    }
+  };
+
+  if (!user?.isAdmin) {
+    return <Navigate to="/login" />;
+  }
+
   return (
     <div className="flex font-roobert">
-      <Sidebar onLogout={logout} />
+      <Sidebar onLogout={logout} user={user} />
 
       <main className="ml-64 flex-1 min-h-screen p-6 sm:p-8 transition-all ">
         <DashboardHeader user={user} />
 
         <div className="flex gap-6 pb-6">
-         <Card className="w-80 h-28 bg-sky-50 rounded-[10px] shadow-none border-none">
-      <CardContent>
-        <div className="w-full flex flex-col justify-start items-start gap-6">
-          {/* Title */}
-          <div className="font-medium leading-none">
-            Total Active Loans
-          </div>
+          <Card className="w-80 h-28 bg-sky-50 rounded-[10px] shadow-none border-none">
+            <CardContent>
+              <div className="w-full flex flex-col justify-start items-start gap-6">
+                <div className="font-medium leading-none">Total Active Loans</div>
+                <div className="w-full flex justify-between items-end">
+                  <div className="text-2xl font-bold leading-normal">
+                    {countByStatus("approved")}
+                  </div>
+                  <div className="w-6 h-6 relative overflow-hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M1 8H15M15 8L8 1M15 8L8 15" stroke="#1E1E1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          {/* Number + Icon */}
-          <div className="w-full flex justify-between items-end">
-            <div className="text-2xl font-bold leading-normal">
-              15
-            </div>
+          <Card className="w-80 h-28 bg-sky-50 rounded-[10px] shadow-none border-none">
+            <CardContent>
+              <div className="w-full flex flex-col justify-start items-start gap-6">
+                <div className="font-medium leading-none">Pending Applications</div>
+                <div className="w-full flex justify-between items-end">
+                  <div className="text-2xl font-bold leading-normal">
+                    {countByStatus("pending")}
+                  </div>
+                  <div className="w-6 h-6 relative overflow-hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M1 8H15M15 8L8 1M15 8L8 15" stroke="#1E1E1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-            <div className="w-6 h-6 relative overflow-hidden">
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-  <path d="M1 8H15M15 8L8 1M15 8L8 15" stroke="#1E1E1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-
-      <Card className="w-80 h-28 bg-sky-50 rounded-[10px] shadow-none border-none">
-      <CardContent>
-        <div className="w-full flex flex-col justify-start items-start gap-6">
-          {/* Title */}
-          <div className="font-medium leading-none">
-            Pending Applications
-          </div>
-
-          {/* Number + Icon */}
-          <div className="w-full flex justify-between items-end">
-            <div className="text-2xl font-bold leading-normal">
-              15
-            </div>
-
-            <div className="w-6 h-6 relative overflow-hidden">
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-  <path d="M1 8H15M15 8L8 1M15 8L8 15" stroke="#1E1E1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-
-      <Card className="w-80 h-28 bg-sky-50 rounded-[10px] shadow-none border-none">
-      <CardContent>
-        <div className="w-full flex flex-col justify-start items-start gap-6">
-          {/* Title */}
-          <div className="font-medium leading-none">
-            Overdue Loans
-          </div>
-
-          {/* Number + Icon */}
-          <div className="w-full flex justify-between items-end">
-            <div className="text-2xl font-bold leading-normal">
-              15
-            </div>
-
-            <div className="w-6 h-6 relative overflow-hidden">
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-  <path d="M1 8H15M15 8L8 1M15 8L8 15" stroke="#1E1E1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-
-
-
-
+          <Card className="w-80 h-28 bg-sky-50 rounded-[10px] shadow-none border-none">
+            <CardContent>
+              <div className="w-full flex flex-col justify-start items-start gap-6">
+                <div className="font-medium leading-none">Overdue Loans</div>
+                <div className="w-full flex justify-between items-end">
+                  <div className="text-2xl font-bold leading-normal">
+                    {overdueCount}
+                  </div>
+                  <div className="w-6 h-6 relative overflow-hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M1 8H15M15 8L8 1M15 8L8 15" stroke="#1E1E1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <section className="py-3">
-          <h2 className="text-lg font-semibold">My Loans</h2>
+          <h2 className="text-lg font-semibold">Loan Applications</h2>
 
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
@@ -171,8 +213,8 @@ export default function AdminDashboard() {
               </button>
             </div>
 
-            <button className="flex gap-3 text-sm mt-3 text-[#001336] py-1 hover:underline">
-              View all{" "}
+            <button className="flex gap-3 text-sm mt-3 text-[#001336] py-1 hover:underline" onClick={handleRefresh}>
+              Refresh{" "}
               <div className="flex justify-center items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -191,7 +233,11 @@ export default function AdminDashboard() {
           </div>
         </section>
 
-        <LoanDashboard />
+        <LoanDashboard
+          loans={filteredLoans}
+          onRefresh={handleRefresh}
+          onError={(err) => setError(err)}
+        />
       </main>
     </div>
   );

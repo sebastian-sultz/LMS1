@@ -1,8 +1,13 @@
+// components/Dashboard/Sidebar.tsx
 import { cn } from "@/lib/utils"
-import {  LogOut } from "lucide-react"
+import { LogOut } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
 
-const menuItems = [
+interface User {
+  isAdmin?: boolean;
+}
+
+const baseMenuItems = [
   { name: "Dashboard",  path: "/dashboard" },
   { name: "Apply For Loan", path: "/dashboard/apply-loan" },
   { name: "Settings", path: "" },
@@ -10,15 +15,26 @@ const menuItems = [
 
 interface SidebarProps {
   onLogout?: () => void;
+  user?: User;
 }
 
-export function Sidebar({ onLogout }: SidebarProps) {
+export function Sidebar({ onLogout, user }: SidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
 
+  const menuItems = user?.isAdmin 
+    ? [
+        { name: "Dashboard", path: "/admin/dashboard" },
+        { name: "Loans", path: "" },
+        { name: "Settings", path: "" },
+      ]
+    : baseMenuItems;
+
   const handleNavigation = (path: string) => {
-    navigate(path);
+    if (path) {
+      navigate(path);
+    }
   }
 
   const handleLogout = () => {
@@ -36,7 +52,6 @@ export function Sidebar({ onLogout }: SidebarProps) {
       <div>
         <nav className="mt-11 space-y-2 px-4">
           {menuItems.map((item) => {
-           
             const active = isActive(item.path);
             
             return (

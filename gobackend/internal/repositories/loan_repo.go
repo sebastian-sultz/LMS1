@@ -29,20 +29,22 @@ func (r *loanRepository) Create(loan *models.Loan) error {
 
 func (r *loanRepository) FindAll() ([]models.Loan, error) {
 	var loans []models.Loan
-	err := r.db.Find(&loans).Error
+	err := r.db.Order("application_date DESC").Find(&loans).Error
+	return loans, err
+}
+
+func (r *loanRepository) FindByUserID(userID string) ([]models.Loan, error) {
+	var loans []models.Loan
+	err := r.db.Where("user_id = ?", userID).
+		Order("application_date DESC").
+		Find(&loans).Error
 	return loans, err
 }
 
 func (r *loanRepository) FindByID(id uuid.UUID) (*models.Loan, error) {
 	var loan models.Loan
-	err := r.db.First(&loan, id).Error
+	err := r.db.First(&loan, "id = ?", id).Error
 	return &loan, err
-}
-
-func (r *loanRepository) FindByUserID(userID string) ([]models.Loan, error) {
-	var loans []models.Loan
-	err := r.db.Where("user_id = ?", userID).Find(&loans).Error
-	return loans, err
 }
 
 func (r *loanRepository) Update(loan *models.Loan) error {

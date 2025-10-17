@@ -1,3 +1,4 @@
+// Updated handlers/loan_handler.go (full file with borrowerName fix)
 package handlers
 
 import (
@@ -18,9 +19,10 @@ func NewLoanHandler(service services.LoanService) *LoanHandler {
 }
 
 type ApplyLoanRequest struct {
-	Amount   float64 `json:"amount" binding:"required,gt=0"`
-	Term     int     `json:"term" binding:"required,gt=0"`
-	LoanType string  `json:"type" binding:"required"`
+	Amount       float64 `json:"amount" binding:"required,gt=0"`
+	Term         int     `json:"term" binding:"required,gt=0"`
+	LoanType     string  `json:"type" binding:"required"`
+	BorrowerName string  `json:"borrowerName" binding:"omitempty"` // Optional, defaults in handler if empty
 }
 
 func (h *LoanHandler) ApplyLoan(c *gin.Context) {
@@ -35,7 +37,11 @@ func (h *LoanHandler) ApplyLoan(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	name := "User"
+	// Use borrowerName from request, fallback to "User"
+	name := req.BorrowerName
+	if name == "" {
+		name = "User"
+	}
 	loan, err := h.service.ApplyLoan(userID, name, req.Amount, req.Term, req.LoanType)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

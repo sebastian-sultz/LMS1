@@ -1,3 +1,4 @@
+// components/Dashboard/LoanDashboard.tsx
 import {
   Table,
   TableBody,
@@ -17,51 +18,94 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { apiService } from "@/services/api";
 
-export default function LoanDashboard() {
+interface Loan {
+  ID: string;
+  BorrowerName: string;
+  ApplicationDate: string;
+  Amount: number;
+  Status: string;
+}
+
+interface LoanDashboardProps {
+  loans: Loan[];
+  onRefresh: () => void;
+  onError: (error: string) => void;
+}
+
+const titleCase = (str: string): string => {
+  return str
+    .toLowerCase()
+    .replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+};
+
+export default function LoanDashboard({ loans, onRefresh, onError }: LoanDashboardProps) {
   const [approveOpen, setApproveOpen] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
   const [reason, setReason] = useState("");
-  const rows = [
-    { name: "Arun Kumar", date: "09/10/2025", amount: "₹1,00,000" },
-    { name: "Sushil", date: "09/10/2025", amount: "₹2,50,000" },
-    { name: "Akshay", date: "09/10/2025", amount: "₹70,000" },
-    { name: "Sushil", date: "09/10/2025", amount: "₹50,00,000" },
-    { name: "Akshay", date: "09/10/2025", amount: "₹1,00,000" },
-    { name: "Arun Kumar", date: "09/10/2025", amount: "₹2,50,000" },
-    
-    { name: "Arun Kumar", date: "09/10/2025", amount: "₹2,50,000" },
-    { name: "Akshay", date: "09/10/2025", amount: "₹70,000" },
-    { name: "Akshay", date: "09/10/2025", amount: "₹50,00,000" },
-    { name: "Sushil", date: "09/10/2025", amount: "₹1,00,000" },
-    { name: "Akshay", date: "09/10/2025", amount: "₹50,00,000" },
-  ];
+  const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
 
-  const handleApproveConfirm = () => {
-    setApproveOpen(false);
+  const normalizeStatus = (status: string) => status?.toLowerCase().trim();
+  const isPending = (loan: Loan) => normalizeStatus(loan.Status) === "pending";
+
+  const handleApproveConfirm = async () => {
+    if (!selectedLoan) return;
+    try {
+      await apiService.approveLoan(selectedLoan.ID);
+      setApproveOpen(false);
+      setSelectedLoan(null);
+      onRefresh();
+    } catch (err: any) {
+      onError(err.message || "Failed to approve loan");
+      console.error("Approve error:", err);
+    }
   };
 
-  const handleRejectConfirm = () => {
-    if (reason.trim()) {
-      console.log("Reject reason:", reason);
+  const handleRejectConfirm = async () => {
+    if (!selectedLoan || !reason.trim()) return;
+    try {
+      await apiService.rejectLoan(selectedLoan.ID, reason);
+      setReason("");
+      setRejectOpen(false);
+      setSelectedLoan(null);
+      onRefresh();
+    } catch (err: any) {
+      onError(err.message || "Failed to reject loan");
+      console.error("Reject error:", err);
     }
-    setReason("");
-    setRejectOpen(false);
   };
 
   const handleCancel = () => {
     setReason("");
     setRejectOpen(false);
+    setSelectedLoan(null);
+  };
+
+  const handleApproveClick = (loan: Loan) => {
+    setSelectedLoan(loan);
+    setApproveOpen(true);
+  };
+
+  const handleRejectClick = (loan: Loan) => {
+    setSelectedLoan(loan);
+    setRejectOpen(true);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-GB"); // dd/mm/yyyy
+  };
+
+  const formatAmount = (amount: number) => {
+    return `₹${amount.toLocaleString("en-IN")}`;
   };
 
   return (
     <div className="">
       <div className=" border border-secondary rounded-[20px] overflow-hidden">
         <Table className="border-collapse w-full">
-          {/* Table Header */}
           <TableHeader className="bg-[#F9FAFB]">
             <TableRow className="text-slate-500 text-sm font-['Arial'] tracking-tight leading-none">
-              {/* Borrower's Name */}
               <TableHead className="w-[25%] py-4 pl-4 font-normal text-left">
                 <div className="flex items-center gap-1">
                   <span>Borrower’s Name</span>
@@ -80,7 +124,6 @@ export default function LoanDashboard() {
                 </div>
               </TableHead>
 
-              {/* Application Date */}
               <TableHead className="w-[25%] py-4 text-center font-normal">
                 <div className="inline-flex items-center justify-center gap-1">
                   <span>Application Date</span>
@@ -99,7 +142,6 @@ export default function LoanDashboard() {
                 </div>
               </TableHead>
 
-              {/* Amount */}
               <TableHead className="w-[20%] py-4 text-center font-normal">
                 <div className="inline-flex items-center justify-center gap-1">
                   <span>Amount</span>
@@ -118,50 +160,66 @@ export default function LoanDashboard() {
                 </div>
               </TableHead>
 
-              {/* Actions */}
               <TableHead className="w-[30%] py-4 pr-4 text-center font-normal">
                 Actions
               </TableHead>
             </TableRow>
           </TableHeader>
 
-          {/* Table Body */}
           <TableBody>
-            {rows.map((row, index) => (
+            {loans.map((loan) => (
               <TableRow
-                key={index}
+                key={loan.ID}
                 className={`text-stone-950 text-sm font-['Arial'] leading-none tracking-tight ${
-                  index === rows.length - 1
+                  loans.indexOf(loan) === loans.length - 1
                     ? "rounded-b-[20px]"
                     : "border-b border-secondary"
                 }`}
               >
                 <TableCell className="w-32 underline py-4 pl-4">
-                  {row.name}
+                  {titleCase(loan.BorrowerName)}
                 </TableCell>
-                <TableCell className="w-36 text-center">{row.date}</TableCell>
-                <TableCell className="w-24 text-center">{row.amount}</TableCell>
+                <TableCell className="w-36 text-center">
+                  {formatDate(loan.ApplicationDate)}
+                </TableCell>
+                <TableCell className="w-24 text-center">
+                  {formatAmount(loan.Amount)}
+                </TableCell>
                 <TableCell className="w-60">
                   <div className="flex justify-center items-center gap-2">
-                    {["Approve", "Reject", "Create Report"].map((label) => (
-                      <button
-                        key={label}
-                        className="px-2 py-1 bg-zinc-100 rounded-[70px] inline-flex justify-center items-center gap-2 text-center text-stone-950 text-xs font-normal font-['Roobert_TRIAL'] shadow-none hover:bg-zinc-200 focus:ring-0 focus:outline-none"
-                        onClick={
-                          label === "Approve"
-                            ? () => setApproveOpen(true)
-                            : label === "Reject"
-                            ? () => setRejectOpen(true)
-                            : undefined
-                        }
-                      >
-                        {label}
-                      </button>
-                    ))}
+                    {isPending(loan) && (
+                      <>
+                        <button
+                          className="px-2 py-1 bg-zinc-100 rounded-[70px] inline-flex justify-center items-center gap-2 text-center text-stone-950 text-xs font-normal font-['Roobert_TRIAL'] shadow-none hover:bg-zinc-200 focus:ring-0 focus:outline-none"
+                          onClick={() => handleApproveClick(loan)}
+                        >
+                          Approve
+                        </button>
+                        <button
+                          className="px-2 py-1 bg-zinc-100 rounded-[70px] inline-flex justify-center items-center gap-2 text-center text-stone-950 text-xs font-normal font-['Roobert_TRIAL'] shadow-none hover:bg-zinc-200 focus:ring-0 focus:outline-none"
+                          onClick={() => handleRejectClick(loan)}
+                        >
+                          Reject
+                        </button>
+                      </>
+                    )}
+                    <button
+                      className="px-2 py-1 bg-zinc-100 rounded-[70px] inline-flex justify-center items-center gap-2 text-center text-stone-950 text-xs font-normal font-['Roobert_TRIAL'] shadow-none hover:bg-zinc-200 focus:ring-0 focus:outline-none"
+                      onClick={() => console.log("Create report for loan:", loan.ID)}
+                    >
+                      Create Report
+                    </button>
                   </div>
                 </TableCell>
               </TableRow>
             ))}
+            {loans.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center py-8 text-gray-500">
+                  No loans found for this status.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
@@ -224,42 +282,37 @@ export default function LoanDashboard() {
                   Reason for rejection
                 </h2>
                 <div className="space-y-4">
-                 
-                  
-                    <Input
-                      id="reason"
-                      placeholder="Enter reason here."
-                      value={reason}
-                      onChange={(e) => setReason(e.target.value)}
-                      className=" rounded-lg border border-gray-300 focus:border-black focus:ring-0"
-                    />
-                 
+                  <Input
+                    id="reason"
+                    placeholder="Enter reason here."
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    className=" rounded-lg border border-gray-300 focus:border-black focus:ring-0"
+                  />
                   <div className="flex justify-between gap-3 pt-4">
-                  
-
-                     <DialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                             onClick={handleCancel}
-                            className="w-[229px] h-10 rounded-[70px]"
-                          >
-                            <span className="font-roobert font-semibold text-sm text-center ">
-                              Cancel
-                            </span>
-                          </Button>
-                        </DialogTrigger>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="default"
-                            className="w-[229px] h-10 rounded-[70px]"
-                          onClick={handleRejectConfirm}
-                            disabled={!reason.trim()}
-                          >
-                            <span className="font-roobert font-semibold text-sm text-center ">
-                              Yes, Confirm
-                            </span>
-                          </Button>
-                        </DialogTrigger>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        onClick={handleCancel}
+                        className="w-[229px] h-10 rounded-[70px]"
+                      >
+                        <span className="font-roobert font-semibold text-sm text-center ">
+                          Cancel
+                        </span>
+                      </Button>
+                    </DialogTrigger>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="default"
+                        className="w-[229px] h-10 rounded-[70px]"
+                        onClick={handleRejectConfirm}
+                        disabled={!reason.trim()}
+                      >
+                        <span className="font-roobert font-semibold text-sm text-center ">
+                          Yes, Confirm
+                        </span>
+                      </Button>
+                    </DialogTrigger>
                   </div>
                 </div>
               </div>

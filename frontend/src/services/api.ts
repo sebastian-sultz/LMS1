@@ -1,4 +1,4 @@
-// services/api.ts (add resendOtp if missing, but assuming it's there; full class for completeness)
+// services/api.ts
 const GO_BASE_URL = import.meta.env.VITE_GO_API_URL || 'http://localhost:8080';
 const NODE_BASE_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:5000/api';
 
@@ -15,14 +15,11 @@ class ApiService {
 
     try {
       const response = await fetch(url, config);
-      const data = await response.json();
-
       if (!response.ok) {
-        const errData = data; // Assuming JSON error
-        throw new Error(errData.error || errData.message || 'Something went wrong');
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || data.message || 'Something went wrong');
       }
-
-      return data;
+      return response.ok ? await response.json() : {};
     } catch (error) {
       console.error('API request failed:', error);
       throw error;
@@ -115,7 +112,7 @@ class ApiService {
   }
 
   // LOANS (Go Backend)
-  async applyLoan(data: { amount: number; term: number; type: string }) {
+  async applyLoan(data: { amount: number; term: number; type: string; borrowerName?: string }) {
     return this.authRequest(GO_BASE_URL, '/loans/apply', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -125,6 +122,24 @@ class ApiService {
   async getMyLoans() {
     const data = await this.authRequest(GO_BASE_URL, '/loans/user', { method: 'GET' });
     return data; // Array
+  }
+
+  async getAllLoans() {
+    const data = await this.authRequest(GO_BASE_URL, '/loans', { method: 'GET' });
+    return data; // Array
+  }
+
+  async approveLoan(loanId: string) {
+    return this.authRequest(GO_BASE_URL, `/loans/${loanId}/approve`, {
+      method: 'POST',
+    });
+  }
+
+  async rejectLoan(loanId: string, reason: string) {
+    return this.authRequest(GO_BASE_URL, `/loans/${loanId}/reject`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    });
   }
 
   async getRepayments(loanId: string) {
