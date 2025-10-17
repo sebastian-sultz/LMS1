@@ -148,7 +148,7 @@ const SetupProfile = (): JSX.Element => {
   };
 
   return (
-    <div className="p-16 flex justify-center font-roobert items-center bg-white">
+    <div className="p-16 flex justify-center font-roobert items-center">
       <Card className="w-full max-w-xl px-14 ">
         <CardHeader>
           <div className="flex flex-col items-center">
