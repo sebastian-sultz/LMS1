@@ -120,7 +120,7 @@ export function OTPVerification() {
   const handleChangeNumberOrEmail = () => {
     localStorage.removeItem("otpPhoneNumber");
     localStorage.removeItem("otpEmailOrPhone");
-    toast.info(`Redirecting to ${isLoginFlow ? "login" : "signup"}`);
+    // toast.info(`Redirecting to ${isLoginFlow ? "login" : "signup"}`);
     navigate(isLoginFlow ? "/login" : "/signup");
   };
 

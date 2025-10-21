@@ -715,7 +715,6 @@ const KycSetup = (): JSX.Element => {
       ...prev,
       { id: prev.length, type: "", file: null, isFixed: false },
     ]);
-    toast.success("New document section added");
   };
 
   const removeDocument = (id: number) => {
@@ -727,16 +726,14 @@ const KycSetup = (): JSX.Element => {
     setDocuments((prev) =>
       prev.map((doc) => (doc.id === id ? { ...doc, type } : doc))
     );
-    toast.success(`Document type set to ${type}`);
   };
 
   const handleFileChange = (id: number, file: File | null) => {
     setDocuments((prev) =>
       prev.map((doc) => (doc.id === id ? { ...doc, file } : doc))
     );
-    if (file) {
-      toast.success(`File ${file.name} selected for upload`);
-    } else {
+    if (!file) {
+    
       toast.info("File selection cleared");
     }
   };
