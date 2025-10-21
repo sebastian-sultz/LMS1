@@ -230,6 +230,7 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
           isProfileSetup: user.isProfileSetup,
           isKycDone: user.isKycDone,
           profile: user.profile,
+          isAdmin: user.isAdmin || false,
           kycDocuments: user.kycDocuments,
           createdAt: user.createdAt
         }

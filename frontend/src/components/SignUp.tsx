@@ -1,4 +1,3 @@
-// components/SignUp.tsx - COMPLETELY FIXED
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,6 +6,8 @@ import indiaFlag from "@/assets/code.png";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
+import { Spinner } from "./ui/spinner";
+import { toast } from "sonner";
 
 export function SignUp() {
   const { signup } = useAuth();
@@ -14,23 +15,22 @@ export function SignUp() {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     phoneNumber: "",
-    referralCode: ""
+    referralCode: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  // FIXED: Handle signup properly
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.phoneNumber) {
-      alert("Please enter your phone number");
+      toast.error("Please enter your phone number");
       return;
     }
 
@@ -38,24 +38,24 @@ export function SignUp() {
 
     try {
       const result = await signup(formData.phoneNumber, formData.referralCode);
-      
-      console.log(" Signup result:", result);
-      
+
+      console.log("Signup result:", result);
+
       if (result.requiresOtp) {
-        //  proceed to OTP verification
-        console.log(" New user - redirecting to OTP verification");
-        localStorage.setItem('tempPhoneNumber', formData.phoneNumber);
-        navigate('/verify-otp', { 
-          state: { phoneNumber: formData.phoneNumber } 
+        toast.success(`OTP sent to +91${formData.phoneNumber}`);
+        console.log("New user - redirecting to OTP verification");
+        localStorage.setItem("tempPhoneNumber", formData.phoneNumber);
+        navigate("/verify-otp", {
+          state: { phoneNumber: formData.phoneNumber },
         });
       } else {
-        // redirect to login
+        toast.info("Existing user detected, please log in");
         console.log("Existing user - redirecting to login");
-        navigate('/login');
+        navigate("/login");
       }
     } catch (error: any) {
-      console.error(' Signup failed:', error);
-      alert(error.message || 'Signup failed. Please try again.');
+      console.error("Signup failed:", error);
+      toast.error(error.message || "Signup failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -63,8 +63,8 @@ export function SignUp() {
 
   return (
     <>
-      <div className="h-screen flex flex-col justify-center items-center ">
-        <div className=" text-center font-inter text-[20px] font-semibold leading-[22px] tracking-[0.25px] pb-4">
+      <div className="h-screen flex flex-col justify-center items-center">
+        <div className="text-center font-inter text-[20px] font-semibold leading-[22px] tracking-[0.25px] pb-4">
           SIGN UP
         </div>
 
@@ -75,14 +75,12 @@ export function SignUp() {
                 <div className="grid gap-4">
                   <div className="relative">
                     <Label htmlFor="phoneNumber">Phone</Label>
-
-                    <div className="flex absolute top-5 left-3 size-5 items-center ">
+                    <div className="flex absolute top-5 left-3 size-5 items-center">
                       <img src={indiaFlag} alt="" className="w-5 h-5" />
                       <span className="mt-[-2px] pl-1 text-[#858699] text-base">
                         +91
                       </span>
                     </div>
-
                     <Input
                       id="phoneNumber"
                       name="phoneNumber"
@@ -95,15 +93,15 @@ export function SignUp() {
                       onChange={handleChange}
                     />
                   </div>
-
                   <div className="relative">
-                    <Label htmlFor="referralCode">Referral Code (Optional)</Label>
-
+                    <Label htmlFor="referralCode">
+                      Referral Code (Optional)
+                    </Label>
                     <Input
                       id="referralCode"
                       name="referralCode"
                       type="text"
-                      placeholder="ENTER YOUR CODE "
+                      placeholder="ENTER YOUR CODE"
                       value={formData.referralCode}
                       onChange={handleChange}
                     />
@@ -112,24 +110,22 @@ export function SignUp() {
               </div>
             </form>
           </CardContent>
-          <CardFooter className="flex flex-col gap-4 ">
+          <CardFooter className="flex flex-col gap-4">
             <div className="text-secondary text-center text-xs justify-start">
-              By clicking continue , you agree to our{" "}
-              <span className="font-bold underline">Terms & Conditions </span>
-              and <span className="font-bold underline ">Privacy Policy </span>
+              By clicking continue, you agree to our{" "}
+              <span className="font-bold underline">Terms & Conditions</span>{" "}
+              and <span className="font-bold underline">Privacy Policy</span>
             </div>
-
-            <Button 
-              variant="default" 
-              size="lg" 
+            <Button
+              variant="default"
+              size="lg"
               className="w-full"
               onClick={handleSubmit}
               disabled={isLoading}
             >
-              {isLoading ? "Continuing..." : "Continue"}
+              {isLoading ? <Spinner /> : "Continue"}
             </Button>
-
-            <div className=" text-sm text-center">
+            <div className="text-sm text-center">
               <span>Already have an account, </span>
               <Link to="/login" className="font-semibold underline">
                 Log-In Instead

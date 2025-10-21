@@ -26,6 +26,6 @@ func (r *repaymentRepository) Create(repayment *models.Repayment) error {
 
 func (r *repaymentRepository) FindByLoanID(loanID uuid.UUID) ([]models.Repayment, error) {
 	var repayments []models.Repayment
-	err := r.db.Where("loan_id = ?", loanID).Find(&repayments).Error
+	err := r.db.Where("loan_id = ?", loanID).Order("due_date ASC").Find(&repayments).Error
 	return repayments, err
 }

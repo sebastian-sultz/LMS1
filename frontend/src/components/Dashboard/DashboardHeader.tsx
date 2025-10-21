@@ -34,7 +34,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
   const firstName = capitalizeWords(userName.split(' ')[0]);
 
   return (
-    <div className="font-roobert flex items-center justify-between w-full">
+    <div className="font-roobert flex items-center justify-between w-full pb-10">
       <div>
         <h1 className="text-2xl font-semibold">Hi {firstName}</h1>
         <p className="font-roobert text-secHeading text-xl ">

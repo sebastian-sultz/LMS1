@@ -8,17 +8,20 @@ import (
 	"loan-microservice/internal/repositories"
 	"loan-microservice/internal/services"
 
-	"github.com/gin-contrib/cors" // Added for CORS
+	jwt "github.com/appleboy/gin-jwt/v3"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+
+	"os"
+	"time"
 )
 
 func main() {
 	config.LoadEnv()
 
 	db := database.Connect()
-	// Handle migration errors gracefully
 	if err := db.AutoMigrate(&models.Loan{}, &models.Repayment{}); err != nil {
-		panic("Failed to migrate database: " + err.Error())
+		panic("Migration failed: " + err.Error())
 	}
 
 	loanRepo := repositories.NewLoanRepository(db)
@@ -28,32 +31,72 @@ func main() {
 
 	r := gin.Default()
 
-	// Add CORS middleware (allows Node/React to call Go)
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:5000"}, // React & Node
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
-		ExposeHeaders:    []string{"Content-Length"},
-		MaxAge:           12 * 3600, // 12 hours
+		MaxAge:           12 * time.Hour,
 	}))
 
-	// Health check endpoint (for testing)
+	// JWT Middleware
+	authMiddleware, err := initJWTMiddleware()
+	if err != nil {
+		panic("JWT init failed: " + err.Error())
+	}
+	authMiddleware.MiddlewareInit()
+
 	r.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{"status": "OK", "message": "Go microservice ready"})
+		c.JSON(200, gin.H{"status": "OK"})
 	})
 
-	// Routes
-	r.POST("/loans/apply", loanHandler.ApplyLoan)
-	r.GET("/loans", loanHandler.GetAllLoans) // Admin
-	r.POST("/loans/:id/approve", loanHandler.ApproveLoan)
-	r.POST("/loans/:id/reject", loanHandler.RejectLoan)
-	r.GET("/loans/user/:user_id", loanHandler.GetUserLoans)
-	r.GET("/repayments/:loan_id", loanHandler.GetRepayments)
+	// Protected routes group
+	auth := r.Group("/")
+	auth.Use(authMiddleware.MiddlewareFunc())
+	{
+		auth.POST("/loans/apply", loanHandler.ApplyLoan)
+		auth.GET("/loans/user", loanHandler.GetUserLoans)
+		auth.GET("/repayments/:loan_id", loanHandler.GetRepayments)
+		auth.GET("/loans", loanHandler.GetAllLoans)
+		auth.POST("/loans/:id/approve", loanHandler.ApproveLoan)
+		auth.POST("/loans/:id/reject", loanHandler.RejectLoan)
+	}
 
 	port := config.GetEnv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 	r.Run(":" + port)
+}
+
+// JWT Setup
+func initJWTMiddleware() (*jwt.GinJWTMiddleware, error) {
+	return jwt.New(&jwt.GinJWTMiddleware{
+		Realm:         "loan-microservice",
+		Key:           []byte(os.Getenv("JWT_SECRET")), // Same as Node
+		Timeout:       time.Hour,
+		MaxRefresh:    time.Hour * 24,
+		TokenLookup:   "header: Authorization",
+		TokenHeadName: "Bearer",
+		TimeFunc:      time.Now,
+		IdentityKey:   "user_id",
+
+		IdentityHandler: func(c *gin.Context) interface{} {
+			claims := jwt.ExtractClaims(c)
+			return claims["user_id"]
+		},
+
+		Authorizer: func(c *gin.Context, data interface{}) bool {
+			claims := jwt.ExtractClaims(c)
+			path := c.FullPath()
+			if path == "/loans" || path == "/loans/:id/approve" || path == "/loans/:id/reject" {
+				return claims["isAdmin"] == true || claims["isAdmin"] == "true" 
+			}
+			return true
+		},
+
+		Unauthorized: func(c *gin.Context, code int, message string) {
+			c.JSON(code, gin.H{"error": message})
+		},
+	})
 }

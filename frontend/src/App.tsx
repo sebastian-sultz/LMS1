@@ -13,9 +13,11 @@ import SetupProfile from "./components/SetupProfile";
 import KycSetup from "./components/KycSetup";
 // import KycSetup from "./components/KycSetup/KycSetup";
 import Dashboard from "./components/Dashboard/Dashboard";
-import AdminDashboard from "./components/AdminDashboard";
+import AdminDashboard from "./components/Dashboard/AdminDashboard";
 import { OTPVerification } from "@/components/OTPVerification";
 import ApplyLoan from "./components/Dashboard/ApplyLoan";
+
+import { Toaster } from 'sonner';
 
 // ✅ Protected route for logged-in users
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -187,6 +189,7 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
+      <Toaster position="top-right" richColors />
       <Router>
         <AppRoutes />
       </Router>

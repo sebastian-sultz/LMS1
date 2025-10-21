@@ -1,9 +1,9 @@
 import { apiService } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
-
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Check, X } from "lucide-react";
+import { Check, X, ChevronsUpDown } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,16 +15,14 @@ import {
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogTrigger,
@@ -33,6 +31,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import Img from "../assets/image.png";
 
 const docs = ["PAN Card", "Aadhaar Card"];
@@ -144,7 +143,7 @@ const SuccessModal = ({
   const handleOpenChange = (newOpen: boolean) => {
     parentOnOpenChange(newOpen);
     if (!newOpen) {
-      console.log("🔄 Navigating to:", redirectPath);
+      console.log("Navigating to:", redirectPath);
       if (redirectPath === "/login") {
         logout();
       }
@@ -187,29 +186,120 @@ const SuccessModal = ({
 
               <div className="relative w-[366.46px] h-[195.69px] flex items-center justify-center">
                 {!isComplete ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    className="w-4 h-4"
-                  >
-                    <path
-                      d="M7 17L17 7"
-                      stroke="black"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M7 7H17V17"
-                      stroke="black"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <svg width="367" height="196" viewBox="0 0 367 196" fill="none" xmlns="http://www.w3.org/2000/svg">
+<ellipse cx="141.884" cy="35.2978" rx="35.1006" ry="35.2978" fill="#1E1E1E" fill-opacity="0.03"/>
+<ellipse cx="97.0311" cy="165.9" rx="13.6502" ry="13.7269" fill="#1E1E1E" fill-opacity="0.03"/>
+<ellipse cx="269.41" cy="16.0801" rx="15.9903" ry="16.0801" fill="#1E1E1E" fill-opacity="0.03"/>
+<g filter="url(#filter0_d_5_2022)">
+<rect x="169.049" y="60.1572" width="100.998" height="130.843" rx="10.813" fill="white"/>
+</g>
+<rect x="180.721" y="71.9756" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint0_linear_5_2022)"/>
+<rect x="180.721" y="86.0234" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint1_linear_5_2022)"/>
+<rect x="180.721" y="100.071" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint2_linear_5_2022)"/>
+<rect x="180.721" y="114.119" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint3_linear_5_2022)"/>
+<rect x="180.721" y="128.167" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint4_linear_5_2022)"/>
+<rect x="180.721" y="142.214" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint5_linear_5_2022)"/>
+<rect x="180.721" y="156.262" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint6_linear_5_2022)"/>
+<rect x="180.721" y="170.31" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint7_linear_5_2022)"/>
+<g filter="url(#filter1_d_5_2022)">
+<rect x="129.955" y="32.1602" width="100.998" height="130.843" rx="10.813" fill="white"/>
+</g>
+<ellipse cx="152.07" cy="60.5331" rx="11.6813" ry="11.7469" fill="url(#paint8_linear_5_2022)"/>
+<rect x="177.041" y="51.3184" width="38.4584" height="6.50599" rx="3.25299" fill="url(#paint9_linear_5_2022)"/>
+<rect x="140.389" y="83.124" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint10_linear_5_2022)"/>
+<rect x="140.389" y="97.1719" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint11_linear_5_2022)"/>
+<rect x="140.389" y="111.219" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint12_linear_5_2022)"/>
+<rect x="140.389" y="125.267" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint13_linear_5_2022)"/>
+<rect x="140.389" y="139.315" width="75.1197" height="6.50599" rx="3.25299" fill="url(#paint14_linear_5_2022)"/>
+<rect x="177.041" y="62.5234" width="20.4872" height="6.50599" rx="3.25299" fill="url(#paint15_linear_5_2022)"/>
+<defs>
+<filter id="filter0_d_5_2022" x="165.445" y="57.6342" width="108.207" height="138.051" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="1.0813"/>
+<feGaussianBlur stdDeviation="1.80216"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_5_2022"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_5_2022" result="shape"/>
+</filter>
+<filter id="filter1_d_5_2022" x="115.371" y="18.6576" width="130.166" height="160.01" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feMorphology radius="3.77089" operator="dilate" in="SourceAlpha" result="effect1_dropShadow_5_2022"/>
+<feOffset dy="1.0813"/>
+<feGaussianBlur stdDeviation="5.40649"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_5_2022"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_5_2022" result="shape"/>
+</filter>
+<linearGradient id="paint0_linear_5_2022" x1="218.281" y1="71.9756" x2="218.281" y2="78.4816" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint1_linear_5_2022" x1="218.281" y1="86.0234" x2="218.281" y2="92.5294" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint2_linear_5_2022" x1="218.281" y1="100.071" x2="218.281" y2="106.577" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint3_linear_5_2022" x1="218.281" y1="114.119" x2="218.281" y2="120.625" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint4_linear_5_2022" x1="218.281" y1="128.167" x2="218.281" y2="134.673" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint5_linear_5_2022" x1="218.281" y1="142.214" x2="218.281" y2="148.72" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint6_linear_5_2022" x1="218.281" y1="156.262" x2="218.281" y2="162.768" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint7_linear_5_2022" x1="218.281" y1="170.31" x2="218.281" y2="176.816" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint8_linear_5_2022" x1="152.07" y1="48.7861" x2="152.07" y2="72.28" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint9_linear_5_2022" x1="196.27" y1="51.3184" x2="196.27" y2="57.8243" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint10_linear_5_2022" x1="177.949" y1="83.124" x2="177.949" y2="89.63" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint11_linear_5_2022" x1="177.949" y1="97.1719" x2="177.949" y2="103.678" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint12_linear_5_2022" x1="177.949" y1="111.219" x2="177.949" y2="117.725" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint13_linear_5_2022" x1="177.949" y1="125.267" x2="177.949" y2="131.773" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint14_linear_5_2022" x1="177.949" y1="139.315" x2="177.949" y2="145.821" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+<linearGradient id="paint15_linear_5_2022" x1="187.285" y1="62.5234" x2="187.285" y2="69.0294" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0F0F0"/>
+<stop offset="1" stop-color="#EAEAEA"/>
+</linearGradient>
+</defs>
+</svg>
                 ) : (
                   <img
                     src={Img}
@@ -230,7 +320,7 @@ const SuccessModal = ({
                   <div className="w-full h-[63px] flex flex-col items-center gap-[9px]">
                     <div className="w-[356px] h-[19px] flex justify-center">
                       <div className="relative w-[284px] h-[19px]">
-                        <div className="absolute top-0 w-full h-[19px] bg-border rounded-[10px]" />
+                        <div className="absolute top-0 w-full bg-[#EFEFEF] h-[19px] bg-border rounded-[10px]" />
                         <div
                           className="absolute top-0.5 h-[15px] shadow-[0px_1px_4px_#00000040] bg-[linear-gradient(90deg,rgba(171,172,194,1)_65%,rgba(133,134,153,1)_99%)] rounded-[10px] transition-all duration-100"
                           style={{ width: `${progress}%` }}
@@ -382,7 +472,7 @@ const FloatingLabelFileUploader = ({
         <Button
           onClick={handleUploadAnother}
           variant="ghost"
-          className=" text-xs font-semibold underline shrink-0 h-auto p-0 flex items-center gap-1 uppercase tracking-tight"
+          className="text-xs font-semibold underline shrink-0 h-auto p-0 flex items-center gap-1 uppercase tracking-tight"
         >
           UPLOAD ANOTHER
         </Button>
@@ -459,6 +549,7 @@ type DocumentUploadSectionProps = {
   onFileChange: (id: number, file: File | null) => void;
   onRemove?: (id: number) => void;
   headerLabel: string;
+  availableDocs: string[];
 };
 
 const DocumentUploadSection = ({
@@ -467,14 +558,13 @@ const DocumentUploadSection = ({
   onFileChange,
   onRemove,
   headerLabel,
+  availableDocs,
 }: DocumentUploadSectionProps) => {
-  const [open, setOpen] = useState(false);
-
   return (
     <div>
       {headerLabel && (
         <div className="flex justify-between">
-          <div className="relative -top-0 py-4 self-stretch justify-start text-sm font-bold uppercase tracking-wider text-black">
+          <div className="relative -top-0 py-4 self-stretch justify-start text-sm font-bold uppercase tracking-wider">
             {headerLabel}
           </div>
           {onRemove && (
@@ -552,54 +642,26 @@ const DocumentUploadSection = ({
         <div className="relative w-full">
           <Label htmlFor={`doc-type-${doc.id}`}>DOCUMENT TYPE</Label>
 
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                id={`doc-type-${doc.id}`}
-                variant="combobox"
-                size="lg"
-                type="button"
-                role="combobox"
-                aria-expanded={open}
-                className="rounded-xl text-secondary "
-              >
-                {doc.type || "Choose Document Type"}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="21"
-                  height="12"
-                  viewBox="0 0 21 12"
-                  fill="none"
-                  className="ml-2 shrink-0"
-                >
-                  <path
-                    d="M11.3695 10.9044L19.9192 2.31262C20.1413 2.08267 20.2641 1.77469 20.2614 1.455C20.2586 1.13532 20.1304 0.82952 19.9043 0.603461C19.6782 0.377403 19.3724 0.249177 19.0528 0.246399C18.7331 0.243621 18.4251 0.366514 18.1951 0.588609L10.5074 8.31837L2.84972 0.618574C2.73724 0.502124 2.60271 0.409238 2.45395 0.345339C2.3052 0.281439 2.14521 0.247805 1.98332 0.246398C1.82143 0.244991 1.66088 0.275841 1.51104 0.337146C1.3612 0.398451 1.22507 0.488984 1.11059 0.603462C0.996111 0.71794 0.905577 0.854071 0.844273 1.00391C0.782968 1.15375 0.752119 1.3143 0.753527 1.47619C0.754934 1.63808 0.788568 1.79807 0.852468 1.94683C0.916368 2.09558 1.00925 2.23012 1.1257 2.34259L9.64544 10.9044C9.87408 11.133 10.1841 11.2614 10.5074 11.2614C10.8307 11.2614 11.1408 11.133 11.3695 10.9044Z"
-                    fill="#929292"
-                  />
-                </svg>
-              </Button>
-            </PopoverTrigger>
-
-            <PopoverContent
-              className="w-[var(--radix-popover-trigger-width)] p-0 bg-white rounded-xl border border-border"
-              align="start"
+          <Select
+            value={doc.type}
+            onValueChange={(value) => onTypeChange(doc.id, value)}
+          >
+            <SelectTrigger
+              id={`doc-type-${doc.id}`}
+              className="rounded-xl text-secondary data-[state=open]:text-black data-[placeholder]:text-secondary"
             >
-              <Command>
-                <CommandInput
-                  placeholder="Search document type..."
-                  className="text-sm"
-                />
-                <CommandGroup>
-                  {docs.map((docType) => (
-                    <CommandItem
-                      key={docType}
-                      value={docType}
-                      onSelect={(currentValue) => {
-                        onTypeChange(doc.id, currentValue);
-                        setOpen(false);
-                      }}
-                      className="cursor-pointer text-base font-semibold"
-                    >
+              <SelectValue placeholder="Choose Document Type" />
+            </SelectTrigger>
+            <SelectContent className="bg-white rounded-xl border border-border">
+              <SelectGroup>
+                <SelectLabel className="sr-only">Document Types</SelectLabel>
+                {availableDocs.map((docType) => (
+                  <SelectItem
+                    key={docType}
+                    value={docType}
+                    className="cursor-pointer text-base font-semibold focus:bg-accent focus:text-accent-foreground"
+                  >
+                    <div className="flex items-center">
                       <Check
                         className={cn(
                           "mr-2 h-4 w-4 text-primary",
@@ -607,12 +669,12 @@ const DocumentUploadSection = ({
                         )}
                       />
                       {docType}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </Command>
-            </PopoverContent>
-          </Popover>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
 
         <FloatingLabelFileUploader
@@ -636,6 +698,7 @@ const KycSetup = (): JSX.Element => {
 
   useEffect(() => {
     if (!authLoading && !token) {
+      toast.error("Please log in to continue");
       navigate("/login");
     }
   }, [authLoading, token, navigate]);
@@ -652,22 +715,30 @@ const KycSetup = (): JSX.Element => {
       ...prev,
       { id: prev.length, type: "", file: null, isFixed: false },
     ]);
+    toast.success("New document section added");
   };
 
   const removeDocument = (id: number) => {
     setDocuments((prev) => prev.filter((doc) => doc.id !== id));
+    toast.success("Document section removed");
   };
 
   const handleTypeChange = (id: number, type: string) => {
     setDocuments((prev) =>
       prev.map((doc) => (doc.id === id ? { ...doc, type } : doc))
     );
+    toast.success(`Document type set to ${type}`);
   };
 
   const handleFileChange = (id: number, file: File | null) => {
     setDocuments((prev) =>
       prev.map((doc) => (doc.id === id ? { ...doc, file } : doc))
     );
+    if (file) {
+      toast.success(`File ${file.name} selected for upload`);
+    } else {
+      toast.info("File selection cleared");
+    }
   };
 
   const hasPan = documents.some(
@@ -681,10 +752,10 @@ const KycSetup = (): JSX.Element => {
   const uploadToCloudinary = async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', 'loan_preset'); 
+    formData.append('upload_preset', 'loan_preset');
 
     const response = await fetch(
-      `https://api.cloudinary.com/v1_1/dd55izwf2/upload`, 
+      `https://api.cloudinary.com/v1_1/dd55izwf2/upload`,
       {
         method: 'POST',
         body: formData,
@@ -696,59 +767,72 @@ const KycSetup = (): JSX.Element => {
     }
 
     const data = await response.json();
-    return data.secure_url; // This is the uploaded file's URL
+    return data.secure_url;
   };
 
   const handleSave = async () => {
-    if (isSaveEnabled) {
-      setIsLoading(true);
-      try {
-        const validDocs = documents.filter((doc) => doc.type && doc.file);
-
-        // Upload each file to Cloudinary  (using Promise.all for efficiency)
-        const uploadedUrls = await Promise.all(
-          validDocs.map(async (doc) => {
-            const fileUrl = await uploadToCloudinary(doc.file!);
-            return { docType: doc.type, fileUrl };
-          })
-        );
-
-        //  saving to MongoDB
-        for (const uploadedDoc of uploadedUrls) {
-          console.log(" Uploading KYC document to backend:", uploadedDoc);
-          const response = await apiService.uploadKyc(uploadedDoc);
-          console.log(" KYC upload successful:", response);
-        }
-
-        const redirectTo = "/login"; 
-        setRedirectPath(redirectTo);
-
-        if (redirectTo === "/login") {
-          localStorage.removeItem("authToken");
-        }
-
-        setSuccessModalOpen(true);
-      } catch (error: any) {
-        console.error(" KYC upload failed:", error);
-        if (
-          error.message?.includes("Unauthorized") ||
-          error.message?.includes("Access denied") ||
-          error.message?.includes("token")
-        ) {
-          localStorage.removeItem("authToken");
-          navigate("/login");
-        } else {
-          alert(error.message || "Failed to upload KYC document. Please try again.");
-        }
-      } finally {
-        setIsLoading(false);
-      }
+    if (!isSaveEnabled) {
+      toast.error("Please upload both PAN Card and Aadhaar Card");
+      return;
     }
+
+    setIsLoading(true);
+    try {
+      const validDocs = documents.filter((doc) => doc.type && doc.file);
+
+      // Upload each file to Cloudinary
+      const uploadedUrls = await Promise.all(
+        validDocs.map(async (doc) => {
+          const fileUrl = await uploadToCloudinary(doc.file!);
+          return { docType: doc.type, fileUrl };
+        })
+      );
+
+      // Save to MongoDB
+      for (const uploadedDoc of uploadedUrls) {
+        console.log("Uploading KYC document to backend:", uploadedDoc);
+        const response = await apiService.uploadKyc(uploadedDoc);
+        console.log("KYC upload successful:", response);
+      }
+
+      toast.success("KYC documents uploaded successfully");
+      const redirectTo = "/login";
+      setRedirectPath(redirectTo);
+
+      if (redirectTo === "/login") {
+        localStorage.removeItem("authToken");
+      }
+
+      setSuccessModalOpen(true);
+    } catch (error: any) {
+      console.error("KYC upload failed:", error);
+      if (
+        error.message?.includes("Unauthorized") ||
+        error.message?.includes("Access denied") ||
+        error.message?.includes("token")
+      ) {
+        toast.error("Session expired, please log in again");
+        localStorage.removeItem("authToken");
+        navigate("/login");
+      } else {
+        toast.error(error.message || "Failed to upload KYC documents. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getAvailableDocs = (currentId: number, currentType: string) => {
+    const otherTypes = documents
+      .filter((d) => d.id !== currentId && d.type)
+      .map((d) => d.type);
+    const available = docs.filter((d) => !otherTypes.includes(d) || d === currentType);
+    return available;
   };
 
   return (
     <div className="p-16 flex justify-center font-inter items-center bg-white">
-      <Card className="w-full max-w-xl px-14 ">
+      <Card className="w-full max-w-xl px-14">
         <CardHeader>
           <div className="flex flex-col items-center">
             <div className="font-bold text-black text-[32px] text-center tracking-[-2px]">
@@ -767,21 +851,15 @@ const KycSetup = (): JSX.Element => {
             DOCUMENTS
           </div>
 
-          <DocumentUploadSection
-            doc={documents[0]}
-            onTypeChange={handleTypeChange}
-            onFileChange={handleFileChange}
-            headerLabel=""
-          />
-
-          {documents.slice(1).map((doc) => (
+          {documents.map((doc, index) => (
             <DocumentUploadSection
               key={doc.id}
               doc={doc}
               onTypeChange={handleTypeChange}
               onFileChange={handleFileChange}
-              onRemove={removeDocument}
-              headerLabel="ADDITIONAL DOCUMENTS"
+              onRemove={index === 0 ? undefined : removeDocument}
+              headerLabel={index === 0 ? "" : "ADDITIONAL DOCUMENTS"}
+              availableDocs={getAvailableDocs(doc.id, doc.type)}
             />
           ))}
 
@@ -811,17 +889,12 @@ const KycSetup = (): JSX.Element => {
         <CardFooter className="flex-col gap-2">
           <Button
             size="lg"
-            variant="outline"
+            variant="default"
             disabled={!isSaveEnabled || isLoading}
-            className={cn(
-              "w-full border-2",
-              isSaveEnabled
-                ? "border-black text-black hover:bg-gray-50 hover:text-black"
-                : "border-gray-300 text-gray-400 cursor-not-allowed"
-            )}
+            className="w-full"
             onClick={handleSave}
           >
-            {isLoading ? "Saving..." : "Save"}
+            {isLoading ? <Spinner /> : "Save"}
           </Button>
 
           {successModalOpen && (

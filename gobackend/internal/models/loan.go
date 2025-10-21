@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/google/uuid" // Keep for UUID type
+	"github.com/google/uuid" 
 )
 
 type LoanStatus string

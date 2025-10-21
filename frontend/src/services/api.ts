@@ -1,11 +1,11 @@
-// const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-
-const API_BASE_URL = 'http://localhost:5000/api';
+// services/api.ts
+const GO_BASE_URL = import.meta.env.VITE_GO_API_URL || 'http://localhost:8080';
+const NODE_BASE_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:5000/api';
 
 class ApiService {
-  private async request(endpoint: string, options: RequestInit = {}) {
-    const url = `${API_BASE_URL}${endpoint}`;
-    const config = {
+  private async request(baseUrl: string, endpoint: string, options: RequestInit = {}) {
+    const url = `${baseUrl}${endpoint}`;
+    const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
@@ -15,76 +15,73 @@ class ApiService {
 
     try {
       const response = await fetch(url, config);
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.message || 'Something went wrong');
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || data.message || 'Something went wrong');
       }
-
-      return data;
+      return response.ok ? await response.json() : {};
     } catch (error) {
       console.error('API request failed:', error);
       throw error;
     }
   }
 
-  private async authRequest(endpoint: string, options: RequestInit = {}) {
+  private async authRequest(baseUrl: string, endpoint: string, options: RequestInit = {}) {
     const token = localStorage.getItem('authToken');
-    
-    const headers: any = {
+
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     };
 
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    
+
     console.log('Auth Request Headers:', headers);
-    
-    return this.request(endpoint, {
+
+    return this.request(baseUrl, endpoint, {
       ...options,
       headers,
     });
   }
 
-  // Auth endpoints
+  // AUTH (Node Backend)
   async signup(phoneNumber: string, referralCode?: string) {
-    return this.request('/auth/signup', {
+    return this.request(NODE_BASE_URL, '/auth/signup', {
       method: 'POST',
       body: JSON.stringify({ phoneNumber, referralCode }),
     });
   }
 
- async verifyOtp(phoneNumber: string, otp: string) {
-  return this.request('/auth/verify-otp', {
-    method: 'POST',
-    body: JSON.stringify({ phoneNumber, otp }),
-  });
-}
+  async verifyOtp(phoneNumber: string, otp: string) {
+    return this.request(NODE_BASE_URL, '/auth/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify({ phoneNumber, otp }),
+    });
+  }
 
   async requestLoginOtp(emailOrPhone: string) {
-    return this.request('/auth/request-login-otp', {
+    return this.request(NODE_BASE_URL, '/auth/request-login-otp', {
       method: 'POST',
       body: JSON.stringify({ emailOrPhone }),
     });
   }
 
   async verifyLoginOtp(emailOrPhone: string, otp: string) {
-    return this.request('/auth/verify-login-otp', {
+    return this.request(NODE_BASE_URL, '/auth/verify-login-otp', {
       method: 'POST',
       body: JSON.stringify({ emailOrPhone, otp }),
     });
   }
 
   async resendOtp(phoneNumber: string) {
-    return this.request('/auth/resend-otp', {
+    return this.request(NODE_BASE_URL, '/auth/resend-otp', {
       method: 'POST',
       body: JSON.stringify({ phoneNumber }),
     });
   }
 
-  // User endpoints
   async setupProfile(profileData: {
     fullName: string;
     email: string;
@@ -93,51 +90,63 @@ class ApiService {
     city: string;
     state: string;
   }) {
-    console.log(' Setup Profile Data:', profileData);
-    
-    return this.authRequest('/user/setup-profile', {
+    console.log('Setup Profile Data:', profileData);
+
+    return this.authRequest(NODE_BASE_URL, '/user/setup-profile', {
       method: 'POST',
       body: JSON.stringify(profileData),
     });
   }
 
-  async uploadKyc(kycData: {
-    docType: string;
-    fileUrl: string;
-  }) {
-    return this.authRequest('/user/upload-kyc', {
+  async uploadKyc(kycData: { docType: string; fileUrl: string }) {
+    return this.authRequest(NODE_BASE_URL, '/user/upload-kyc', {
       method: 'POST',
       body: JSON.stringify(kycData),
     });
   }
 
   async getProfile() {
-    return this.authRequest('/user/profile');
+    return this.authRequest(NODE_BASE_URL, '/user/profile', {
+      method: 'GET',
+    });
   }
 
-
-  async applyLoan(data: { amount: number; repaymentTerm: number; loanType: string }) {
-    return this.authRequest('/loan/apply', {
+  // LOANS (Go Backend)
+  async applyLoan(data: { amount: number; term: number; type: string; borrowerName?: string }) {
+    return this.authRequest(GO_BASE_URL, '/loans/apply', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   async getMyLoans() {
-    return this.authRequest('/loan/my-loans', {
-      method: 'GET',
+    const data = await this.authRequest(GO_BASE_URL, '/loans/user', { method: 'GET' });
+    return data; // Array
+  }
+
+  async getAllLoans() {
+    const data = await this.authRequest(GO_BASE_URL, '/loans', { method: 'GET' });
+    return data; // Array
+  }
+
+  async approveLoan(loanId: string) {
+    return this.authRequest(GO_BASE_URL, `/loans/${loanId}/approve`, {
+      method: 'POST',
     });
   }
 
-  // Optional: Add more like getRepayments(loanId: string)
+  async rejectLoan(loanId: string, reason: string) {
+    return this.authRequest(GO_BASE_URL, `/loans/${loanId}/reject`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    });
+  }
+
   async getRepayments(loanId: string) {
-    return this.authRequest(`/loan/${loanId}/repayments`, {
+    return this.authRequest(GO_BASE_URL, `/repayments/${loanId}`, {
       method: 'GET',
     });
   }
-
-
-
 }
 
 export const apiService = new ApiService();

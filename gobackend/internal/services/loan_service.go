@@ -28,10 +28,9 @@ func NewLoanService(loanRepo repositories.LoanRepository, repaymentRepo reposito
 }
 
 var interestRates = map[string]float64{
-	"home_loan":     0.08, // 8%
-	"gold_loan":     0.10, // 10%
-	"personal_loan": 0.12, // 12%
-	// Add more types as needed
+  "home": 0.08,
+  "car":  0.09,
+  "gold": 0.07,
 }
 
 func (s *loanService) ApplyLoan(userID, borrowerName string, amount float64, termMonths int, loanType string) (*models.Loan, error) {

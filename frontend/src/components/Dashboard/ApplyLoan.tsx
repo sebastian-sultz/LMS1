@@ -1,10 +1,8 @@
-// Updated ApplyLoan.tsx - Fully dynamic with backend submission
 import { Sidebar } from "./Sidebar";
 import { DashboardHeader } from "./DashboardHeader";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-
 import {
   Select,
   SelectContent,
@@ -14,12 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "../ui/input";
 import LoanCalculatorComponent from "./LoanCalculatorComponent";
-import { apiService } from '@/services/api'; // Import for API calls
+import { apiService } from "@/services/api";
+import { toast } from "sonner";
 
 export default function ApplyLoan() {
   const { token, isLoading: authLoading, user, logout } = useAuth();
@@ -27,32 +25,44 @@ export default function ApplyLoan() {
 
   useEffect(() => {
     if (!authLoading && !token) {
+      toast.error("Please log in to apply for a loan");
       navigate("/login");
     }
   }, [authLoading, token, navigate]);
 
+  useEffect(() => {
+    if (!authLoading && user && !user.profile?.fullName) {
+      toast.error("Please complete your profile before applying for a loan");
+      navigate("/setup-profile");
+    }
+  }, [authLoading, user, navigate]);
+
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    loanAmount: '',
-    repaymentTerm: '',
-    loanType: ''
+    loanAmount: "",
+    repaymentTerm: "",
+    loanType: "",
   });
-  const [emi, setEmi] = useState(0); // For calculator
+  const [emi, setEmi] = useState(0);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    // Allow only non-negative integers for loanAmount
+    if (name === "loanAmount" && value !== "" && !/^\d+$/.test(value)) {
+      toast.error("Loan amount must be a whole number");
+      return;
+    }
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSelectChange = (field: string) => (value: string) => {
     setFormData({ ...formData, [field]: value });
   };
 
-  // Calculate EMI (simple formula, match Go logic)
   const calculateEMI = () => {
-    const amount = parseFloat(formData.loanAmount);
+    const amount = parseInt(formData.loanAmount);
     const term = parseInt(formData.repaymentTerm);
     if (!amount || !term) return;
-    // Assuming rates: home=8%, car=9%, gold=7% (match Go's interestRates map)
     const rates: Record<string, number> = { home: 8, car: 9, gold: 7 };
     const rate = rates[formData.loanType] || 8;
     const monthlyRate = rate / 12 / 100;
@@ -60,33 +70,42 @@ export default function ApplyLoan() {
     setEmi(Math.round(emi));
   };
 
-  // Submit to backend
+  const goToStep2 = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!formData.loanAmount || !formData.repaymentTerm || !formData.loanType) {
+      toast.error("Please fill all fields");
+      return;
+    }
+    if (!/^\d+$/.test(formData.loanAmount) || parseInt(formData.loanAmount) <= 0) {
+      toast.error("Loan amount must be a positive whole number");
+      return;
+    }
+    calculateEMI();
+    setStep(2);
+    toast.info("Proceeding to review and submit");
+  };
+
   const handleSubmit = async () => {
     if (!formData.loanAmount || !formData.repaymentTerm || !formData.loanType) {
-      alert('Please fill all fields');
+      toast.error("Please fill all fields");
+      return;
+    }
+    if (!/^\d+$/.test(formData.loanAmount) || parseInt(formData.loanAmount) <= 0) {
+      toast.error("Loan amount must be a positive whole number");
       return;
     }
     try {
-      const response = await apiService.authRequest('/loan/apply', {
-        method: 'POST',
-        body: JSON.stringify({
-          amount: parseFloat(formData.loanAmount),
-          repaymentTerm: parseInt(formData.repaymentTerm),
-          loanType: formData.loanType
-        }),
+      await apiService.applyLoan({
+        amount: parseInt(formData.loanAmount),
+        term: parseInt(formData.repaymentTerm),
+        type: formData.loanType,
+        borrowerName: user.profile.fullName,
       });
-      alert('Loan applied successfully!');
-      navigate('/dashboard'); // Redirect to dashboard
+      toast.success("Loan applied successfully!");
+      navigate("/dashboard?status=pending");
     } catch (error: any) {
-      alert(error.message || 'Failed to apply');
+      toast.error(error.message || "Failed to apply for loan");
     }
-  };
-
-  // Proceed to step 2 and calculate
-  const goToStep2 = (e: React.MouseEvent) => {
-    e.preventDefault();
-    calculateEMI();
-    setStep(2);
   };
 
   return (
@@ -139,17 +158,19 @@ export default function ApplyLoan() {
                       <Input
                         id="loanAmount"
                         name="loanAmount"
-                        type="text"
+                        type="number"
                         placeholder="Enter Amount"
                         required
                         className="w-full"
                         value={formData.loanAmount}
                         onChange={handleInputChange}
+                        min="1"
+                        step="1"
                       />
                     </div>
                     <div className="relative flex-1">
                       <Label htmlFor="repaymentTerm">Repayment Term</Label>
-                      <Select onValueChange={handleSelectChange('repaymentTerm')} value={formData.repaymentTerm}>
+                      <Select onValueChange={handleSelectChange("repaymentTerm")} value={formData.repaymentTerm}>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Choose Repayment Term" />
                         </SelectTrigger>
@@ -169,7 +190,7 @@ export default function ApplyLoan() {
 
                   <div className="relative w-full">
                     <Label htmlFor="loanType">Loan Type</Label>
-                    <Select onValueChange={handleSelectChange('loanType')} value={formData.loanType}>
+                    <Select onValueChange={handleSelectChange("loanType")} value={formData.loanType}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Choose Loan Type" />
                       </SelectTrigger>
@@ -180,7 +201,7 @@ export default function ApplyLoan() {
                           <SelectItem value="car">Car Loan</SelectItem>
                           <SelectItem value="gold">Gold Loan</SelectItem>
                         </SelectGroup>
-                      </SelectContent>
+                        </SelectContent>
                     </Select>
                   </div>
                   <Button
@@ -194,16 +215,19 @@ export default function ApplyLoan() {
               </>
             ) : (
               <>
-                <LoanCalculatorComponent 
-                  amount={formData.loanAmount} 
-                  term={formData.repaymentTerm} 
-                  type={formData.loanType} 
-                  emi={emi} 
+                <LoanCalculatorComponent
+                  amount={formData.loanAmount}
+                  term={formData.repaymentTerm}
+                  type={formData.loanType}
+                  emi={emi}
                 />
 
                 <div className="flex justify-between py-6">
                   <Button
-                    onClick={() => setStep(1)}
+                    onClick={() => {
+                      setStep(1);
+                      toast.info("Returning to loan details");
+                    }}
                     variant="outline"
                     className="w-52"
                   >

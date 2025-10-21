@@ -1,4 +1,3 @@
-// components/OTPVerification.tsx
 import { Button } from "@/components/ui/button";
 import {
   InputOTP,
@@ -8,11 +7,13 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
+import { Spinner } from "./ui/spinner";
+import { toast } from "sonner";
 
 const totalSlots = 6;
 
 export function OTPVerification() {
-  const { verifyOtp, verifyLoginOtp, resendOtp } = useAuth();
+  const { verifyOtp, verifyLoginOtp, resendOtp, user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -43,6 +44,7 @@ export function OTPVerification() {
         setEmailOrPhone(storedEmail);
         setIsLoginFlow(true);
       } else {
+        toast.error("No email or phone number found, please try again");
         navigate("/login");
       }
     }
@@ -58,7 +60,7 @@ export function OTPVerification() {
 
   const handleVerifyOtp = async () => {
     if (otp.length !== totalSlots) {
-      alert("Please enter the complete OTP");
+      toast.error("Please enter the complete OTP");
       return;
     }
 
@@ -74,11 +76,30 @@ export function OTPVerification() {
       localStorage.removeItem("otpPhoneNumber");
       localStorage.removeItem("otpEmailOrPhone");
 
-      console.log(" OTP verified successfully:", result.redirectTo);
-      navigate(result.redirectTo);
+      console.log("OTP verified successfully:", result.redirectTo);
+      toast.success("OTP verified successfully");
+
+      // Wait for user to be set (polling)
+      const waitForUser = () => new Promise<void>((resolve) => {
+        const interval = setInterval(() => {
+          if (user) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, 50);
+
+        setTimeout(() => {
+          clearInterval(interval);
+          resolve(); // Fallback
+        }, 2000);
+      });
+
+      await waitForUser();
+
+      navigate(result.redirectTo || '/dashboard');
     } catch (error: any) {
-      console.error(" OTP verification failed:", error);
-      alert(error.message || "OTP verification failed. Please try again.");
+      console.error("OTP verification failed:", error);
+      toast.error(error.message || "OTP verification failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -90,15 +111,16 @@ export function OTPVerification() {
       await resendOtp(emailOrPhone);
       setTimer(30);
       setOtp("");
-      alert("OTP resent successfully!");
+      toast.success("OTP resent successfully");
     } catch (error: any) {
-      alert(error.message || "Failed to resend OTP. Please try again.");
+      toast.error(error.message || "Failed to resend OTP. Please try again.");
     }
   };
 
   const handleChangeNumberOrEmail = () => {
     localStorage.removeItem("otpPhoneNumber");
     localStorage.removeItem("otpEmailOrPhone");
+    toast.info(`Redirecting to ${isLoginFlow ? "login" : "signup"}`);
     navigate(isLoginFlow ? "/login" : "/signup");
   };
 
@@ -112,7 +134,7 @@ export function OTPVerification() {
           <div className="text-center text-base font-inter">
             <span className="font-normal">We have sent an OTP to </span>
             <span className="font-extrabold">
-              { emailOrPhone}
+              {emailOrPhone}
             </span>
           </div>
         </div>
@@ -126,6 +148,7 @@ export function OTPVerification() {
                   className="flex gap-4"
                   value={otp}
                   onChange={setOtp}
+                  autoFocus
                 >
                   {Array.from({ length: totalSlots }).map((_, index) => (
                     <InputOTPGroup key={index}>
@@ -161,7 +184,7 @@ export function OTPVerification() {
               onClick={handleVerifyOtp}
               disabled={isLoading || otp.length !== totalSlots}
             >
-              {isLoading ? "Verifying..." : "Verify OTP"}
+              {isLoading ? <Spinner /> : "Verify OTP"}
             </Button>
 
             {timer === 0 && (

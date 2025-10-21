@@ -6,10 +6,8 @@ import { IUser } from '../models/User.model';
 const router = Router();
 const GO_SERVICE_URL = process.env.GO_SERVICE_URL || 'http://localhost:8080';
 
-// Apply authentication middleware to all routes
-router.use(authenticate as RequestHandler); // Type the middleware usage explicitly
+router.use(authenticate as RequestHandler); 
 
-// Helper to handle Axios errors uniformly (narrows 'unknown' to AxiosError)
 const handleAxiosError = (error: unknown, res: Response, fallbackMsg: string) => {
   if (axios.isAxiosError(error)) {
     const axiosErr = error as AxiosError;
@@ -24,7 +22,7 @@ const handleAxiosError = (error: unknown, res: Response, fallbackMsg: string) =>
 
 // User: Apply for a loan
 router.post('/apply', (async (req, res) => {
-  const authReq = req as AuthenticatedRequest; // Assert to access custom props
+  const authReq = req as AuthenticatedRequest; 
   const user: IUser = authReq.user;
 
   try {
@@ -53,7 +51,7 @@ router.post('/apply', (async (req, res) => {
   } catch (error) {
     handleAxiosError(error, res, 'Failed to apply for loan');
   }
-}) as RequestHandler); // Explicitly type as RequestHandler to match Express overload
+}) as RequestHandler); 
 
 // User: Get my loans
 router.get('/my-loans', (async (req, res) => {
