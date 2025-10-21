@@ -1,9 +1,9 @@
 import { apiService } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
-
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { Check, X, ChevronsUpDown } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +31,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import Img from "../assets/image.png";
 
 const docs = ["PAN Card", "Aadhaar Card"];
@@ -299,7 +300,6 @@ const SuccessModal = ({
 </linearGradient>
 </defs>
 </svg>
-
                 ) : (
                   <img
                     src={Img}
@@ -472,7 +472,7 @@ const FloatingLabelFileUploader = ({
         <Button
           onClick={handleUploadAnother}
           variant="ghost"
-          className=" text-xs font-semibold underline shrink-0 h-auto p-0 flex items-center gap-1 uppercase tracking-tight"
+          className="text-xs font-semibold underline shrink-0 h-auto p-0 flex items-center gap-1 uppercase tracking-tight"
         >
           UPLOAD ANOTHER
         </Button>
@@ -698,6 +698,7 @@ const KycSetup = (): JSX.Element => {
 
   useEffect(() => {
     if (!authLoading && !token) {
+      toast.error("Please log in to continue");
       navigate("/login");
     }
   }, [authLoading, token, navigate]);
@@ -714,22 +715,30 @@ const KycSetup = (): JSX.Element => {
       ...prev,
       { id: prev.length, type: "", file: null, isFixed: false },
     ]);
+    toast.success("New document section added");
   };
 
   const removeDocument = (id: number) => {
     setDocuments((prev) => prev.filter((doc) => doc.id !== id));
+    toast.success("Document section removed");
   };
 
   const handleTypeChange = (id: number, type: string) => {
     setDocuments((prev) =>
       prev.map((doc) => (doc.id === id ? { ...doc, type } : doc))
     );
+    toast.success(`Document type set to ${type}`);
   };
 
   const handleFileChange = (id: number, file: File | null) => {
     setDocuments((prev) =>
       prev.map((doc) => (doc.id === id ? { ...doc, file } : doc))
     );
+    if (file) {
+      toast.success(`File ${file.name} selected for upload`);
+    } else {
+      toast.info("File selection cleared");
+    }
   };
 
   const hasPan = documents.some(
@@ -743,10 +752,10 @@ const KycSetup = (): JSX.Element => {
   const uploadToCloudinary = async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', 'loan_preset'); 
+    formData.append('upload_preset', 'loan_preset');
 
     const response = await fetch(
-      `https://api.cloudinary.com/v1_1/dd55izwf2/upload`, 
+      `https://api.cloudinary.com/v1_1/dd55izwf2/upload`,
       {
         method: 'POST',
         body: formData,
@@ -758,53 +767,58 @@ const KycSetup = (): JSX.Element => {
     }
 
     const data = await response.json();
-    return data.secure_url; // This is the uploaded file's URL
+    return data.secure_url;
   };
 
   const handleSave = async () => {
-    if (isSaveEnabled) {
-      setIsLoading(true);
-      try {
-        const validDocs = documents.filter((doc) => doc.type && doc.file);
+    if (!isSaveEnabled) {
+      toast.error("Please upload both PAN Card and Aadhaar Card");
+      return;
+    }
 
-        // Upload each file to Cloudinary  (using Promise.all for efficiency)
-        const uploadedUrls = await Promise.all(
-          validDocs.map(async (doc) => {
-            const fileUrl = await uploadToCloudinary(doc.file!);
-            return { docType: doc.type, fileUrl };
-          })
-        );
+    setIsLoading(true);
+    try {
+      const validDocs = documents.filter((doc) => doc.type && doc.file);
 
-        //  saving to MongoDB
-        for (const uploadedDoc of uploadedUrls) {
-          console.log(" Uploading KYC document to backend:", uploadedDoc);
-          const response = await apiService.uploadKyc(uploadedDoc);
-          console.log(" KYC upload successful:", response);
-        }
+      // Upload each file to Cloudinary
+      const uploadedUrls = await Promise.all(
+        validDocs.map(async (doc) => {
+          const fileUrl = await uploadToCloudinary(doc.file!);
+          return { docType: doc.type, fileUrl };
+        })
+      );
 
-        const redirectTo = "/login"; 
-        setRedirectPath(redirectTo);
-
-        if (redirectTo === "/login") {
-          localStorage.removeItem("authToken");
-        }
-
-        setSuccessModalOpen(true);
-      } catch (error: any) {
-        console.error(" KYC upload failed:", error);
-        if (
-          error.message?.includes("Unauthorized") ||
-          error.message?.includes("Access denied") ||
-          error.message?.includes("token")
-        ) {
-          localStorage.removeItem("authToken");
-          navigate("/login");
-        } else {
-          alert(error.message || "Failed to upload KYC document. Please try again.");
-        }
-      } finally {
-        setIsLoading(false);
+      // Save to MongoDB
+      for (const uploadedDoc of uploadedUrls) {
+        console.log("Uploading KYC document to backend:", uploadedDoc);
+        const response = await apiService.uploadKyc(uploadedDoc);
+        console.log("KYC upload successful:", response);
       }
+
+      toast.success("KYC documents uploaded successfully");
+      const redirectTo = "/login";
+      setRedirectPath(redirectTo);
+
+      if (redirectTo === "/login") {
+        localStorage.removeItem("authToken");
+      }
+
+      setSuccessModalOpen(true);
+    } catch (error: any) {
+      console.error("KYC upload failed:", error);
+      if (
+        error.message?.includes("Unauthorized") ||
+        error.message?.includes("Access denied") ||
+        error.message?.includes("token")
+      ) {
+        toast.error("Session expired, please log in again");
+        localStorage.removeItem("authToken");
+        navigate("/login");
+      } else {
+        toast.error(error.message || "Failed to upload KYC documents. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -818,7 +832,7 @@ const KycSetup = (): JSX.Element => {
 
   return (
     <div className="p-16 flex justify-center font-inter items-center bg-white">
-      <Card className="w-full max-w-xl px-14 ">
+      <Card className="w-full max-w-xl px-14">
         <CardHeader>
           <div className="flex flex-col items-center">
             <div className="font-bold text-black text-[32px] text-center tracking-[-2px]">
@@ -877,10 +891,10 @@ const KycSetup = (): JSX.Element => {
             size="lg"
             variant="default"
             disabled={!isSaveEnabled || isLoading}
-           className="w-full"
+            className="w-full"
             onClick={handleSave}
           >
-            {isLoading ? "Saving..." : "Save"}
+            {isLoading ? <Spinner /> : "Save"}
           </Button>
 
           {successModalOpen && (

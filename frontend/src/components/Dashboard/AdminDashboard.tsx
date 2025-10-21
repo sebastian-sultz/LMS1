@@ -1,4 +1,3 @@
-// components/Dashboard/AdminDashboard.tsx
 import { Sidebar } from "./Sidebar";
 import { DashboardHeader } from "./DashboardHeader";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,6 +7,7 @@ import LoanDashboard from "./LoanDashboard";
 import { Card, CardContent } from "../ui/card";
 import { apiService } from "@/services/api";
 import { Navigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function AdminDashboard() {
   const { token, isLoading: authLoading, user, logout } = useAuth();
@@ -23,6 +23,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (!authLoading && !token) {
+      toast.error("Please log in to access the dashboard");
       navigate("/login");
     }
   }, [authLoading, token, navigate]);
@@ -42,6 +43,7 @@ export default function AdminDashboard() {
       ["approved", "pending", "rejected"].includes(initialStatus)
     ) {
       setFilteredStatus(initialStatus as "approved" | "pending" | "rejected");
+      toast.info(`Showing ${initialStatus} loans`);
     }
   }, [location.search]);
 
@@ -53,8 +55,10 @@ export default function AdminDashboard() {
         setError(null);
         const data = await apiService.getAllLoans();
         setLoans(data);
+        toast.success("Loans fetched successfully");
       } catch (err: any) {
         setError(err.message || "Failed to fetch loans");
+        toast.error(err.message || "Failed to fetch loans");
         console.error("Fetch loans error:", err);
       }
     };
@@ -102,12 +106,16 @@ export default function AdminDashboard() {
     try {
       const data = await apiService.getAllLoans();
       setLoans(data);
+      setError(null);
+      toast.success("Loans refreshed successfully");
     } catch (err: any) {
       setError(err.message || "Failed to refresh loans");
+      toast.error(err.message || "Failed to refresh loans");
     }
   };
 
   if (!user?.isAdmin) {
+    toast.error("Admin access required");
     return <Navigate to="/login" />;
   }
 
@@ -187,7 +195,10 @@ export default function AdminDashboard() {
                     ? "bg-[#000] text-white"
                     : "bg-gray-100 text-gray-700"
                 }`}
-                onClick={() => setFilteredStatus("approved")}
+                onClick={() => {
+                  setFilteredStatus("approved");
+                  toast.info("Showing approved loans");
+                }}
               >
                 Approved ({countByStatus("approved")})
               </button>
@@ -197,7 +208,10 @@ export default function AdminDashboard() {
                     ? "bg-[#000] text-white"
                     : "bg-gray-100 text-gray-700"
                 }`}
-                onClick={() => setFilteredStatus("pending")}
+                onClick={() => {
+                  setFilteredStatus("pending");
+                  toast.info("Showing pending loans");
+                }}
               >
                 Pending ({countByStatus("pending")})
               </button>
@@ -207,7 +221,10 @@ export default function AdminDashboard() {
                     ? "bg-[#000] text-white"
                     : "bg-gray-100 text-gray-700"
                 }`}
-                onClick={() => setFilteredStatus("rejected")}
+                onClick={() => {
+                  setFilteredStatus("rejected");
+                  toast.info("Showing rejected loans");
+                }}
               >
                 Rejected ({countByStatus("rejected")})
               </button>
@@ -236,7 +253,10 @@ export default function AdminDashboard() {
         <LoanDashboard
           loans={filteredLoans}
           onRefresh={handleRefresh}
-          onError={(err) => setError(err)}
+          onError={(err) => {
+            setError(err);
+            toast.error(err);
+          }}
         />
       </main>
     </div>
