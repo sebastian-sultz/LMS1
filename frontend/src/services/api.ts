@@ -1,4 +1,3 @@
-// services/api.ts
 const GO_BASE_URL = import.meta.env.VITE_GO_API_URL || 'http://localhost:8080';
 const NODE_BASE_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:5000/api';
 
@@ -46,7 +45,6 @@ class ApiService {
     });
   }
 
-  // AUTH (Node Backend)
   async signup(phoneNumber: string, referralCode?: string) {
     return this.request(NODE_BASE_URL, '/auth/signup', {
       method: 'POST',
@@ -111,7 +109,6 @@ class ApiService {
     });
   }
 
-  // LOANS (Go Backend)
   async applyLoan(data: { amount: number; term: number; type: string; borrowerName?: string }) {
     return this.authRequest(GO_BASE_URL, '/loans/apply', {
       method: 'POST',
@@ -121,12 +118,12 @@ class ApiService {
 
   async getMyLoans() {
     const data = await this.authRequest(GO_BASE_URL, '/loans/user', { method: 'GET' });
-    return data; // Array
+    return data;
   }
 
   async getAllLoans() {
     const data = await this.authRequest(GO_BASE_URL, '/loans', { method: 'GET' });
-    return data; // Array
+    return data;
   }
 
   async approveLoan(loanId: string) {
@@ -147,6 +144,14 @@ class ApiService {
       method: 'GET',
     });
   }
+
+  async payRepayment(repaymentId: string) {
+    return this.authRequest(GO_BASE_URL, `/repayments/${repaymentId}/pay`, {
+      method: 'POST',
+    });
+  }
 }
 
 export const apiService = new ApiService();
+
+

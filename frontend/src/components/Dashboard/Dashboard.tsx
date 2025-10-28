@@ -1,15 +1,15 @@
-// components/Dashboard/Dashboard.tsx (add useEffect for user change)
 import { Sidebar } from "./Sidebar";
 import { DashboardHeader } from "./DashboardHeader";
 import { LoanCard } from "./LoanCard";
 import { TotalLoan } from "./TotalLoan";
 import QuickAccessCard from "./QuickAccessCard";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-
+import  RepaymentDrawer  from "./RepaymentDrawer";
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import { apiService } from '@/services/api';
+import { toast } from "sonner";
 
 export default function Dashboard() {
   const { token, isLoading: authLoading, user, logout } = useAuth();
@@ -20,6 +20,8 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [totalApproved, setTotalApproved] = useState("₹0");
   const [filteredStatus, setFilteredStatus] = useState<"approved" | "pending" | "rejected">("approved");
+  const [repaymentDrawerOpen, setRepaymentDrawerOpen] = useState(false);
+  const [selectedLoanId, setSelectedLoanId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (!authLoading && !token) {
@@ -27,15 +29,13 @@ export default function Dashboard() {
     }
   }, [authLoading, token, navigate]);
 
-  // NEW: React to user updates
   useEffect(() => {
     if (user) {
       console.log('User updated in Dashboard:', user);
-      // Optionally refetch loans or other user-dependent data here
+      if (token) fetchLoans();
     }
-  }, [user]);
+  }, [user, token]);
 
-  // Set initial status from query param (e.g., ?status=pending)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const initialStatus = params.get('status');
@@ -44,30 +44,28 @@ export default function Dashboard() {
     }
   }, [location.search]);
 
-  // Fetch loans and calculate totals
-  useEffect(() => {
-    const fetchLoans = async () => {
-      if (!token) return;
-      try {
-        setLoadingLoans(true);
-        setError(null);
-        const response = await apiService.getMyLoans();
-        const fetchedLoans = Array.isArray(response) ? response : [];
-        // Sort all loans by ApplicationDate descending (latest first)
-        fetchedLoans.sort((a, b) => new Date(b.ApplicationDate).getTime() - new Date(a.ApplicationDate).getTime());
-        setLoans(fetchedLoans);
-        // Calculate total approved
-        const approvedLoans = fetchedLoans.filter((loan: any) => loan.Status?.toLowerCase() === 'approved');
-        const total = approvedLoans.reduce((sum: number, loan: any) => sum + (loan.Amount || 0), 0);
-        setTotalApproved(`₹${total.toLocaleString('en-IN')}`);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load loans');
-        console.error('Fetch loans error:', err);
-      } finally {
-        setLoadingLoans(false);
-      }
-    };
+  const fetchLoans = async () => {
+    if (!token) return;
+    try {
+      setLoadingLoans(true);
+      setError(null);
+      const response = await apiService.getMyLoans();
+      const fetchedLoans = Array.isArray(response) ? response : [];
+      fetchedLoans.sort((a, b) => new Date(b.ApplicationDate).getTime() - new Date(a.ApplicationDate).getTime());
+      setLoans(fetchedLoans);
+      const approvedLoans = fetchedLoans.filter((loan: any) => loan.Status?.toLowerCase() === 'approved');
+      const total = approvedLoans.reduce((sum: number, loan: any) => sum + (loan.Amount || 0), 0);
+      setTotalApproved(`₹${total.toLocaleString('en-IN')}`);
+    } catch (err: any) {
+      setError(err.message || 'Failed to load loans');
+      toast.error(err.message || 'Failed to load loans');
+      console.error('Fetch loans error:', err);
+    } finally {
+      setLoadingLoans(false);
+    }
+  };
 
+  useEffect(() => {
     if (token) fetchLoans();
   }, [token]);
 
@@ -77,43 +75,59 @@ export default function Dashboard() {
 
   const countByStatus = (status: string) => loans.filter((loan) => normalizeStatus(loan.Status) === status).length;
 
+  const handleViewRepayments = (loanId: string) => {
+    setSelectedLoanId(loanId);
+    setRepaymentDrawerOpen(true);
+  };
+
+  const handleViewAllRepayments = () => {
+    setSelectedLoanId(undefined);
+    setRepaymentDrawerOpen(true);
+  };
+
+  const handleCloseRepaymentDrawer = () => {
+    setRepaymentDrawerOpen(false);
+    setSelectedLoanId(undefined);
+    fetchLoans();
+  };
+
   return (
     <div className="flex font-roobert">
       <Sidebar onLogout={logout} />
-
       <main className="ml-64 flex-1 min-h-screen p-6 sm:p-8 transition-all">
         <DashboardHeader user={user} />
-
-        <div className="flex relative ">
+        <div className="flex relative">
           <TotalLoan totalLoan={totalApproved} onApplyClick={() => navigate('/dashboard/apply-loan')} />
           <QuickAccessCard />
         </div>
-
         <section className="pt-3">
           <h2 className="text-lg font-semibold">My Loans</h2>
-
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-
           <div className="flex justify-between">
             <div className="flex gap-2 mt-3">
-              <button 
+              <button
                 className={`text-xs px-3 py-1 rounded-full ${filteredStatus === 'approved' ? 'bg-[#000] text-white' : 'bg-gray-100 text-gray-700'}`}
-                onClick={() => setFilteredStatus('approved')}>
+                onClick={() => setFilteredStatus('approved')}
+              >
                 Approved ({countByStatus('approved')})
               </button>
-              <button 
+              <button
                 className={`text-xs px-3 py-1 rounded-full ${filteredStatus === 'pending' ? 'bg-[#000] text-white' : 'bg-gray-100 text-gray-700'}`}
-                onClick={() => setFilteredStatus('pending')}>
+                onClick={() => setFilteredStatus('pending')}
+              >
                 Pending ({countByStatus('pending')})
               </button>
-              <button 
+              <button
                 className={`text-xs px-3 py-1 rounded-full ${filteredStatus === 'rejected' ? 'bg-[#000] text-white' : 'bg-gray-100 text-gray-700'}`}
-                onClick={() => setFilteredStatus('rejected')}>
+                onClick={() => setFilteredStatus('rejected')}
+              >
                 Rejected ({countByStatus('rejected')})
               </button>
             </div>
-
-            <button className="flex gap-3 text-sm mt-3 text-[#001336] py-1 hover:underline">
+            <button
+              className="flex gap-3 text-sm mt-3 text-[#001336] py-1 hover:underline"
+              onClick={handleViewAllRepayments}
+            >
               View all{" "}
               <div className="flex justify-center items-center">
                 <svg
@@ -131,7 +145,6 @@ export default function Dashboard() {
               </div>
             </button>
           </div>
-
           <ScrollArea className="mt-5 max-w-6xl scroll-smooth overflow-x-auto">
             {loadingLoans ? (
               <div className="text-center py-4 text-gray-500">Loading loans...</div>
@@ -143,10 +156,12 @@ export default function Dashboard() {
               <div className="flex gap-4 pb-4">
                 {filteredLoans.map((loan) => (
                   <div key={loan.ID} className="min-w-[293px]">
-                    <LoanCard 
-                      amount={`₹${loan.Amount.toLocaleString('en-IN')}`} 
+                    <LoanCard
+                      loanId={loan.ID}
+                      amount={`₹${loan.Amount.toLocaleString('en-IN')}`}
                       status={loan.Status}
                       rejectionReason={loan.RejectionReason}
+                      onViewRepayments={handleViewRepayments}
                     />
                   </div>
                 ))}
@@ -155,6 +170,11 @@ export default function Dashboard() {
             <ScrollBar className="w-full"/>
           </ScrollArea>
         </section>
+        <RepaymentDrawer
+          open={repaymentDrawerOpen}
+          onClose={handleCloseRepaymentDrawer}
+          loanId={selectedLoanId}
+        />
       </main>
     </div>
   );

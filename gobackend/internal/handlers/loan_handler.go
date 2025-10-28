@@ -127,3 +127,24 @@ func (h *LoanHandler) GetRepayments(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, repayments)
 }
+
+func (h *LoanHandler) PayRepayment(c *gin.Context) {
+	claims := jwt.ExtractClaims(c)
+	userID, ok := claims["user_id"].(string)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		return
+	}
+	repaymentIDStr := c.Param("id")
+	repaymentID, err := uuid.Parse(repaymentIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid repayment ID"})
+		return
+	}
+	err = h.service.PayRepayment(repaymentID, userID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Repayment marked as paid"})
+}

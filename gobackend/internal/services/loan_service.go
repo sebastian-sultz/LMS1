@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"loan-microservice/internal/models"
 	"loan-microservice/internal/repositories"
 	"math"
@@ -16,6 +17,7 @@ type LoanService interface {
 	RejectLoan(id uuid.UUID, reason string) error
 	GetUserLoans(userID string) ([]models.Loan, error)
 	GetRepayments(loanID uuid.UUID) ([]models.Repayment, error)
+	PayRepayment(repaymentID uuid.UUID, userID string) error
 }
 
 type loanService struct {
@@ -28,9 +30,9 @@ func NewLoanService(loanRepo repositories.LoanRepository, repaymentRepo reposito
 }
 
 var interestRates = map[string]float64{
-  "home": 0.08,
-  "car":  0.09,
-  "gold": 0.07,
+	"home": 0.08,
+	"car":  0.09,
+	"gold": 0.07,
 }
 
 func (s *loanService) ApplyLoan(userID, borrowerName string, amount float64, termMonths int, loanType string) (*models.Loan, error) {
@@ -41,6 +43,10 @@ func (s *loanService) ApplyLoan(userID, borrowerName string, amount float64, ter
 		TermMonths:   termMonths,
 		LoanType:     loanType,
 		Status:       models.Pending,
+		InterestRate: interestRates[loanType],
+	}
+	if loan.InterestRate == 0 {
+		loan.InterestRate = 0.10 // Default 10%
 	}
 	err := s.loanRepo.Create(loan)
 	return loan, err
@@ -62,27 +68,29 @@ func (s *loanService) ApproveLoan(id uuid.UUID) error {
 	now := time.Now()
 	loan.Status = models.Approved
 	loan.ApprovalDate = &now
+	if loan.InterestRate == 0 {
+		rate, ok := interestRates[loan.LoanType]
+		if !ok {
+			rate = 0.10 // Default 10%
+		}
+		loan.InterestRate = rate
+	}
 	err = s.loanRepo.Update(loan)
 	if err != nil {
 		return err
 	}
 
-	// Calculate total amount with interest
-	rate, ok := interestRates[loan.LoanType]
-	if !ok {
-		rate = 0.10 // Default 10%
-	}
+	rate := loan.InterestRate
 	interest := loan.Amount * rate * (float64(loan.TermMonths) / 12)
 	total := loan.Amount + interest
 	emi := total / float64(loan.TermMonths)
 
-	// Generate repayments
 	for i := 1; i <= loan.TermMonths; i++ {
-		dueDate := now.AddDate(0, i, 0) // Monthly
+		dueDate := now.AddDate(0, i, 0)
 		repayment := &models.Repayment{
 			LoanID:  loan.ID,
 			DueDate: dueDate,
-			Amount:  math.Round(emi*100) / 100, // 2 decimal
+			Amount:  math.Round(emi*100) / 100,
 			Status:  models.RepayPending,
 		}
 		if err := s.repaymentRepo.Create(repayment); err != nil {
@@ -111,4 +119,24 @@ func (s *loanService) GetUserLoans(userID string) ([]models.Loan, error) {
 
 func (s *loanService) GetRepayments(loanID uuid.UUID) ([]models.Repayment, error) {
 	return s.repaymentRepo.FindByLoanID(loanID)
+}
+
+func (s *loanService) PayRepayment(repaymentID uuid.UUID, userID string) error {
+	repayment, err := s.repaymentRepo.FindByID(repaymentID)
+	if err != nil {
+		return fmt.Errorf("failed to find repayment: %w", err)
+	}
+	loan, err := s.loanRepo.FindByID(repayment.LoanID)
+	if err != nil {
+		return fmt.Errorf("failed to find loan: %w", err)
+	}
+	if loan.UserID != userID {
+		return fmt.Errorf("unauthorized: user does not own this loan")
+	}
+	if repayment.Status == models.Paid {
+		return fmt.Errorf("repayment already paid")
+	}
+	repayment.Status = models.Paid
+	repayment.UpdatedAt = time.Now()
+	return s.repaymentRepo.Update(repayment)
 }

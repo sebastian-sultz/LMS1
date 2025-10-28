@@ -8,6 +8,7 @@ import (
 	"loan-microservice/internal/repositories"
 	"loan-microservice/internal/services"
 
+	//hey
 	jwt "github.com/appleboy/gin-jwt/v3"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -39,7 +40,6 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	// JWT Middleware
 	authMiddleware, err := initJWTMiddleware()
 	if err != nil {
 		panic("JWT init failed: " + err.Error())
@@ -50,13 +50,13 @@ func main() {
 		c.JSON(200, gin.H{"status": "OK"})
 	})
 
-	// Protected routes group
 	auth := r.Group("/")
 	auth.Use(authMiddleware.MiddlewareFunc())
 	{
 		auth.POST("/loans/apply", loanHandler.ApplyLoan)
 		auth.GET("/loans/user", loanHandler.GetUserLoans)
 		auth.GET("/repayments/:loan_id", loanHandler.GetRepayments)
+		auth.POST("/repayments/:id/pay", loanHandler.PayRepayment) // Added
 		auth.GET("/loans", loanHandler.GetAllLoans)
 		auth.POST("/loans/:id/approve", loanHandler.ApproveLoan)
 		auth.POST("/loans/:id/reject", loanHandler.RejectLoan)
@@ -69,11 +69,10 @@ func main() {
 	r.Run(":" + port)
 }
 
-// JWT Setup
 func initJWTMiddleware() (*jwt.GinJWTMiddleware, error) {
 	return jwt.New(&jwt.GinJWTMiddleware{
 		Realm:         "loan-microservice",
-		Key:           []byte(os.Getenv("JWT_SECRET")), // Same as Node
+		Key:           []byte(os.Getenv("JWT_SECRET")),
 		Timeout:       time.Hour,
 		MaxRefresh:    time.Hour * 24,
 		TokenLookup:   "header: Authorization",
@@ -90,7 +89,7 @@ func initJWTMiddleware() (*jwt.GinJWTMiddleware, error) {
 			claims := jwt.ExtractClaims(c)
 			path := c.FullPath()
 			if path == "/loans" || path == "/loans/:id/approve" || path == "/loans/:id/reject" {
-				return claims["isAdmin"] == true || claims["isAdmin"] == "true" 
+				return claims["isAdmin"] == true || claims["isAdmin"] == "true"
 			}
 			return true
 		},

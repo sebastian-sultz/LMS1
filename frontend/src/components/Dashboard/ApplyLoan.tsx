@@ -108,6 +108,13 @@ export default function ApplyLoan() {
     }
   };
 
+  // Define loan types with their interest rates for consistent rendering
+  const loanTypes = [
+    { value: "home", label: "Home Loan", rate: 8 },
+    { value: "car", label: "Car Loan", rate: 9 },
+    { value: "gold", label: "Gold Loan", rate: 7 },
+  ];
+
   return (
     <div className="flex font-roobert">
       <Sidebar onLogout={logout} />
@@ -177,33 +184,58 @@ export default function ApplyLoan() {
                         <SelectContent>
                           <SelectGroup>
                             <SelectLabel>Terms</SelectLabel>
-                            <SelectItem value="6">6 Months</SelectItem>
-                            <SelectItem value="12">12 Months</SelectItem>
-                            <SelectItem value="18">18 Months</SelectItem>
-                            <SelectItem value="24">24 Months</SelectItem>
-                            <SelectItem value="30">30 Months</SelectItem>
+                            <SelectItem value="6" className="text-gray-700">6 Months</SelectItem>
+                            <SelectItem value="12" className="text-gray-700">12 Months</SelectItem>
+                            <SelectItem value="18" className="text-gray-700">18 Months</SelectItem>
+                            <SelectItem value="24" className="text-gray-700">24 Months</SelectItem>
+                            <SelectItem value="30" className="text-gray-700">30 Months</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
 
-                  <div className="relative w-full">
-                    <Label htmlFor="loanType">Loan Type</Label>
-                    <Select onValueChange={handleSelectChange("loanType")} value={formData.loanType}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Choose Loan Type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Loan Type</SelectLabel>
-                          <SelectItem value="home">Home Loan</SelectItem>
-                          <SelectItem value="car">Car Loan</SelectItem>
-                          <SelectItem value="gold">Gold Loan</SelectItem>
-                        </SelectGroup>
-                        </SelectContent>
-                    </Select>
-                  </div>
+               <div className="relative w-full">
+  <Label htmlFor="loanType">Loan Type</Label>
+
+  <Select
+    onValueChange={handleSelectChange("loanType")}
+    value={formData.loanType}
+  >
+    <SelectTrigger className="w-full flex justify-between items-center">
+      {formData.loanType ? (
+        (() => {
+          const selected = loanTypes.find(
+            (l) => l.value === formData.loanType
+          );
+          return (
+            <div className="flex justify-between w-full items-center">
+              <span>{selected?.label}</span>
+              <span className="text-gray-600">{selected?.rate}%</span>
+            </div>
+          );
+        })()
+      ) : (
+        <span className="text-gray-400">Choose Loan Type</span>
+      )}
+    </SelectTrigger>
+
+    <SelectContent>
+      <SelectGroup>
+        <SelectLabel>Loan Type</SelectLabel>
+        {loanTypes.map((loan) => (
+                            <SelectItem key={loan.value} value={loan.value} className="block">
+                              <div className="flex justify-between w-full items-center">
+                                <span className="text-gray-700">{loan.label}</span>
+                                <span className="text-gray-700">{loan.rate}%</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+      </SelectGroup>
+    </SelectContent>
+  </Select>
+</div>
+
                   <Button
                     type="button"
                     className="w-52"
